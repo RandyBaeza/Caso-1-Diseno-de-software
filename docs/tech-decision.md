@@ -23,18 +23,23 @@ Considerations:
 
 ## 2. Application Architecture
 
-Next.js (App Router) with Server Side Rendering(SSR)/Static site generator(SSG)
+Vite (Single Page Application - SPA)
 
 Why:
 
-- Server-Side Rendering helps SEO(Search Engine Optimization) and initial page load.
-- It's very nice cause it lets us hide parts of UI based on user roles safely.
-- Includes built-in optimizations (images, fonts,splitting).
+Extremely fast development server and optimized builds.
+
+Simple setup, lighter than full frameworks like Next.js.
+
+Works seamlessly with React and TypeScript.
 
 Considerations:
 
-- App Router is new, some learning needed.
-- Requires Node.js, which needs server or serverless hosting.
+No built-in Server-Side Rendering (SSR) or Static Site Generation (SSG).
+
+SEO may be limited compared to SSR solutions.
+
+Requires a separate backend (API) for server-side functionality.
 
 ---
 
@@ -102,18 +107,19 @@ Considerations:
 
 ## 7. Styling & UI
 
-Tailwind CSS
+Tailwind CSS + shadcn-ui
 
 Why:
 
-- Fast prototyping and consistent design.
-- Works nicely with Next.js and TypeScript.
+Fast prototyping and consistent design.
+
+shadcn-ui provides prebuilt, accessible components styled with Tailwind.
+
+Works nicely with Vite, React, and TypeScript.
 
 Considerations:
 
-- Classes can get long, but easy to learn.
-
----
+Tailwind classes can get long, but easy to learn.
 
 ## 8. Additional Tools
 
