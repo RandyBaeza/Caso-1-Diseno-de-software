@@ -1,0 +1,23 @@
+{
+  "name": "caso-1-diseno-de-software",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RandyBaeza/Caso-1-Diseno-de-software.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RandyBaeza/Caso-1-Diseno-de-software/issues"
+  },
+  "homepage": "https://github.com/RandyBaeza/Caso-1-Diseno-de-software#readme"
+}
