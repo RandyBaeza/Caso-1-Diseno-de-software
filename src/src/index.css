@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 20minCoach Design System - Professional coaching platform */
+
+@layer base {
+  :root {
+    /* Core Brand Colors */
+    --background: 240 7% 98%;
+    --foreground: 240 10% 15%;
+
+    /* Card System */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 15%;
+
+    /* Popover System */
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 15%;
+
+    /* Primary Brand - Professional Blue */
+    --primary: 218 100% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 218 100% 68%;
+
+    /* Secondary - Trust & Expertise */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 240 10% 20%;
+
+    /* Muted - Subtle backgrounds */
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 5% 45%;
+
+    /* Accent - Success & Premium */
+    --accent: 142 76% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 218 100% 58%;
+
+    /* Premium Gold Accent */
+    --premium: 45 100% 60%;
+    --premium-foreground: 240 10% 15%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(218 100% 58%), hsl(218 100% 68%));
+    --gradient-hero: linear-gradient(135deg, hsl(218 100% 58%) 0%, hsl(142 76% 55%) 100%);
+    --gradient-premium: linear-gradient(135deg, hsl(45 100% 60%) 0%, hsl(35 100% 55%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(240 7% 98%) 0%, hsl(240 5% 96%) 100%);
+
+    /* Shadows */
+    --shadow-elegant: 0 10px 25px -5px hsl(218 100% 58% / 0.15);
+    --shadow-card: 0 4px 6px -1px hsl(240 10% 15% / 0.1);
+    --shadow-premium: 0 8px 25px -5px hsl(45 100% 60% / 0.25);
+
+    /* Animation */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Core Colors */
+    --background: 240 10% 8%;
+    --foreground: 240 5% 95%;
+
+    /* Card System */
+    --card: 240 8% 12%;
+    --card-foreground: 240 5% 95%;
+
+    /* Popover System */
+    --popover: 240 8% 12%;
+    --popover-foreground: 240 5% 95%;
+
+    /* Primary Brand - Brighter in dark mode */
+    --primary: 218 100% 68%;
+    --primary-foreground: 240 10% 8%;
+    --primary-glow: 218 100% 78%;
+
+    /* Secondary */
+    --secondary: 240 8% 15%;
+    --secondary-foreground: 240 5% 85%;
+
+    /* Muted */
+    --muted: 240 6% 18%;
+    --muted-foreground: 240 5% 65%;
+
+    /* Accent */
+    --accent: 142 76% 65%;
+    --accent-foreground: 240 10% 8%;
+
+    /* Destructive */
+    --destructive: 0 84% 70%;
+    --destructive-foreground: 240 10% 8%;
+
+    /* Borders & Inputs */
+    --border: 240 6% 20%;
+    --input: 240 6% 18%;
+    --ring: 218 100% 68%;
+
+    /* Premium */
+    --premium: 45 100% 70%;
+    --premium-foreground: 240 10% 8%;
+
+    /* Dark Mode Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(218 100% 68%), hsl(218 100% 78%));
+    --gradient-hero: linear-gradient(135deg, hsl(218 100% 68%) 0%, hsl(142 76% 65%) 100%);
+    --gradient-premium: linear-gradient(135deg, hsl(45 100% 70%) 0%, hsl(35 100% 65%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(240 10% 8%) 0%, hsl(240 8% 12%) 100%);
+
+    /* Dark Mode Shadows */
+    --shadow-elegant: 0 10px 25px -5px hsl(0 0% 0% / 0.5);
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.3);
+    --shadow-premium: 0 8px 25px -5px hsl(45 100% 70% / 0.3);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
