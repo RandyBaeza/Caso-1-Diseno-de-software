@@ -131,6 +131,11 @@ export const CoachResults: React.FC = () => {
             <Clock className="h-4 w-4" />
             <span>Coach {currentIndex + 1} de {coaches.length}</span>
           </div>
+          <div className="bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+            <span className="text-primary font-medium">
+              5 sesiones restantes
+            </span>
+          </div>
         </div>
       </header>
 

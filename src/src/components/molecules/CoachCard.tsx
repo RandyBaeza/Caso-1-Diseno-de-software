@@ -72,20 +72,17 @@ export const CoachCard: React.FC<CoachCardProps> = ({ coach, onRequestSession, o
         </div>
         
         <div className="pt-4 border-t">
-          <div className="bg-muted/50 p-3 rounded-lg mb-4">
-            <p className="text-sm font-medium text-foreground mb-1">Paquetes Disponibles:</p>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>• Starter: $19.99/mes (2 sesiones)</p>
-              <p>• Pro: $59.99/mes (8 sesiones)</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={onNext}>
+          <div className="flex items-center justify-between gap-4">
+            <Button 
+              variant="outline" 
+              onClick={onNext}
+              className="flex-1 h-12"
+            >
               Siguiente Coach
             </Button>
             <Button 
               onClick={() => onRequestSession(coach)}
-              className="bg-gradient-primary hover:opacity-90 shadow-elegant px-8"
+              className="flex-1 h-12 bg-gradient-primary hover:opacity-90 shadow-elegant"
             >
               Solicitar Sesión
             </Button>

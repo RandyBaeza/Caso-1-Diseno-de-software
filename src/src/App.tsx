@@ -20,6 +20,7 @@ const App = () => (
     authorizationParams={{
       redirect_uri: auth0Config.redirectUri,
       audience: auth0Config.audience,
+      scope: "read:content read:premium_content",
     }}
   >
     <QueryClientProvider client={queryClient}>

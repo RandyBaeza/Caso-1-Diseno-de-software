@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePermissions } from '@/hooks/usePermissions';
 import { Logo } from '@/components/atoms/Logo';
 import { SearchInput } from '@/components/molecules/SearchInput';
 import { CategoryCard } from '@/components/molecules/CategoryCard';
@@ -17,11 +18,24 @@ const searchController = new SearchController();
 export const CoachSearch: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { hasPremiumAccess } = usePermissions();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
+  useEffect(() => {
+    const checkPremium = () => {
+      const premium = hasPremiumAccess();
+      console.log("Premium access:", premium); // Debug log
+      setIsPremium(premium);
+    };
+    
+    checkPremium();
+  }, [hasPremiumAccess]);
+
+  
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       toast({
@@ -151,7 +165,7 @@ export const CoachSearch: React.FC = () => {
         </div>
 
         {/* Premium Benefits */}
-        {!user?.isPremium && (
+        {isPremium && (
           <div className="flex justify-center">
             <Card className="max-w-md shadow-premium border-2 border-premium/20">
               <CardContent className="p-6 text-center">
