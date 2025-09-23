@@ -1,6 +1,39 @@
 ![Logo](./images/logo.png)
 <hr>
 
+## Frontend Source Code
+
+- The repository includes the complete `src/` folder with the full project structure, including the source code created for the prototype.
+- All Proof of Concepts (PoCs) and requested classes are stored inside the `src/` folder.
+- All files, templates, and source code provided as guidance are placed in the appropriate layer folder where they are used in the final implementation.
+
+## Prototype
+The prototype was created using the AI-based tool [Lovable](https://lovable.dev/)
+
+Two main screens were created as part of the prototype:
+
+### 1. Coach Search Screen ([CoachSearch.tsx](./src/src/pages/CoachSearch.tsx))
+
+- Allows users to enter their coaching needs via a search input or voice.
+- Displays popular coaching categories for quick selection.
+- Shows a premium benefits button if the user has the permission.
+
+<br>
+
+![Coach Search](./images/CoachSearch.png)
+
+### 2. Coach Results Screen ([CoachResults.tsx](./src/src/pages/CoachResults.tsx))
+
+- Displays information for a single coach at a time.
+- Allows the user to request a session with the displayed coach.
+- Allows the user to move to the next coach in the search results.
+
+<br>
+
+![Coach Results](./images/CoachResults.png)
+
+Both screens follow the selected frontend technologies (React, TypeScript, Tailwind, shadcn/ui) and were used for a UX test.
+
 ## Testing 
 
 ### Strategy
