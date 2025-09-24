@@ -327,7 +327,11 @@ This document outlines a clean, maintainable layered architecture for the 20minC
 
 ---
 
-## Layer 1: Models
+## 1. Detailed Layer Design
+
+
+
+### Layer 1: Models
 
 Responsibilities: Define the structure  of all data moving throughout the application.
 
@@ -338,9 +342,9 @@ Contents:
  
 Communication: All other layers import and use these types. They act as a foundation.
 
----
 
-## Layer 2: API Client Layer
+
+### Layer 2: API Client Layer
 
 Responsibilities: Provide a 1 configured HTTP client for all communication with the backend REST API. 
 Handles cross-cutting concerns like parsing errors.
@@ -352,9 +356,9 @@ Contents:
  
 Communication: Injected into the Services Layer. The API client calls the backend and returns raw data.
 
----
 
-## Layer 3: Services Layer
+
+### Layer 3: Services Layer
 
 Responsibilities: Keeps together all the logic for interaction with external systems, like the backend API.
 
@@ -368,9 +372,9 @@ Communication:
  - Calls: The API Client Layer and external SDKs.
  - Returns: Promises with Models.
 
----
 
-## Layer 4: State Layer
+
+### Layer 4: State Layer
 
 Responsibilities: Manage the application's state reactively.
 
@@ -383,9 +387,9 @@ Communication:
  - React Query: Hooks call query functions (which are in the Services Layer) to fetch data.
  - Provides state to: Components and Hooks.
 
----
 
-## Layer 5: Controller Layer
+
+### Layer 5: Controller Layer
 
 Responsibilities: Contain the complex logic for components. They act as the glue between the presentation layer and the state and services layer).
 
@@ -396,9 +400,9 @@ Communication:
  - Uses: State Layer hooks (React Query, Zustand) and Services.
  - Provides: Data and functions to Components.
 
----
+
  
-## Layer 6: Presentation Layer
+### Layer 6: Presentation Layer
 
 Responsibilities: Define what the user sees on the screen.
 
@@ -412,13 +416,9 @@ Communication:
  - Receives data and callbacks via props from parent components or hooks.
  - Should not contain direct calls to services or state management logic. These are provided by hooks.
 
----
 
 
-
----
-
-## Layer 7: Middleware
+### Layer 7: Middleware
 
 Responsibilities: This layer will support the different middlewares.
 
@@ -429,9 +429,9 @@ Contents:
  
 Communication: All middlewares will listen and send data through hooks.
 
----
 
-## Layer 8: Business
+
+### Layer 8: Business
 
 Responsibilities TODO:
 
@@ -440,9 +440,9 @@ Contents:
  
 Communication: TODO
 
----
 
-## Layer 9: Listeners
+
+### Layer 9: Listeners
 
 Responsibilities: This layer will support the different listeners.
 
@@ -453,9 +453,9 @@ Contents:
  
 Communication: The listeners will listen to the interface components through hooks and make calls to their respective handlers. UI to Controller listeners will listen the Presentation Layer user interactions and redirect their data to the Controller layer calls.
 
----
 
-## Layer 10:  Validators
+
+### Layer 10:  Validators
 
 Responsibilities: This layer will support the different validators.
 
@@ -467,9 +467,9 @@ Contents:
 
 Communication: This layer will communicate through the use of function calls from other processes that may require validation and return responses as boolean data.
 
----
 
-## Layer 11: Styles
+
+### Layer 11: Styles
 
 Responsibilities: This layer will manage different visual stylings for the interface components.
 
@@ -480,9 +480,9 @@ Contents:
  
 Communication: This layer will receive styling requests as function calls with parameters from the controller layer and apply changes on the presentation layer through calls to modify component style.
 
----
 
-## Layer 12: Utilities
+
+### Layer 12: Utilities
 
 Responsibilities: This layer will give miscellaneous utilities used on different modules of the system.
 
@@ -495,9 +495,9 @@ Contents:
 
 Communication: This layer will be called via function imports from any other layer requiring utility functions. Utilities are stateless and return immediate results without side effects.
 
----
 
-## Layer 13: Exception Handling
+
+### Layer 13: Exception Handling
 
 Responsibilities: This layer will make sure exceptions are handled correctly. This implies operating over the data received from the exception listeners and executing necessary functions for healthy system operation.
 
@@ -507,9 +507,9 @@ Contents:
 
 Communication: The handler will be called from the exception listener and then further calls will be passed to other functional layers from the exception handling processes.
 
----
 
-##Layer 14: Logging
+
+### Layer 14: Logging
 
 Responsibilities: This layer defines the format of system logs. It also provides the logging structure for creating and storing such logs.
 
@@ -519,9 +519,9 @@ Contents:
 
 Communication: The layer will be called from the logger trigger, then will respond with another call towards the log middleware.
 
----
 
-##Layer 15: Security
+
+### Layer 15: Security
 
 Responsibilities: This layer is to protect the system from potentially harmful actions and warrant the security of sensible or restricted data.
 
@@ -533,3 +533,45 @@ Contents:
  - Input Sanitization Service: Cleanses and validates all user inputs to prevent errors  and mitigate vulnerabilities before processing.
 
 Communication: This layer will be called by the middleware layer for request authentication, by controllers for permission checks, and by services for data protection. It will work with Auth0 SDK and browser security APIs.
+
+
+
+### Layer 16: Linter Configuration
+
+Responsibilities: This layer will hold the necessary data and functions for the linter to work according to the desired configuration.
+
+Contents:
+ - Prettier Formatting Config: Code formatting rules for consistent indentation, spacing, line breaks, and code organization across the team.
+ - TypeScript Strict Configuration: Type checking rules ensuring type safety, strict null checks, and proper interface implementation.
+
+Communication: This layer operates at the development tooling level, integrating with IDEs, build processes, and version control systems. It provides feedback to developers through editor warnings and CI/CD pipeline reports.
+
+
+
+### Layer 17: Build and Deployment Pipelining
+
+Responsibilities: This layer will handle the building and deployment process of the system, seeking to maximize efficiency and minimize errors on the process.
+
+Contents: 
+ - Vite Build Configuration: Environment-specific build settings for development, staging, and production.
+ - Environment Variable Management: Secure handling of environment-specific configurations, API endpoints, and feature flags across different deployment targets.
+ - CI/CD Pipeline Definitions: Automated workflows for running tests, building artifacts, security scanning, and deploying to respective environments.
+
+Communication: This layer integrates with version control systems to trigger builds on code changes, communicates with hosting platforms for deployment, and provides build status feedback to the development team through notifications and dashboards.
+
+---
+
+## 2. Communication Patterns and Data Flow
+
+(TODO Table)
+
+---
+
+## 3. Separation of Concerns & Maintainability Rationale
+
+This architecture was chosen explicitly to achieve the following goals:
+ - Testability: Each layer can be tested in isolation.
+ - Services/API Client: Can be tested with unit tests mocking network requests.
+ - Controller Hooks: Can be tested with React Testing Library by mocking the State and Services layers.
+ - Presentation: Can be tested with visual snapshot tests or component tests with mocked props.
+ - Replaceability: External technologies can be swapped with minimal impact.
