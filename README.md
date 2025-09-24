@@ -98,3 +98,59 @@ npm test    # Run all tests
 npm run test:watch  # Run tests in watch mode
 npm run test:coverage   # Run tests with coverage report
 ```
+
+
+
+
+
+
+
+
+# Tech Decision - 20minCoach (Frontend)
+
+This document explains the main technology choices for the frontend of 20minCoach.
+
+---
+
+## 1. Frontend Framework
+
+React + TypeScript
+
+Why:
+
+- TypeScript helps catch errors before running the app.
+- Makes code easier to understand and maintain.
+- Works well with React components.
+
+Considerations:
+
+- You need to learn TypeScript basics, slightly steep learning curve.
+- Slightly more setup than plain React.
+
+---
+Technology Selection & Justification 
+1. Frontend Framework & Architecture
+Selected: React 18 + TypeScript, built with Vite
+
+
+Choice:
+React
+-Why: The standard used for its massive ecosystem and proven stability. Its component-based model perfectly suits the interactive UI of elements needed in a 20 min coach.
+-Alternatives considered: Vue.js: Excellent framework but React's larger community and ecosystem give it a slight edge for long-term maintainability. Angular: Too heavy for this project's scale. Its complexity is unnecessary for a primarily UI-driven application.
+
+Choice:
+Typescript
+-Why: Essential for catching errors at compile time, safely defining data structures, and ensuring maintainability as the codebase grows.
+-Alternatives considered: Plain JavaScript: Rejected due to the high potential for runtime errors, difficulty in scaling, and lack of self-documenting code, which would slow down development and increase bug-fixing time.
+
+Choice:
+Vite
+-Why: Selected for its development experience and optimized production builds.
+-Alternatives considered: Next.js: Amazing for its built-in routing, API routes, and SEO benefits. However, rejected because the core application functionality (video calls, authenticated dashboards) is behind a login wall, negating SEO benefits for key flows.
+
+
+
+
+
+
+
