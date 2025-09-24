@@ -204,3 +204,51 @@ UI/Client State
 
 
 
+# 2. N-Layer Architecture Design
+
+This document outlines a clean, maintainable layered architecture for the 20minCoach frontend.
+
+---
+
+## Layer 1: Models
+
+Responsibilities: Define the structure  of all data moving throughout the application.
+
+Contents:
+ • TypeScript Interfaces/Types: Define the core entities (User, Coach, Session, BookingRequest).
+ • Data Transfer Object (DTO) Interfaces: Define the structure of data sent to and received from the API. 
+ • Enums: For fixed sets of values (SessionStatus, UserRole).
+ 
+Communication: All other layers import and use these types. They act as a foundation.
+
+---
+
+##Layer 2: API Client Layer
+
+Responsibilities: Provide a 1 configured HTTP client for all communication with the backend REST API. 
+Handles cross-cutting concerns like parsing errors.
+
+Contents:
+ • A configured Axios instance.
+ • Request Interceptor: Automatically adds the user's authentication token (from Auth0) to the Authorization header. This for every outgoing request.
+ • Response Interceptor: Globally handles common API errors.
+ 
+Communication: Injected into the Services Layer. The API client calls the backend and returns raw data.
+
+---
+
+##Layer 3: Services Layer
+
+Responsibilities: Keeps together all the logic for interaction with external systems, like the backend API.
+
+Contents:
+ • API Services: Classes or modules using API Client with methods for each endpoint (getUserData, registerCoach...). 
+ • Real-Time Services: Modules for initializing and managing the connections of Socket.IO and PeerJS.
+ • Auth Service: A module that wraps the Auth0 SDK, providing a clean interface for login, logout, and getting user info.
+
+Communication:
+ • Called by: Hooks, Zustand stores, or components directly for simpler cases.
+ • Calls: The API Client Layer and external SDKs.
+ • Returns: Promises with Models.
+
+---
