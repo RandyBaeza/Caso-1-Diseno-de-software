@@ -471,3 +471,42 @@ Contents:
  - Math Utilities: Functions for pricing calculations, percentage calculations, and statistical analysis of coaching users.
 
 Communication: This layer will be called via function imports from any other layer requiring utility functions. Utilities are stateless and return immediate results without side effects.
+
+---
+
+## Layer 13: Exception Handling
+
+Responsibilities: This layer will make sure exceptions are handled correctly. This implies operating over the data received from the exception listeners and executing necessary functions for healthy system operation.
+
+Contents:
+ - Exception handler: The exception handler will be called with the exception information and context as parameters by the exception listener and then call the appropriate exception handling processes.
+ - Exception handling processes: These processes will define the necessary calls over functional layers to ensure software stability and maintainability under specific error and error groups. The processes should call loggers that match their exception type.
+
+Communication: The handler will be called from the exception listener and then further calls will be passed to other functional layers from the exception handling processes.
+
+---
+
+##Layer 14: Logging
+
+Responsibilities: This layer defines the format of system logs. It also provides the logging structure for creating and storing such logs.
+
+Contents:
+ - Logger handler: The logger handler will be called by the logger trigger along with the information and type of log, then call the respective logger depending on the log type.
+ - Loggers: These loggers will provide format and define the structure for each type of log. The information to log will be received from the logger handler and then passed to the log middleware to store it. All loggers should apply a clear, concise and easy-to-understand format. Particular loggers should be called by all important steps on processes that do not rely on user interaction.
+
+Communication: The layer will be called from the logger trigger, then will respond with another call towards the log middleware.
+
+---
+
+##Layer 15: Security
+
+Responsibilities: This layer is to protect the system from potentially harmful actions and warrant the security of sensible or restricted data.
+
+Contents:
+ - Authentication Manager: Authentication state across the application.Handles login, logout and user session management using Auth0 integration.
+ - Authorization Service: Enforces role-based access throughout the app. It does it by verifying user permissions for specific actions, routes, and data access.
+ - Data Encryption Handler: Provides encryption and decryption services for sensitive data stored locally.
+ - Security Headers Manager: Configures and manages security-related HTTP headers and for all outgoing requests.
+ - Input Sanitization Service: Cleanses and validates all user inputs to prevent errors  and mitigate vulnerabilities before processing.
+
+Communication: This layer will be called by the middleware layer for request authentication, by controllers for permission checks, and by services for data protection. It will work with Auth0 SDK and browser security APIs.
