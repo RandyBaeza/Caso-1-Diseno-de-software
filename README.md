@@ -34,6 +34,34 @@ Two main screens were created as part of the prototype:
 
 Both screens follow the selected frontend technologies (React, TypeScript, Tailwind, shadcn/ui) and were used for a UX test.
 
+## UX Testing
+The UX test was performed using [Maze](https://maze.co/), utilizing a Figma prototype of the screens created.
+
+Link to perform the test: https://t.maze.co/445485876?guerilla=true
+
+Test participants:
+- Diego: 26 years old, Paint mixer - [Link to video evidence](https://app.maze.co/report/reels/480a7062-5775-4af1-a430-ddc70870c95c)
+- Liseth: 40 years old, Preschool director - [Link to video evidence](https://app.maze.co/report/reels/961175cc-066d-4266-87ef-2de88dcd877d)
+- Luz: 58 years old, Cashier - [Link to video evidence](https://app.maze.co/report/reels/798064af-8896-40f8-a9f0-ec3aca15cb7f)
+- Didier: 61 years old, Independent vendor - [Link to video evidence](https://app.maze.co/report/reels/1d7e83d8-f944-4729-b7de-3fbdd2d9901d)
+
+Two main tasks were defined for participants:
+
+### Task #1: "Haz clic en el campo de búsqueda (el que dice “Describe qué necesitas y en qué te podemos ayudar...”)"
+Description: "Estás en la página principal. El primer paso es buscar qué tipo de ayuda necesitas."
+#### Heatmap showing user interactions during Task #1
+![Heatmap Task 1](./images/heatmaptask1.jpg)
+
+#### Key metrics from Task #1
+![Metrics Task 1](./images/metricstask1.png)
+
+### Task #2: "Haz clic en el botón “Solicitar sesión” del coach mostrado en el resultado."
+Description: "Imagina que encontraste un coach que te interesa y quieres iniciar una sesión con él."
+#### Heatmap showing user interactions during Task #2
+![Heatmap Task 2](./images/heatmaptask2.jpg)
+#### Key metrics from Task #2
+![Metrics Task 2](./images/metricstask2.png)
+
 ## Testing 
 
 ### Strategy
@@ -226,17 +254,20 @@ Auth0
 
 ## 5. Authentication
 
-Auth0 (with Next.js SDK)
+Auth0 (with React SDK)
 
 Why:
 
-- Easy login setup with roles and multi factor authentication.
-- Works with Next.js Server Components.
+Easy login setup with roles and multi factor authentication.
+
+React SDK integrates well with SPAs.
 
 Considerations:
 
-- Dependence on external service.
-- Some features may require a premium, paid plan.
+Dependence on external service.
+
+Some features may require a premium, paid plan.
+
 
 ---
 
