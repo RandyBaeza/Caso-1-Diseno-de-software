@@ -295,6 +295,29 @@ Component Library
 -Why: shadcn/ui provides a collection of copy-paste React components built with Tailwind, allowing rapid early-stage development while retaining full control over the source code and styling.
 -Alternatives considered: MUI/Ant Design: Rejected due to their heavy bundle size and the significant effort required to customize their design to a unique brand.
 
+## 8. Additional Tools
+
+ESLint + Prettier
+
+Why:
+
+- Keeps code style consistent.
+- Built-in support for TypeScript.
+
+Considerations:
+
+- Extra config, but improves team workflow.
+
+
+Choice:
+EsLint
+-Why: The standard for identifying and fixing problems in JavaScript/TypeScript code.
+-Alternatives considered: TSLint: Discarded in favor of ESLint with TypeScript support.
+
+Choice:
+Prettier
+-Why: Automatically formats code on save, eliminating all debates over code style.
+-Alternatives considered: None.
 
 
 
