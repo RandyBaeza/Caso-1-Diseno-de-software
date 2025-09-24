@@ -222,6 +222,46 @@ Auth0
 -Why: Chosen to accelerate development and enhance security. It provides the required MFA, social logins, and a secure token management system, saving months of development and security review time.
 -Alternatives considered: Custom JWT/Bcrypt Backend: Rejected due to the security risks. Supabase: Excellent choice, but Auth0 was selected for its maturity, extensive feature set, and proven reliability at scale.
 
+---
+
+## 5. Authentication
+
+Auth0 (with Next.js SDK)
+
+Why:
+
+- Easy login setup with roles and multi factor authentication.
+- Works with Next.js Server Components.
+
+Considerations:
+
+- Dependence on external service.
+- Some features may require a premium, paid plan.
+
+---
+
+## 6. Testing
+
+Jest + React Testing Library (+ optional Cypress)
+
+Why:
+
+- Unit and component tests work well with TypeScript.
+- Cypress can test full workflows in the browser.
+
+Considerations:
+
+- Needs some initial setup.
+
+---
+
+
+
+
+Choice:
+Unit/Component
+-Why: RTL+Jest encourages testing component behavior like a user would, leading to more resilient tests. Perfect for testing individual UI components and custom hooks.
+-Alternatives considered: Enzyme: Largely forgotten in favor of RTL. Vitest: A great alternative to Jest but has a slightly smaller ecosystem.
 
 
 
