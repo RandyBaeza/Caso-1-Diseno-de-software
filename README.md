@@ -263,6 +263,38 @@ Unit/Component
 -Why: RTL+Jest encourages testing component behavior like a user would, leading to more resilient tests. Perfect for testing individual UI components and custom hooks.
 -Alternatives considered: Enzyme: Largely forgotten in favor of RTL. Vitest: A great alternative to Jest but has a slightly smaller ecosystem.
 
+---
+
+## 7. Styling & UI
+
+Tailwind CSS + shadcn-ui
+
+Why:
+
+Fast prototyping and consistent design.
+
+shadcn-ui provides prebuilt, accessible components styled with Tailwind.
+
+Works nicely with Vite, React, and TypeScript.
+
+Considerations:
+
+Tailwind classes can get long, but easy to learn.
+
+
+
+
+
+Choice:
+CSS Framework
+-Why: Tailwind CSS enables rapid UI development with a utility-first approach and ensures design consistency.
+-Alternatives considered: Styled-Components/Emotion: Rejected because they introduce runtime overhead and require context switching between CSS and JS.
+
+Choice:
+Component Library
+-Why: shadcn/ui provides a collection of copy-paste React components built with Tailwind, allowing rapid early-stage development while retaining full control over the source code and styling.
+-Alternatives considered: MUI/Ant Design: Rejected due to their heavy bundle size and the significant effort required to customize their design to a unique brand.
+
 
 
 
