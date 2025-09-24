@@ -226,13 +226,13 @@ Auth0
 
 
 
-## 2. N-Layer Architecture Design
+# N-Layer Architecture Design
 
 This document outlines a clean, maintainable layered architecture for the 20minCoach frontend.
 
 ---
 
-### Layer 1: Models
+## Layer 1: Models
 
 Responsibilities: Define the structure  of all data moving throughout the application.
 
@@ -245,7 +245,7 @@ Communication: All other layers import and use these types. They act as a founda
 
 ---
 
-### Layer 2: API Client Layer
+## Layer 2: API Client Layer
 
 Responsibilities: Provide a 1 configured HTTP client for all communication with the backend REST API. 
 Handles cross-cutting concerns like parsing errors.
@@ -259,7 +259,7 @@ Communication: Injected into the Services Layer. The API client calls the backen
 
 ---
 
-### Layer 3: Services Layer
+## Layer 3: Services Layer
 
 Responsibilities: Keeps together all the logic for interaction with external systems, like the backend API.
 
@@ -275,7 +275,7 @@ Communication:
 
 ---
 
-### Layer 4: State Layer
+## Layer 4: State Layer
 
 Responsibilities: Manage the application's state reactively.
 
@@ -290,7 +290,7 @@ Communication:
 
 ---
 
-### Layer 5: Controller Layer
+## Layer 5: Controller Layer
 
 Responsibilities: Contain the complex logic for components. They act as the glue between the presentation layer and the state and services layer).
 
@@ -303,7 +303,7 @@ Communication:
 
 ---
  
-### Layer 6: Presentation Layer
+## Layer 6: Presentation Layer
 
 Responsibilities: Define what the user sees on the screen.
 
@@ -316,3 +316,44 @@ Communication:
  • Imports and uses: Hooks from the Controller Layer.
  • Receives data and callbacks via props from parent components or hooks.
  • Should not contain direct calls to services or state management logic. These are provided by hooks.
+
+---
+
+
+
+---
+
+## Layer 7: Middleware
+
+Responsibilities: This layer will support the different middlewares.
+
+Contents:
+ • Permission middleware: TODO
+ • Error handling middleware: TODO
+ •  Log middleware: TODO
+ 
+Communication: All middlewares will listen and send data through hooks.
+
+---
+
+## Layer 8: Business
+
+Responsibilities TODO:
+
+Contents:
+ • TODO
+ 
+Communication: TODO
+
+---
+
+## Layer 9: Listeners
+
+Responsibilities: This layer will support the different listeners.
+
+Contents:
+ • UI to Controller listener: The UI to Controller listener will read user interaction events and send them to the controller layer to handle them.
+ • Error listener: The error listener will listen to errors throughout all layers and send responses to the exception handling layer.
+ • Log triggerer: The log triggerer will listen for events that need logging and respond to the logging class.
+ 
+Communication: The listeners will listen to the interface components through hooks and make calls to their respective handlers. UI to Controller listeners will listen the Presentation Layer user interactions and redirect their data to the Controller layer calls.
