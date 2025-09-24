@@ -148,6 +148,56 @@ Vite
 -Why: Selected for its development experience and optimized production builds.
 -Alternatives considered: Next.js: Amazing for its built-in routing, API routes, and SEO benefits. However, rejected because the core application functionality (video calls, authenticated dashboards) is behind a login wall, negating SEO benefits for key flows.
 
+## 2. Application Architecture
+Vite (Single Page Application - SPA)
+
+Why:
+
+Extremely fast development server and optimized builds.
+
+Simple setup, lighter than full frameworks like Next.js.
+
+Works seamlessly with React and TypeScript.
+
+Considerations:
+
+No built-in Server-Side Rendering (SSR) or Static Site Generation (SSG).
+
+SEO may be limited compared to SSR solutions.
+
+Requires a separate backend (API) for server-side functionality.
+
+---
+
+## 3. State Management
+
+React Query + Zustand
+
+Why:
+
+- React Query handles server data fetching and caching.
+- Zustand is simple for global UI state (theme, filters).
+
+Considerations:
+
+- Two libraries to learn, but simpler than alternatives like Redux.
+
+---
+
+
+
+
+Choice:
+Server State
+-Why: React Query handles caching, background updates, loading/error states, and pagination out-of-the-box, eliminating the need for repetitive code.
+-Alternatives considered: Manual useEffect fetching: Rejected as it is error-prone and requires building a complex caching and update logic from scratch. Redux: React Query is a more focused and simpler tool for the specific job of data fetching.
+
+Choice:
+UI/Client State
+-Why: Zustand offers a minimalistic, unopinionated API, perfect for lightweight global state that isn't server-related, such as theme preferences.
+-Alternatives considered: Redux: Rejected due to its conceptual overhead. For global state needs, it is overkill.
+
+
 
 
 
