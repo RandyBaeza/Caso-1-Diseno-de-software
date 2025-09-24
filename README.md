@@ -237,9 +237,9 @@ This document outlines a clean, maintainable layered architecture for the 20minC
 Responsibilities: Define the structure  of all data moving throughout the application.
 
 Contents:
- • TypeScript Interfaces/Types: Define the core entities (User, Coach, Session, BookingRequest).
- • Data Transfer Object (DTO) Interfaces: Define the structure of data sent to and received from the API. 
- • Enums: For fixed sets of values (SessionStatus, UserRole).
+ - TypeScript Interfaces/Types: Define the core entities (User, Coach, Session, BookingRequest).
+ - Data Transfer Object (DTO) Interfaces: Define the structure of data sent to and received from the API. 
+ - Enums: For fixed sets of values (SessionStatus, UserRole).
  
 Communication: All other layers import and use these types. They act as a foundation.
 
@@ -251,9 +251,9 @@ Responsibilities: Provide a 1 configured HTTP client for all communication with 
 Handles cross-cutting concerns like parsing errors.
 
 Contents:
- • A configured Axios instance.
- • Request Interceptor: Automatically adds the user's authentication token (from Auth0) to the Authorization header. This for every outgoing request.
- • Response Interceptor: Globally handles common API errors.
+ - A configured Axios instance.
+ - Request Interceptor: Automatically adds the user's authentication token (from Auth0) to the Authorization header. This for every outgoing request.
+ - Response Interceptor: Globally handles common API errors.
  
 Communication: Injected into the Services Layer. The API client calls the backend and returns raw data.
 
@@ -264,14 +264,14 @@ Communication: Injected into the Services Layer. The API client calls the backen
 Responsibilities: Keeps together all the logic for interaction with external systems, like the backend API.
 
 Contents:
- • API Services: Classes or modules using API Client with methods for each endpoint (getUserData, registerCoach...). 
- • Real-Time Services: Modules for initializing and managing the connections of Socket.IO and PeerJS.
- • Auth Service: A module that wraps the Auth0 SDK, providing a clean interface for login, logout, and getting user info.
+ - API Services: Classes or modules using API Client with methods for each endpoint (getUserData, registerCoach...). 
+ - Real-Time Services: Modules for initializing and managing the connections of Socket.IO and PeerJS.
+ - Auth Service: A module that wraps the Auth0 SDK, providing a clean interface for login, logout, and getting user info.
 
 Communication:
- • Called by: Hooks, Zustand stores, or components directly for simpler cases.
- • Calls: The API Client Layer and external SDKs.
- • Returns: Promises with Models.
+ - Called by: Hooks, Zustand stores, or components directly for simpler cases.
+ - Calls: The API Client Layer and external SDKs.
+ - Returns: Promises with Models.
 
 ---
 
@@ -280,13 +280,13 @@ Communication:
 Responsibilities: Manage the application's state reactively.
 
 Contents:
- • Zustand Stores: For global UI state that needs to be shared across the app (e.g. light/dark mode, general colors, general search filters).
- • React Query Cache : The primary state manager for data fetched from the API. It handles caching, background updates, and stale data out of the box.
+ - Zustand Stores: For global UI state that needs to be shared across the app (e.g. light/dark mode, general colors, general search filters).
+ - React Query Cache : The primary state manager for data fetched from the API. It handles caching, background updates, and stale data out of the box.
 
 Communication:
- • Zustand: Stores can call Services to perform actions.
- • React Query: Hooks call query functions (which are in the Services Layer) to fetch data.
- • Provides state to: Components and Hooks.
+ - Zustand: Stores can call Services to perform actions.
+ - React Query: Hooks call query functions (which are in the Services Layer) to fetch data.
+ - Provides state to: Components and Hooks.
 
 ---
 
@@ -295,11 +295,11 @@ Communication:
 Responsibilities: Contain the complex logic for components. They act as the glue between the presentation layer and the state and services layer).
 
 Contents:
- • Custom Hooks: Reusable hooks that compose multiple state operations, handle form state.
- • This is where the majority of your application's behavior lives.
+ - Custom Hooks: Reusable hooks that compose multiple state operations, handle form state.
+ - This is where the majority of your application's behavior lives.
 Communication:
- • Uses: State Layer hooks (React Query, Zustand) and Services.
- • Provides: Data and functions to Components.
+ - Uses: State Layer hooks (React Query, Zustand) and Services.
+ - Provides: Data and functions to Components.
 
 ---
  
@@ -308,14 +308,14 @@ Communication:
 Responsibilities: Define what the user sees on the screen.
 
 Contents:
- • Pages: Top-level components that act as routers for specific views.
- • Components: Reusable UI components (buttons, cards, modals). 
- • Layouts: Components that define the common structure of pages (header, footer, sidebar).
+ - Pages: Top-level components that act as routers for specific views.
+ - Components: Reusable UI components (buttons, cards, modals). 
+ - Layouts: Components that define the common structure of pages (header, footer, sidebar).
  
 Communication:
- • Imports and uses: Hooks from the Controller Layer.
- • Receives data and callbacks via props from parent components or hooks.
- • Should not contain direct calls to services or state management logic. These are provided by hooks.
+ - Imports and uses: Hooks from the Controller Layer.
+ - Receives data and callbacks via props from parent components or hooks.
+ - Should not contain direct calls to services or state management logic. These are provided by hooks.
 
 ---
 
@@ -328,9 +328,9 @@ Communication:
 Responsibilities: This layer will support the different middlewares.
 
 Contents:
- • Permission middleware: TODO
- • Error handling middleware: TODO
- •  Log middleware: TODO
+ - Permission middleware: TODO
+ - Error handling middleware: TODO
+ - Log middleware: TODO
  
 Communication: All middlewares will listen and send data through hooks.
 
@@ -341,7 +341,7 @@ Communication: All middlewares will listen and send data through hooks.
 Responsibilities TODO:
 
 Contents:
- • TODO
+ - TODO
  
 Communication: TODO
 
@@ -352,8 +352,50 @@ Communication: TODO
 Responsibilities: This layer will support the different listeners.
 
 Contents:
- • UI to Controller listener: The UI to Controller listener will read user interaction events and send them to the controller layer to handle them.
- • Error listener: The error listener will listen to errors throughout all layers and send responses to the exception handling layer.
- • Log triggerer: The log triggerer will listen for events that need logging and respond to the logging class.
+ - UI to Controller listener: The UI to Controller listener will read user interaction events and send them to the controller layer to handle them.
+ - Error listener: The error listener will listen to errors throughout all layers and send responses to the exception handling layer.
+ - Log triggerer: The log triggerer will listen for events that need logging and respond to the logging class.
  
 Communication: The listeners will listen to the interface components through hooks and make calls to their respective handlers. UI to Controller listeners will listen the Presentation Layer user interactions and redirect their data to the Controller layer calls.
+
+---
+
+## Layer 10:  Validators
+
+Responsibilities: This layer will support the different validators.
+
+Contents:
+ - Permission validator: This validator will be called from the controller layer on user interactions and calls the permission middleware to check whether a user has active permissions for a specific action. If a permission is invalid, the Security layer should handle the invalidation over the triggering action.
+ - Input validators: This validator will be called by the controller layer over user input to check if the inputted data format is correct. If the input is incorrect, the controller should use that information to give the user feedback and stop the data from passing deeper onto the system.
+ - Connection validator: This validator will be called by the controller layer and measure the internet connection quality to help the system be aware if there are connection problems or risks during normal activity or coaching sessions. If the connection is unstable, the user should be warned on the presentation layer and resource use optimized for efficiency on the controller layer.
+ - Compatibility validator: This validator will be called by the controller layer and check if a function of the system is compatible with the user’s local technology. If a function is incompatible, the controller layer should dishabilitate it for the time being and send a warning through the presentation layer.
+
+Communication: This layer will communicate through the use of function calls from other processes that may require validation and return responses as boolean data.
+
+---
+
+## Layer 11: Styles
+
+Responsibilities: This layer will manage different visual stylings for the interface components.
+
+Contents:
+ - Style manager: This class will provide seamless switching and handling between different visual component style templates. In case that switching fails or a custom style cannot be loaded, the changes must be reverted or temporarily set to default, respectively.
+ - Style template rules: Each template should use two or three colors (excluding gradients, images and slight tonal variation), one color exactly should catch more attention than the others and the general luminosity should be balanced among all visual components.
+ - Dark/light support strategy: The light and dark mode will be stored as different styles. Depending on the device style settings, the style manager may apply such styles accordingly over the visual elements.
+ 
+Communication: This layer will receive styling requests as function calls with parameters from the controller layer and apply changes on the presentation layer through calls to modify component style.
+
+---
+
+## Layer 12: Utilities
+
+Responsibilities: This layer will give miscellaneous utilities used on different modules of the system.
+
+Contents:
+ - Date/Time Utilities: Functions for date formatting and timezone management.
+ - String Manipulation Utilities: Formatting, truncation and validation of user inputs and display texts.
+ - Array/Collection Utilities: All kinds of actions managing collections of data such as user lists, session history, and available time slots.
+ - Validation Helpers: Common validation patterns for data like emails, phone numbers, passwords.
+ - Math Utilities: Functions for pricing calculations, percentage calculations, and statistical analysis of coaching users.
+
+Communication: This layer will be called via function imports from any other layer requiring utility functions. Utilities are stateless and return immediate results without side effects.
