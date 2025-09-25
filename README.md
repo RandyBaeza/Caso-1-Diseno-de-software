@@ -825,6 +825,29 @@ This architecture was chosen explicitly to achieve the following goals:
 
 # Visual Components Strategy
  - Develop a component organization strategy, this might be lead by the technology choose
+
+(creo que sería hablar como de cómo se van a crear los componentes visuales, tipo que x cosa use cierto componente hecho de estos otros, que los componentes para z cosa tengan o sean así y asá, que los componentes se les aplique el estilo o se renderizen en n orden y de m forma, y que los componentes se comuniquen con el controller usando p método)
+   
  - Design how to achive a reusable component library structure, those are steps for the developers
+
+(Propongo hablar de cómo organizar los componentes y funciones del layer visual más pequeños y generales en paquetes, hacer que a dichos componentes se les pueda configurar el formato, estilo y algunas propiedades, luego que las pantallas u otros componentes llamen a esos sub-componentes como librerías configurándolos de ser necesario por medio de parámetros y métodos.
+   
  - Create a component development workflow based on the technology selected, those are steps for the developers
+
+(Talvez como decir “los componentes primero se van a crear como archivos así y asá, luego se van a programar basándose en el prototipo de la interfaz siguiendo los principios de clean code y buscando reusabilidad, luego se van a conectar con el controller layer y finalmente testeados para aplicar correcciones necesarias. Se debe manejar la siguiente estructura para cada archivo de componentes: 1. definición del paquete, 2. imports de librerías, 3. imports de otros archivos internos propios del sistema, 4. variables globales del archivo), 5. funciones globales del archivo, 6. enumerados, 7. clases del archivo, 8. otros. Si no hubiese alguno de estos componentes, se puede omitir. Cada grupo de esos componentes tiene que estar separado por tres lineas en blanco. Cada elemento dentro del mismo grupo de los grupos de funciones globales, enumerados, clases y otros deben ir separados por una línea en blanco en el medio. Los paquetes deben ir por jerarquía carpeta_src->module->component->sub-components, en donde los componentes y subcomponentes deben ser atómicos en su función y los subcomponentes son componentes exclusivamente utilizados para el componente al que pertenecen (si varios componentes necesitaran de uno en particular, este se deberia colocar como un componente, ó bien en carpeta_src->component_library si fuese utilizado por múltiples módulos.”)
+   
  - Establish component testing methodology, this is not theory, are steps for the developers
+
+(Talvez algo como “The steps for testing a component are:
+
+1. Revise functionality
+   a. Test accessibility to it from the corresponding interface section
+   b. If it has available interactions, test all of them based on their use cases (interaction and expected result)
+   c. If it needs code to be executed on another layer, make sure that code is already tested and working as intended, then check whether it is being called properly and receiving the correct data.
+2. Revise appearance
+   a. Confirm its appearance matches the component visual design
+   b. Test if different styles compatible with the system work as intended over the component.
+
+Take into account that if the component’s functionality, appearance or dependencies may vary from different browsers or devices, repeat all previous steps that may be affected by such variation for all target browsers or devices.
+
+3. Generate a report with the results of each step, specifying the device and browser used for the test. If use cases were also tested, update their data on the use case repository.)
