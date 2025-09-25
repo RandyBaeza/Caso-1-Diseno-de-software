@@ -6,7 +6,6 @@
 - The repository includes the complete `src/` folder with the full project structure, including the source code created for the prototype.
 - All Proof of Concepts (PoCs) and requested classes are stored inside the `src/` folder.
 - All files, templates, and source code provided as guidance are placed in the appropriate layer folder where they are used in the final implementation.
-
 ## Prototype
 The prototype was created using the AI-based tool [Lovable](https://lovable.dev/)
 
@@ -130,9 +129,9 @@ npm run test:coverage   # Run tests with coverage report
 
 
 
+---
 
-
-
+---
 
 # Tech Decision - 20minCoach (Frontend)
 
@@ -163,37 +162,37 @@ Selected: React 18 + TypeScript, built with Vite
 
 Choice:
 React
--Why: The standard used for its massive ecosystem and proven stability. Its component-based model perfectly suits the interactive UI of elements needed in a 20 min coach.
--Alternatives considered: Vue.js: Excellent framework but React's larger community and ecosystem give it a slight edge for long-term maintainability. Angular: Too heavy for this project's scale. Its complexity is unnecessary for a primarily UI-driven application.
+- Why: The standard used for its massive ecosystem and proven stability. Its component-based model perfectly suits the interactive UI of elements needed in a 20 min coach.
+- Alternatives considered: Vue.js: Excellent framework but React's larger community and ecosystem give it a slight edge for long-term maintainability. Angular: Too heavy for this project's scale. Its complexity is unnecessary for a primarily UI-driven application.
 
 Choice:
 Typescript
--Why: Essential for catching errors at compile time, safely defining data structures, and ensuring maintainability as the codebase grows.
--Alternatives considered: Plain JavaScript: Rejected due to the high potential for runtime errors, difficulty in scaling, and lack of self-documenting code, which would slow down development and increase bug-fixing time.
+- Why: Essential for catching errors at compile time, safely defining data structures, and ensuring maintainability as the codebase grows.
+- Alternatives considered: Plain JavaScript: Rejected due to the high potential for runtime errors, difficulty in scaling, and lack of self-documenting code, which would slow down development and increase bug-fixing time.
 
 Choice:
 Vite
--Why: Selected for its development experience and optimized production builds.
--Alternatives considered: Next.js: Amazing for its built-in routing, API routes, and SEO benefits. However, rejected because the core application functionality (video calls, authenticated dashboards) is behind a login wall, negating SEO benefits for key flows.
+- Why: Selected for its development experience and optimized production builds.
+- Alternatives considered: Next.js: Amazing for its built-in routing, API routes, and SEO benefits. However, rejected because the core application functionality (video calls, authenticated dashboards) is behind a login wall, negating SEO benefits for key flows.
 
 ## 2. Application Architecture
 Vite (Single Page Application - SPA)
 
 Why:
 
-Extremely fast development server and optimized builds.
+ - Extremely fast development server and optimized builds.
 
-Simple setup, lighter than full frameworks like Next.js.
+ - Simple setup, lighter than full frameworks like Next.js.
 
-Works seamlessly with React and TypeScript.
+ - Works seamlessly with React and TypeScript.
 
 Considerations:
 
-No built-in Server-Side Rendering (SSR) or Static Site Generation (SSG).
+ - No built-in Server-Side Rendering (SSR) or Static Site Generation (SSG).
 
-SEO may be limited compared to SSR solutions.
+ - SEO may be limited compared to SSR solutions.
 
-Requires a separate backend (API) for server-side functionality.
+ - Requires a separate backend (API) for server-side functionality.
 
 ---
 
@@ -217,13 +216,13 @@ Considerations:
 
 Choice:
 Server State
--Why: React Query handles caching, background updates, loading/error states, and pagination out-of-the-box, eliminating the need for repetitive code.
--Alternatives considered: Manual useEffect fetching: Rejected as it is error-prone and requires building a complex caching and update logic from scratch. Redux: React Query is a more focused and simpler tool for the specific job of data fetching.
+- Why: React Query handles caching, background updates, loading/error states, and pagination out-of-the-box, eliminating the need for repetitive code.
+- Alternatives considered: Manual useEffect fetching: Rejected as it is error-prone and requires building a complex caching and update logic from scratch. Redux: React Query is a more focused and simpler tool for the specific job of data fetching.
 
 Choice:
 UI/Client State
--Why: Zustand offers a minimalistic, unopinionated API, perfect for lightweight global state that isn't server-related, such as theme preferences.
--Alternatives considered: Redux: Rejected due to its conceptual overhead. For global state needs, it is overkill.
+- Why: Zustand offers a minimalistic, unopinionated API, perfect for lightweight global state that isn't server-related, such as theme preferences.
+- Alternatives considered: Redux: Rejected due to its conceptual overhead. For global state needs, it is overkill.
 
 
 
@@ -247,8 +246,8 @@ Considerations:
 
 Choice:
 Auth0
--Why: Chosen to accelerate development and enhance security. It provides the required MFA, social logins, and a secure token management system, saving months of development and security review time.
--Alternatives considered: Custom JWT/Bcrypt Backend: Rejected due to the security risks. Supabase: Excellent choice, but Auth0 was selected for its maturity, extensive feature set, and proven reliability at scale.
+- Why: Chosen to accelerate development and enhance security. It provides the required MFA, social logins, and a secure token management system, saving months of development and security review time.
+- Alternatives considered: Custom JWT/Bcrypt Backend: Rejected due to the security risks. Supabase: Excellent choice, but Auth0 was selected for its maturity, extensive feature set, and proven reliability at scale.
 
 ---
 
@@ -258,15 +257,15 @@ Auth0 (with React SDK)
 
 Why:
 
-Easy login setup with roles and multi factor authentication.
+ - Easy login setup with roles and multi factor authentication.
 
-React SDK integrates well with SPAs.
+ - React SDK integrates well with SPAs.
 
 Considerations:
 
-Dependence on external service.
+ - Dependence on external service.
 
-Some features may require a premium, paid plan.
+ - Some features may require a premium, paid plan.
 
 
 ---
@@ -291,8 +290,8 @@ Considerations:
 
 Choice:
 Unit/Component
--Why: RTL+Jest encourages testing component behavior like a user would, leading to more resilient tests. Perfect for testing individual UI components and custom hooks.
--Alternatives considered: Enzyme: Largely forgotten in favor of RTL. Vitest: A great alternative to Jest but has a slightly smaller ecosystem.
+- Why: RTL+Jest encourages testing component behavior like a user would, leading to more resilient tests. Perfect for testing individual UI components and custom hooks.
+- Alternatives considered: Enzyme: Largely forgotten in favor of RTL. Vitest: A great alternative to Jest but has a slightly smaller ecosystem.
 
 ---
 
@@ -302,15 +301,15 @@ Tailwind CSS + shadcn-ui
 
 Why:
 
-Fast prototyping and consistent design.
+ - Fast prototyping and consistent design.
 
-shadcn-ui provides prebuilt, accessible components styled with Tailwind.
+ - shadcn-ui provides prebuilt, accessible components styled with Tailwind.
 
-Works nicely with Vite, React, and TypeScript.
+ - Works nicely with Vite, React, and TypeScript.
 
 Considerations:
 
-Tailwind classes can get long, but easy to learn.
+ - Tailwind classes can get long, but easy to learn.
 
 
 
@@ -318,13 +317,13 @@ Tailwind classes can get long, but easy to learn.
 
 Choice:
 CSS Framework
--Why: Tailwind CSS enables rapid UI development with a utility-first approach and ensures design consistency.
--Alternatives considered: Styled-Components/Emotion: Rejected because they introduce runtime overhead and require context switching between CSS and JS.
+- Why: Tailwind CSS enables rapid UI development with a utility-first approach and ensures design consistency.
+- Alternatives considered: Styled-Components/Emotion: Rejected because they introduce runtime overhead and require context switching between CSS and JS.
 
 Choice:
 Component Library
--Why: shadcn/ui provides a collection of copy-paste React components built with Tailwind, allowing rapid early-stage development while retaining full control over the source code and styling.
--Alternatives considered: MUI/Ant Design: Rejected due to their heavy bundle size and the significant effort required to customize their design to a unique brand.
+- Why: shadcn/ui provides a collection of copy-paste React components built with Tailwind, allowing rapid early-stage development while retaining full control over the source code and styling.
+- Alternatives considered: MUI/Ant Design: Rejected due to their heavy bundle size and the significant effort required to customize their design to a unique brand.
 
 ## 8. Additional Tools
 
@@ -342,21 +341,23 @@ Considerations:
 
 Choice:
 EsLint
--Why: The standard for identifying and fixing problems in JavaScript/TypeScript code.
--Alternatives considered: TSLint: Discarded in favor of ESLint with TypeScript support.
+- Why: The standard for identifying and fixing problems in JavaScript/TypeScript code.
+- Alternatives considered: TSLint: Discarded in favor of ESLint with TypeScript support.
 
 Choice:
 Prettier
--Why: Automatically formats code on save, eliminating all debates over code style.
--Alternatives considered: None.
+- Why: Automatically formats code on save, eliminating all debates over code style.
+- Alternatives considered: None.
 
+---
 
+---
 
 # N-Layer Architecture Design
 
 This document outlines a clean, maintainable layered architecture for the 20minCoach frontend.
 
----
+
 
 ## 1. Detailed Layer Design
 
@@ -598,7 +599,7 @@ Communication: This layer integrates with version control systems to trigger bui
 
 ## 2. Communication Patterns and Data Flow
 
-(TODO Table)
+(To finish and place diagram)
 
 ---
 
@@ -610,3 +611,13 @@ This architecture was chosen explicitly to achieve the following goals:
  - Controller Hooks: Can be tested with React Testing Library by mocking the State and Services layers.
  - Presentation: Can be tested with visual snapshot tests or component tests with mocked props.
  - Replaceability: External technologies can be swapped with minimal impact.
+
+---
+
+---
+
+# Visual Components Strategy
+ - Develop a component organization strategy, this might be lead by the technology choose
+ - Design how to achive a reusable component library structure, those are steps for the developers
+ - Create a component development workflow based on the technology selected, those are steps for the developers
+ - Establish component testing methodology, this is not theory, are steps for the developers
