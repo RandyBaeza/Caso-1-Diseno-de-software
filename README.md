@@ -1,5 +1,23 @@
 ![Logo](./images/logo.png)
 <hr>
+This document presents the 20minCoach frontend design. It is intended as a complete reference for developers, providing all the necessary instructions, examples, and configurations to implement, test, and extend the 20minCoach frontend system without ambiguity.
+
+<br>
+
+You can try the prototype here: https://twenty-min-connect.lovable.app/
+
+For testing purposes, the following accounts are available:
+
+#### BasicUser
+- Email: usuario@example.com
+- Password: Usuario1234
+
+#### PremiumUser
+- Email: premium@example.com
+- Password: Premium1234
+
+New users registering through the prototype will receive BasicUser permissions.
+<hr>
 
 ## Frontend Source Code
 
@@ -60,6 +78,200 @@ Description: "Imagina que encontraste un coach que te interesa y quieres iniciar
 ![Heatmap Task 2](./images/heatmaptask2.jpg)
 #### Key metrics from Task #2
 ![Metrics Task 2](./images/metricstask2.png)
+
+## Authentication & Authorization
+A login screen was implemented, using [Auth0](https://auth0.com/) as the authentication and authorization provider.
+
+![Login](./images/login.png)
+
+### How to Create an Application in Auth0
+1. Log in to the **Auth0 Dashboard**.
+
+2. Create a new **Single Page Application (SPA)**.
+
+3. Configure the **Allowed Callback URLs** and **Logout URLs** to point to the local environment and deployed app.
+
+<br>
+
+To Configure the Allowed Callback URLs go to the **Auth0 Dashboard** → **Applications** → **Applications**, select your newly created application and open the **Settings** tab.
+
+![URL Callback](./images/urlcallbacks.png)
+
+### Roles & Permissions
+Two actions from the prototype screens were assigned to role-based permissions. In the **Auth0 Management Console**, the following roles were set up:
+
+![Roles](./images/roles.png)
+
+**basicUser:** Allowed to perform only read: content.
+
+![Basic Rol](./images/basicrol.png)
+
+**premiumUser:** Allowed to perform both read: content and read: premium_content.
+
+![Premium Rol](./images/premiumrol.png)
+
+### How to Create a Role
+
+1. Go to the **Auth0 Dashboard** → **User Management** → **Roles**.
+
+2. Click **+ Create Role**.
+
+3. Enter Name, Description and click Create.
+
+4. Assign permissions.
+    - Select your newly created Role and open the Permissions tab. 
+    - Click Add Permissions.
+
+5. Assign users to the role.
+
+### How to Create an API
+1. Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
+
+2. Click **+ Create API**.
+
+3. Enter: 
+      - **Name** → e.g., `20MinCoachUsersAPI` 
+      - **Identifier** → a unique URI, e.g., `https://twenty-min-connect.lovable.app/users`. This value will be used as the **audience** parameter on authorization calls
+      - **Signing Algorithm** → leave as **RS256**
+4. Click **Create**.
+
+5. Select your newly created API and open the Settings tab.
+      - **Enable RBAC**
+      - **Enable Add Permissions in the Access Token**
+
+### How to Create a Permission
+1. Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
+
+2. Select your API, then open the **Permissions** tab.
+
+3. Enter: 
+      - **Permission** → e.g., `read: appointments` 
+      - **Description** → e.g., `Read your appointments`
+4. Click **+ Add**.
+
+### How to Customize the Login
+1. Go to the **Auth0 Dashboard** → **Branding** → **Universal Login**.
+
+2. Options to customize:
+    - **Logo and Background** → upload your app logo and set background image or color.
+    - **Primary Colors** → set theme colors to match your app.
+    - **Custom Text** → modify headings, placeholders, and button text.
+
+3. Save the changes.
+
+#### How to Change Default Language
+1. Go to the **Auth0 Dashboard** → **Settings**
+
+2. Open the **General** tab.
+
+3. Scroll down to the **Languages** section.
+
+4. Select your desired **default language**.
+
+5. Save the changes.
+
+### How to Enable Two-Factor Authentication
+1. Go to the **Auth0 Dashboard** → **Security** → **Multi-factor Auth**.
+
+2. Choose the factors to enable.
+
+![MFA](./images/mfa.png)
+
+3. Define policies.
+
+![MFA2](./images/mfa2.png)
+
+4. Save the changes.
+
+5. Test by logging in with a user account to verify that MFA is prompted.
+
+![MFA screen](./images/mfascreen.png)
+
+**Note:** After performing the tests, **MFA was disabled** to simplify login and sign-up for users who want to test the prototype.
+
+You can test the authentication and prototype using the following link: https://twenty-min-connect.lovable.app/
+
+### How to Integrate Auth0 in React
+
+1. Create an auth0Config file ([auth.ts](./src/src/lib/auth.ts)) with your credentials:
+
+``` ts
+const domain = w.__AUTH0_DOMAIN__ || localStorage.getItem("auth0Domain") || "dev-dwut2n5nvuu4bl0n.us.auth0.com";
+const clientId = w.__AUTH0_CLIENT_ID__ || localStorage.getItem("auth0ClientId") || "h5wipav5LmusIRE1kBUFUu4VNxbHTlD7";
+const audience = w.__AUTH0_AUDIENCE__ || localStorage.getItem("auth0Audience") || "https://twenty-min-connect.lovable.app/users";
+```
+  - **Domain** and **Client ID** are provided by Auth0 when you create your application.
+- **Audience** refers to the API you created in Auth0 and is used to request access tokens for that API.
+
+  To find your **Domain** and **Client ID** in Auth0: Go to the **Auth0 Dashboard** → **Applications** → **Applications**, Select your application and Open the **Settings** tab.
+
+![Auth Domain](./images/authdomain.png)
+
+2. Wrap your app with `Auth0Provider` in [App.tsx](./src/src/App.tsx):
+
+``` tsx
+const App = () => (
+  <Auth0Provider
+    domain={auth0Config.domain}
+    clientId={auth0Config.clientId}
+    authorizationParams={{
+      redirect_uri: auth0Config.redirectUri,
+      audience: auth0Config.audience,
+      scope: "read:content read:premium_content",
+    }}
+  >
+    <App />
+  </Auth0Provider>
+);
+```
+
+3. Use the **Auth0 hooks** (like [usePermissions.ts](./src/src/hooks/usePermissions.ts)) to manage authentication in your components:
+
+``` ts
+import { useAuth0 } from '@auth0/auth0-react';
+
+const LoginButton = () => {
+  const { loginWithRedirect } = useAuth0();
+  return <button onClick={() => loginWithRedirect()}>Sign In</button>;
+};
+
+const LogoutButton = () => {
+  const { logout } = useAuth0();
+  return <button onClick={() => logout({ returnTo: window.location.origin })}>Sign Out</button>;
+};
+```
+
+4. Protect routes or components using authentication state:
+
+``` ts
+const Profile = () => {
+  const { user, isAuthenticated } = useAuth0();
+  if (!isAuthenticated) return <p>Please log in.</p>;
+  return <div>Welcome, {user.name}</div>;
+};
+```
+
+### Testing the Authentication & Authorization Implementation
+
+Test users were created and assigned to the corresponding roles.
+
+![Auth Test](./images/authtest.png)
+
+#### BasicUser
+- Email: usuario@example.com
+- Password: Usuario1234
+
+When logging in with a **BasicUser** account and scrolling to the bottom of the page, the **Premium User button is not visible**.
+
+![Auth Basic](./images/basic.png)
+
+#### PremiumUser
+- Email: premium@example.com
+- Password: Premium1234
+
+When logging in with a **PremiumUser** account and scrolling to the bottom of the page, the **Premium User button is visible**.
+
+![Auth Premium](./images/premium.png)
 
 ## Testing 
 
@@ -242,15 +454,6 @@ Considerations:
 
 ---
 
-
-
-Choice:
-Auth0
-- Why: Chosen to accelerate development and enhance security. It provides the required MFA, social logins, and a secure token management system, saving months of development and security review time.
-- Alternatives considered: Custom JWT/Bcrypt Backend: Rejected due to the security risks. Supabase: Excellent choice, but Auth0 was selected for its maturity, extensive feature set, and proven reliability at scale.
-
----
-
 ## 5. Authentication
 
 Auth0 (with React SDK)
@@ -267,6 +470,10 @@ Considerations:
 
  - Some features may require a premium, paid plan.
 
+ Choice:
+Auth0
+- Why: Chosen to accelerate development and enhance security. It provides the required MFA, social logins, and a secure token management system, saving months of development and security review time.
+- Alternatives considered: Custom JWT/Bcrypt Backend: Rejected due to the security risks. Supabase: Excellent choice, but Auth0 was selected for its maturity, extensive feature set, and proven reliability at scale.
 
 ---
 
