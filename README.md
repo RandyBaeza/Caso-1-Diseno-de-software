@@ -806,7 +806,7 @@ Communication: This layer integrates with version control systems to trigger bui
 
 ## 2. Communication Patterns and Data Flow
 
-(To finish and place diagram)
+[Lucidchart Diagram](https://lucid.app/lucidchart/343d278b-1d3b-4d0e-aeef-1c5d75190ad0/edit?viewport_loc=-6154%2C-4167%2C16136%2C8048%2C0_0&invitationId=inv_43b6251c-dffe-4d75-81db-4d0b9ab83c5a)
 
 ---
 
