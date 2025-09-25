@@ -426,7 +426,7 @@ Responsibilities: Contain the complex logic for components. They act as the glue
 
 Contents:
  - Custom Hooks: Reusable hooks that compose multiple state operations, handle form state.
- - This is where the majority of your application's behavior lives.
+ - This is where the majority of the application's behavior lives.
 Communication:
  - Uses: State Layer hooks (React Query, Zustand) and Services.
  - Provides: Data and functions to Components.
@@ -451,12 +451,12 @@ Communication:
 
 ### Layer 7: Middleware
 
-Responsibilities: This layer will support the different middlewares.
+Responsibilities: This layer will support the different middlewares for intermediate data (not the service APIs, those belonging to other layers such as Services Layer).
 
 Contents:
- - Permission middleware: TODO
- - Error handling middleware: TODO
- - Log middleware: TODO
+ - Permission middleware: The permission middleware will be called from the permission validator and will prepare the data to call the authentication service and return the response.
+ - Error handling middleware: This middleware will be called from the error listener and prepare the data to be sent by a call to the exception handling layer.
+ - Log middleware: The log middleware will be called from the log triggerer and prepare the data to be sent by a call to the logging layer.
  
 Communication: All middlewares will listen and send data through hooks.
 
@@ -464,12 +464,16 @@ Communication: All middlewares will listen and send data through hooks.
 
 ### Layer 8: Business
 
-Responsibilities TODO:
+Responsibilities: The business layer will handle and ensure the proper logic execution for the system, such as ensuring server-side changes or processes based on the authenticated and validated actions of users.
 
 Contents:
- - TODO
+ - Call connector: Handles the logic for preparing a service user and coach to mutually connect on calls and to disconnect them once they ask to or the assigned timespace gets exhausted.
+ - Coach search motor: Handles the logic for finding a coach based on user requests, taking to account applied filters, ratings, availability and giving priority to geographically closer coaches.
+ - Billing handler: The billing handler will process transactions within the app and ensure the payments are successful.
+ - Subscription handler: It will hold the login for changes over user subscription’s credit amount or state.
+ - Account handler: It will hold the logic for account-related operations, such as registering a new user, updating user information or deleting an account. The account data updates may be over the user rating, administrative enforcement or user in-app requests (such as changing email or name).
  
-Communication: TODO
+Communication: All business layer components will get called through hooks from the controller layer after the requests that trigger controller layer actions are validated and authenticated. Whenever a procedure on this layer is completed, it will return feedback to the controller layer for the user and interface/service use.
 
 
 
@@ -533,10 +537,10 @@ Communication: This layer will be called via function imports from any other lay
 Responsibilities: This layer will make sure exceptions are handled correctly. This implies operating over the data received from the exception listeners and executing necessary functions for healthy system operation.
 
 Contents:
- - Exception handler: The exception handler will be called with the exception information and context as parameters by the exception listener and then call the appropriate exception handling processes.
+ - Exception handler: The exception handler will be called with the error middleware and context as parameters by the exception listener and then call the appropriate exception handling processes.
  - Exception handling processes: These processes will define the necessary calls over functional layers to ensure software stability and maintainability under specific error and error groups. The processes should call loggers that match their exception type.
 
-Communication: The handler will be called from the exception listener and then further calls will be passed to other functional layers from the exception handling processes.
+Communication: The handler will be called from the error middleware and then further calls will be passed to other functional layers from the exception handling processes.
 
 
 
@@ -545,10 +549,10 @@ Communication: The handler will be called from the exception listener and then f
 Responsibilities: This layer defines the format of system logs. It also provides the logging structure for creating and storing such logs.
 
 Contents:
- - Logger handler: The logger handler will be called by the logger trigger along with the information and type of log, then call the respective logger depending on the log type.
+ - Logger handler: The logger handler will be called by the log middleware along with the information and type of log, then call the respective logger depending on the log type.
  - Loggers: These loggers will provide format and define the structure for each type of log. The information to log will be received from the logger handler and then passed to the log middleware to store it. All loggers should apply a clear, concise and easy-to-understand format. Particular loggers should be called by all important steps on processes that do not rely on user interaction.
 
-Communication: The layer will be called from the logger trigger, then will respond with another call towards the log middleware.
+Communication: The layer will be called from the log middleware, then will respond with another call towards the log middleware.
 
 
 
