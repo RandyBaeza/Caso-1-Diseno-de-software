@@ -824,7 +824,7 @@ This architecture was chosen explicitly to achieve the following goals:
 ---
 
 # Visual Components Strategy
- - Develop a component organization strategy, this might be lead by the technology choose
+## Component Organization Strategy 
 
 (creo que sería hablar como de cómo se van a crear los componentes visuales, tipo que x cosa use cierto componente hecho de estos otros, que los componentes para z cosa tengan o sean así y asá, que los componentes se les aplique el estilo o se renderizen en n orden y de m forma, y que los componentes se comuniquen con el controller usando p método)
    
@@ -867,22 +867,63 @@ In order to achieve reusability on the project’s own library structure, the co
    - Easy to understand implementation
 
    
- - Create a component development workflow based on the technology selected, those are steps for the developers
+## Component Development Workflow
 
 (Talvez como decir “los componentes primero se van a crear como archivos así y asá, luego se van a programar basándose en el prototipo de la interfaz siguiendo los principios de clean code y buscando reusabilidad, luego se van a conectar con el controller layer y finalmente testeados para aplicar correcciones necesarias. Se debe manejar la siguiente estructura para cada archivo de componentes: 1. definición del paquete, 2. imports de librerías, 3. imports de otros archivos internos propios del sistema, 4. variables globales del archivo), 5. funciones globales del archivo, 6. enumerados, 7. clases del archivo, 8. otros. Si no hubiese alguno de estos componentes, se puede omitir. Cada grupo de esos componentes tiene que estar separado por tres lineas en blanco. Cada elemento dentro del mismo grupo de los grupos de funciones globales, enumerados, clases y otros deben ir separados por una línea en blanco en el medio. Los paquetes deben ir por jerarquía carpeta_src->module->component->sub-components, en donde los componentes y subcomponentes deben ser atómicos en su función y los subcomponentes son componentes exclusivamente utilizados para el componente al que pertenecen (si varios componentes necesitaran de uno en particular, este se deberia colocar como un componente, ó bien en carpeta_src->component_library si fuese utilizado por múltiples módulos.”)
    
- - Establish component testing methodology, this is not theory, are steps for the developers
+## Component testing methodology
 
-(Talvez algo como “The steps for testing a component are:
+Testing must be performed on all components, once implemented, until needed quality is reached. The set of steps for testing varies for different components, further below are those sets that rely on the type of component.
+Take into account that the component’s functionality, appearance or dependencies may vary from different browsers or devices. All steps must be performed at least once on one device and browser compatible with the component. Also all steps that may be affected by such variation must be tested for all target browsers and devices.
+After any step or test, the information of each must be reported on the designated space for the testing process in the project backlog. If use cases were also tested, update their data on the use case repository.
 
-1. Revise functionality
-   a. Test accessibility to it from the corresponding interface section
-   b. If it has available interactions, test all of them based on their use cases (interaction and expected result)
-   c. If it needs code to be executed on another layer, make sure that code is already tested and working as intended, then check whether it is being called properly and receiving the correct data.
-2. Revise appearance
-   a. Confirm its appearance matches the component visual design
-   b. Test if different styles compatible with the system work as intended over the component.
+### Format:
+#### Step:
+	<Step_performed>
+	<Date_of_test>. Performed by <tester_name>
+    
+	Contextual information:
+		(Here goes the information of the device/s and browser/s used, any external factors or relevant configuration on these must be pointed out)
+        
+	Process:
+		(Here goes a detailed description of how the step was tested, including any observations and middle steps).
+        
+	Result:
+		(Here goes a conclusion over the state of the component, including how well it fulfills its responsibility, how well it is integrated into the system and needed or potential changes)
 
-Take into account that if the component’s functionality, appearance or dependencies may vary from different browsers or devices, repeat all previous steps that may be affected by such variation for all target browsers or devices.
+#### Test:
+    <Component_name>, <component hierarchy> [the hierarchy, as for example, layer/module/component]. Test No°<number_of_test_over_the_component>
+    From <Start_date_of_test> to <Ending_date_of_test>.
+    
+    Testers:
+        List of tester names
 
-3. Generate a report with the results of each step, specifying the device and browser used for the test. If use cases were also tested, update their data on the use case repository.)
+	<list of steps>
+
+	Summary:
+		(Here goes a summary of all conclusions)
+
+### Steps to perform:
+#### Visual components:
+
+These steps must be helped by the use of Jest and React Testing Library. Cypress is preferably used for testing the components on the full web app. Snapshots may be used for testing components, be sure to follow the test isolation principle.
+
+   1. Revise functionality
+       - Test colocation on corresponding interface: Is it shown in the expected position? Is it shown when expected? Does its colocation follow design after interactions, visual updates or processes? Do screen readers access it as expected?
+       - If it has available interactions, test all of them based on their responsibility: Do interactions behave as expected? Do they work with different control devices (touch, mice, keyboards)? Do they work the amount of time they should? Do they keep working after interactions, visual updates or processes?
+       - If it needs code to be executed on another layer, make sure that code is already tested and working as intended, then check whether it is being called properly and receiving the correct data: Is the data sent to the controller correct? Is the data received from the controller correct? Is the data being handled as expected on the component?
+   3. Revise appearance
+       - Confirm its appearance matches the component visual design: Does it render as on the design? Does it stay visually matching after interactions, visual updates or processes?
+       - Test if different styles compatible with the system work as intended over the component: Does the shown style match the style applied? Does the component behave functionally the same with the different style?
+
+#### Model components:
+   - Internal functions: Do functions over data fulfill their design? Are all expected functions implemented? Do they execute their purpose accordingly?
+   - Data types: Does data have the correct data types? Does it include all expected data?
+   - Data format: Is data being stored as the expected format? Is data being organized according to design?
+   - Access methods: Are access methods working as expected? Are all expected methods implemented?
+#### Other components:
+   - Execution: Do its processes, logic and behaviour work as expected? Do they receive and return intended values? Are they stable? Does its construction follow design?
+   - Data: If it holds or creates data, does it use the right values and data types? Is its data managed correctly? 
+   - Access methods: Are access methods working as expected? Are all expected methods implemented?
+   - If it needs code to be executed on another layer, make sure that code is already tested and working as intended, then check whether it is being called properly and receiving the correct data: Is the data sent to the correct? Is the data received correct? Is the data being handled as expected on the component?
+
