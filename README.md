@@ -828,9 +828,44 @@ This architecture was chosen explicitly to achieve the following goals:
 
 (creo que sería hablar como de cómo se van a crear los componentes visuales, tipo que x cosa use cierto componente hecho de estos otros, que los componentes para z cosa tengan o sean así y asá, que los componentes se les aplique el estilo o se renderizen en n orden y de m forma, y que los componentes se comuniquen con el controller usando p método)
    
- - Design how to achive a reusable component library structure, those are steps for the developers
+## Reusable Component Structure
 
-(Propongo hablar de cómo organizar los componentes y funciones del layer visual más pequeños y generales en paquetes, hacer que a dichos componentes se les pueda configurar el formato, estilo y algunas propiedades, luego que las pantallas u otros componentes llamen a esos sub-componentes como librerías configurándolos de ser necesario por medio de parámetros y métodos.
+In order to achieve reusability on the project’s own library structure, the component files and construction must follow the next structure, bigger and more complex components mainly being composed of more detailed or atomic components:
+
+### Key definitions for the structure:
+ - Responsibilities: A responsibility is considered a group of functions, properties, logic or styling that focus on a single specific objective. Major responsibilities are responsibilities that cannot form other responsibilities, but can be grouped together. Minor responsibilities are those that cannot be divided into smaller responsibilities. This concept may be subjective at first, but the closer a responsibility matches those definitions, the more correct it is.
+
+ - Component: A component is a piece of software that fulfills a single responsibility.
+
+ - Composing: A component composes another one if an instance of the composing component is being created, stored and handled within the composed component. Calls, hook connections, imports, or stored references by themselves are not considered composing.
+
+ - Module: A module is a special type of component that fulfills a major responsibility. For example, the logging layer has the logger handler and specialized individual loggers as modules, for their major responsibilities are handling log requests and creating logs respectively (even though both are related to logs, each of them focuses on different specific objectives).
+
+ - Terminal components: A component is terminal if it is not composed of any other component. Terminal components only can have minor responsibilities.
+
+ - Category: The category is an indicator of the level of hierarchy of a component. The category value is equal to the amount of times it is directly or indirectly composing another component. For example, modules are category 0, components for any module are category 1 and further subcomponents will have even greater category values and are considered subcomponents.
+
+### Structure Organization
+
+ - React components must have a prop-driven design.
+
+ - Tailwind components must be utility-first classes.
+
+ - On the src folder, there has to be a package for each layer. Inside those packages, more packages will be created for each module. For each module, there will be packages for each component that compose the module, and those may also have their own subpackages for higher category components in order to achieve proper separation of concerns. The resulting format for folders, hierarchy and construction would be src/layer/module/category1_component/category2_subcomponents/…
+
+ - If a component would compose two or more components, they must be placed within a package located at the same category level as the composed components and named <parent_package>_components. For example, if component3 composes …/package/component1 and …/package/component2, it would be located as …/package/package_components/component3.
+   - Additionally, if a component would compose two or more components from distinct layers, it would be assigned to src/utility/components instead.
+
+ - If a terminal component would fulfill a responsibility that is not minor, it has to be composed of components that fulfill the division of such responsibility instead.
+
+ - All components should strongly consider:
+   - Use of design patterns
+   - Abstraction
+   - Clear documentation
+   - General ways to access their responsibilities (as with generics or encapsulated methods)
+   - Configurable behaviour or appearance (if used on more than one scenario or at least mildly complex)
+   - Easy to understand implementation
+
    
  - Create a component development workflow based on the technology selected, those are steps for the developers
 
