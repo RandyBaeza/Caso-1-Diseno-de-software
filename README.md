@@ -830,21 +830,21 @@ This architecture was chosen explicitly to achieve the following goals:
 
 For the core strategy, combine:
 
- -Atomic Design (tecnical consistency)
+ - Atomic Design (tecnical consistency)
 
- -Domain-Driven Design (business alignment)
+ - Domain-Driven Design (business alignment)
 
 Strategic Decisions:
 
- -Component Architecture
+ - Component Architecture
 
- -Foundation Layer: Primitive UI components  - buttons, inputs, labels
+ - Foundation Layer: Primitive UI components  - buttons, inputs, labels
 
- -Layout Layer: Structural components that arrange content - headers, grids
+ - Layout Layer: Structural components that arrange content - headers, grids
 
- -Domain Layer: Heart of the architecture, business components that combine primitives with business logic
+ - Domain Layer: Heart of the architecture, business components that combine primitives with business logic
 
- -Page Layer: Top-level components representing full screens
+ - Page Layer: Top-level components representing full screens
 
 ## Technology-Driven Organization
 
