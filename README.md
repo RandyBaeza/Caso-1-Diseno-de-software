@@ -1,6 +1,6 @@
 ![Logo](./images/logo.png)
 <hr>
-This document presents the 20minCoach frontend design. It is intended as a complete reference for developers, providing all the necessary instructions, examples, and configurations to implement, test, and extend the 20minCoach frontend system without ambiguity.
+
 
 <br>
 
@@ -347,7 +347,7 @@ npm run test:coverage   # Run tests with coverage report
 
 # Tech Decision - 20minCoach (Frontend)
 
-This document explains the main technology choices for the frontend of 20minCoach.
+
 
 ---
 
@@ -562,7 +562,7 @@ Prettier
 
 # N-Layer Architecture Design
 
-This document outlines a clean, maintainable layered architecture for the 20minCoach frontend.
+
 
 
 
@@ -824,9 +824,74 @@ This architecture was chosen explicitly to achieve the following goals:
 ---
 
 # Visual Components Strategy
-## Component Organization Strategy 
 
-(creo que sería hablar como de cómo se van a crear los componentes visuales, tipo que x cosa use cierto componente hecho de estos otros, que los componentes para z cosa tengan o sean así y asá, que los componentes se les aplique el estilo o se renderizen en n orden y de m forma, y que los componentes se comuniquen con el controller usando p método)
+
+## 3.1 Component Organization Strategy 
+
+For the core strategy, combine:
+
+ -Atomic Design (tecnical consistency)
+
+ -Domain-Driven Design (business alignment)
+
+Strategic Decisions:
+
+ -Component Architecture
+
+ -Foundation Layer: Primitive UI components  - buttons, inputs, labels
+
+ -Layout Layer: Structural components that arrange content - headers, grids
+
+ -Domain Layer: Heart of the architecture, business components that combine primitives with business logic
+
+ -Page Layer: Top-level components representing full screens
+
+## Technology-Driven Organization
+
+- React + TypeScript: All will be function components with interfaces using strict TypeScript
+
+- Tailwind CSS: Utility-first styling approach
+
+- shadcn/ui: Base component library
+
+## Separation of Concerns
+
+- Presentational Components: Only handle appearance (in ui/ folder)
+
+- Container Components: That handle business logic and data (in domain/ folder)
+
+- Layout Components: Structural components (in layout/ folder)
+
+## Scalability Approach
+
+- Shared code architecture: Components organized in a way that could be extracted to a separate package
+
+- Progressive: Start simple, add complexity only when needed
+
+- Documentation: Each component folder must include usage examples
+
+## Organizational Principles:
+
+- Single Responsibility: Each component should do one thing well
+
+- Composition over Inheritance: Build complex components by combining simple ones
+
+- Prop-Based Customization: Configure components through props, not CSS overrides
+
+
+## Folder Structure Strategy:
+
+
+	src/components/
+		 ui/           # Presentational components
+		 layout/       # Layout  components
+		 domain/       # Container components
+		 pages/        # Page-level compositions
+
+- This high-level strategy ensures that our component architecture is:
+
+- Scalable, maintainable and consistent.
+
    
 ## Reusable Component Structure
 
