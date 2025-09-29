@@ -761,15 +761,6 @@ Setup:
 # 3 N-Layer Architecture Design
 
 
-
-
-
-# 3 N-Layer Architecture Design
-
-
-
-
-
 ## 3.1 Detailed Layer Design
 
 
@@ -813,14 +804,14 @@ Setup:
 - Data from backend API:
 
 
-
-	export interface CoachDTO {
-	  id: string;
-	  user_name: string;
-	  specialty_area: string;
-	  average_rating: number;
-	  is_available: boolean;
-	}
+	
+		export interface CoachDTO {
+		  id: string;
+		  user_name: string;
+		  specialty_area: string;
+		  average_rating: number;
+		  is_available: boolean;
+		}
 
 
  -Data to sent to API:
@@ -861,13 +852,13 @@ Location: src/lip/api/
 
    - Add auth token automatically
    
-	   apiClient.interceptors.request.use((config) => {
-	  const token = localStorage.getItem('auth_token');
-	  if (token) {
-		config.headers.Authorization = `Bearer ${token}`;
-	  }
-	  return config;
-	});
+		   apiClient.interceptors.request.use((config) => {
+		  const token = localStorage.getItem('auth_token');
+		  if (token) {
+			config.headers.Authorization = `Bearer ${token}`;
+		  }
+		  return config;
+			});
 	
 	- Handle common errors:
 	
@@ -1673,24 +1664,181 @@ Location: src/utils/
 	VITE_AUTH0_CLIENT_ID=prod-client-id-here
 
 ---
+## 3.2 Practical Layer Separation - Developer Guidelines
 
-## 3.2 Communication Patterns and Data Flow
+### 3.2.1 How Developers Maintain Separation in Daily Work
 
+#### File Organization Rules
+
+src/:
+   -  services/  -> only API calls & data transformation
+   - hooks/      -> only state management & business logic
+   - components/ -> only UI rendering & user interactions
+   - types/      -> only type definitions
+   - utils/      -> only pure helper functions
+   - stores/     -> only global client state
+
+
+#### Concrete Coding Rules Developers Follow in .ts:
+
+ 
+#### 3.2 Communication Patterns and Data Flow
+
+- No API Calls in Components like example:
+
+
+		const CoachSearch = () => {
+		  const [coaches, setCoaches] = useState([]);
+		  
+		  useEffect(() => {
+		    axios.get('/api/coaches').then(setCoaches); 
+		  }, []);
+		}
+  - API calls with service layer:
+ 
+    
+		const CoachSearch = () => {
+	 	 const { data: coaches } = useCoachSearch(filters); 
+		}										  
+
+
+---
+
+#### One responsability per file
+
+- services/CoachService.ts -> only data operations:
+
+		export class CoachService {
+		  async searchCoaches(filters: CoachSearchFilters): Promise<Coach[]> {
+		    const response = await apiClient.get('/coaches', { params: filters });
+		    return this.transformCoachDTO(response.data); 
+		  }
+		}
+
+- components/CoachSearch.tsx -> only UI:
+
+		const CoachSearch = () => {
+	  const { data: coaches } = useCoachSearch(filters); 
+	  return coaches?.map(coach => <CoachCard coach={coach} />); 
+		}
+
+
+### 3.2.2  Real Development Workflow 
+
+- Example: Adding Coach Rating
+
+#### 1.Types: src/types/rating.ts
+
+	export interface Rating {
+	  score: number;
+	  comment: string;
+	  userId: string;
+	  coachId: string;
+	}
+
+#### 2. Service Method: src/services/ratingService.ts
+
+
+	export class RatingService {
+	  async submitRating(rating: Rating): Promise<void> {
+	    return apiClient.post('/ratings', rating); 
+	  }
+	}
+
+#### 3. Business Logic Hook: src/hooks/useRating.ts
+
+
+	export const useRating = () => {
+	  const submitRating = useMutation({
+	    mutationFn: (rating: Rating) => ratingService.submitRating(rating)
+	  });
+	  return { submitRating }; 
+	}
+
+#### 4.Build UI Component: src/components/RatingForm.tsx
+
+	const RatingForm = ({ coachId }) => {
+	  const { submitRating } = useRating();
+	  const [score, setScore] = useState(0);
+	  
+	  const handleSubmit = () => {
+	    submitRating({ score, comment: '', coachId, userId: '123' });
+	  };
+	  
+	  return (
+	    <div>
+	      <StarRating value={score} onChange={setScore} />
+	      <button onClick={handleSubmit}>Submit Rating</button>
+	    </div>
+	  );
+	}
+
+### 3.2.3 Error Handling Pattern
+
+ Not to do:
+     - Error handling mixed with UI:
+
+
+	const CoachSearch = () => {
+	  try {
+	    const coaches = await api.get('/coaches');
+	  } catch (error) {
+	    alert('Failed to load coaches');
+	  }
+	}
+
+- Do like this, keep separated:
+
+		  // services/CoachService.ts
+		async searchCoaches(): Promise<Coach[]> {
+		  const response = await apiClient.get('/coaches');
+		  return response.data; // Throws error to caller
+		}
+		
+		// hooks/useCoachSearch.ts  
+		const useCoachSearch = () => {
+		  return useQuery({
+		    queryKey: ['coaches'],
+		    queryFn: () => coachService.searchCoaches(),
+		  }); // Error handled by React Query
+		}
+		
+		// components/CoachSearch.tsx
+		const CoachSearch = () => {
+		  const { data: coaches, error } = useCoachSearch();
+		  if (error) return <ErrorMessage message="Failed to load coaches" />;  //UI just display
+		}
+
+
+### 3.2.4 How to review code:
+
+#### Verifiy that each pull request meets these conditions:
+
+- No API calls in component files
+
+- No UI rendering in service/hook files
+
+- No business logic in component files
+
+- Single responsibility per file
+
+- Proper layer communication (Components → Hooks → Services)
+
+- Type definitions separated in /types folder
+
+- Pure functions in /utils without side effects
+
+---
+
+## Layer diagram
 
 
 ![Diagrama de layers](images/Darquitectura3.jpeg)
 
 
----
 
-## 3.3 Separation of Concerns & Maintainability Rationale
 
-This architecture was chosen explicitly to achieve the following goals:
- - Testability: Each layer can be tested in isolation.
- - Services/API Client: Can be tested with unit tests mocking network requests.
- - Controller Hooks: Can be tested with React Testing Library by mocking the State and Services layers.
- - Presentation: Can be tested with visual snapshot tests or component tests with mocked props.
- - Replaceability: External technologies can be swapped with minimal impact.
+
 
 ---
 
