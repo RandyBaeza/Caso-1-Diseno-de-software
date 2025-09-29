@@ -427,12 +427,12 @@ Considerations:
 
 
 
-### Server State
+### 3.1 Server State
 - Why: React Query handles caching, background updates, loading/error states, and pagination out-of-the-box, eliminating the need for repetitive code.
 - Alternatives considered: Manual useEffect fetching: Rejected as it is error-prone and requires building a complex caching and update logic from scratch. Redux: React Query is a more focused and simpler tool for the specific job of data fetching.
 
 
-### UI/Client State
+### 3.2 UI/Client State
 - Why: Zustand offers a minimalistic, unopinionated API, perfect for lightweight global state that isn't server-related, such as theme preferences.
 - Alternatives considered: Redux: Rejected due to its conceptual overhead. For global state needs, it is overkill.
 
