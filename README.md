@@ -372,17 +372,17 @@ Technology Selection & Justification
 Selected: React 18 + TypeScript, built with Vite
 
 
-Choice:
+
 React
 - Why: The standard used for its massive ecosystem and proven stability. Its component-based model perfectly suits the interactive UI of elements needed in a 20 min coach.
 - Alternatives considered: Vue.js: Excellent framework but React's larger community and ecosystem give it a slight edge for long-term maintainability. Angular: Too heavy for this project's scale. Its complexity is unnecessary for a primarily UI-driven application.
 
-Choice:
+
 Typescript
 - Why: Essential for catching errors at compile time, safely defining data structures, and ensuring maintainability as the codebase grows.
 - Alternatives considered: Plain JavaScript: Rejected due to the high potential for runtime errors, difficulty in scaling, and lack of self-documenting code, which would slow down development and increase bug-fixing time.
 
-Choice:
+
 Vite
 - Why: Selected for its development experience and optimized production builds.
 - Alternatives considered: Next.js: Amazing for its built-in routing, API routes, and SEO benefits. However, rejected because the core application functionality (video calls, authenticated dashboards) is behind a login wall, negating SEO benefits for key flows.
@@ -426,12 +426,12 @@ Considerations:
 
 
 
-Choice:
+
 Server State
 - Why: React Query handles caching, background updates, loading/error states, and pagination out-of-the-box, eliminating the need for repetitive code.
 - Alternatives considered: Manual useEffect fetching: Rejected as it is error-prone and requires building a complex caching and update logic from scratch. Redux: React Query is a more focused and simpler tool for the specific job of data fetching.
 
-Choice:
+
 UI/Client State
 - Why: Zustand offers a minimalistic, unopinionated API, perfect for lightweight global state that isn't server-related, such as theme preferences.
 - Alternatives considered: Redux: Rejected due to its conceptual overhead. For global state needs, it is overkill.
@@ -470,7 +470,7 @@ Considerations:
 
  - Some features may require a premium, paid plan.
 
- Choice:
+
 Auth0
 - Why: Chosen to accelerate development and enhance security. It provides the required MFA, social logins, and a secure token management system, saving months of development and security review time.
 - Alternatives considered: Custom JWT/Bcrypt Backend: Rejected due to the security risks. Supabase: Excellent choice, but Auth0 was selected for its maturity, extensive feature set, and proven reliability at scale.
@@ -495,7 +495,7 @@ Considerations:
 
 
 
-Choice:
+
 Unit/Component
 - Why: RTL+Jest encourages testing component behavior like a user would, leading to more resilient tests. Perfect for testing individual UI components and custom hooks.
 - Alternatives considered: Enzyme: Largely forgotten in favor of RTL. Vitest: A great alternative to Jest but has a slightly smaller ecosystem.
@@ -522,12 +522,12 @@ Considerations:
 
 
 
-Choice:
+
 CSS Framework
 - Why: Tailwind CSS enables rapid UI development with a utility-first approach and ensures design consistency.
 - Alternatives considered: Styled-Components/Emotion: Rejected because they introduce runtime overhead and require context switching between CSS and JS.
 
-Choice:
+
 Component Library
 - Why: shadcn/ui provides a collection of copy-paste React components built with Tailwind, allowing rapid early-stage development while retaining full control over the source code and styling.
 - Alternatives considered: MUI/Ant Design: Rejected due to their heavy bundle size and the significant effort required to customize their design to a unique brand.
@@ -546,12 +546,12 @@ Considerations:
 - Extra config, but improves team workflow.
 
 
-Choice:
+
 EsLint
 - Why: The standard for identifying and fixing problems in JavaScript/TypeScript code.
 - Alternatives considered: TSLint: Discarded in favor of ESLint with TypeScript support.
 
-Choice:
+
 Prettier
 - Why: Automatically formats code on save, eliminating all debates over code style.
 - Alternatives considered: None.
