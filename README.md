@@ -932,9 +932,110 @@ In order to achieve reusability on the project’s own library structure, the co
    - Easy to understand implementation
 
    
-## Component Development Workflow
 
-(Talvez como decir “los componentes primero se van a crear como archivos así y asá, luego se van a programar basándose en el prototipo de la interfaz siguiendo los principios de clean code y buscando reusabilidad, luego se van a conectar con el controller layer y finalmente testeados para aplicar correcciones necesarias. Se debe manejar la siguiente estructura para cada archivo de componentes: 1. definición del paquete, 2. imports de librerías, 3. imports de otros archivos internos propios del sistema, 4. variables globales del archivo), 5. funciones globales del archivo, 6. enumerados, 7. clases del archivo, 8. otros. Si no hubiese alguno de estos componentes, se puede omitir. Cada grupo de esos componentes tiene que estar separado por tres lineas en blanco. Cada elemento dentro del mismo grupo de los grupos de funciones globales, enumerados, clases y otros deben ir separados por una línea en blanco en el medio. Los paquetes deben ir por jerarquía carpeta_src->module->component->sub-components, en donde los componentes y subcomponentes deben ser atómicos en su función y los subcomponentes son componentes exclusivamente utilizados para el componente al que pertenecen (si varios componentes necesitaran de uno en particular, este se deberia colocar como un componente, ó bien en carpeta_src->component_library si fuese utilizado por múltiples módulos.”)
+
+
+
+## 3.3 Component Development Workflow
+
+
+### Phase 1: Planning & Analysis
+#### Step 1.1: Determine Component Type
+
+Decide the component type: Is this basic UI , a layout, or  business?
+
+Choose the correct folder: 
+
+	ui/     ->  reusable basics 
+	domain/ ->  business logic
+	layout/ ->  structure
+
+#### Step 1.2: Define the purpose for the component
+
+- Explain briefly what the component does
+
+- List all the information it needs to receive
+
+- Identify which existing components it will use inside it
+
+#### Step 1.3: Check Existing Components
+
+- Look in the component library to see if something similar already exists
+
+- If there is something similar, note what needs to be customized
+
+### Phase 2: Implementation
+#### Step 2.1: Create Folder Structure
+
+- 1.Create a new folder with the component name
+
+- 2.Create these files inside: the main component, test,export, and documentation.
+
+#### Step 2.2: Define Component Interface
+
+- Specify exactly what data the component expects to receive
+
+- Include accessibility requirements
+
+#### Step 2.3: Build the Component
+
+- Use Tailwind CSS classes for styling according to the design system
+
+- The focus must be one main responsibility for the component
+
+- If possible, compose it from smaller components
+
+#### Step 2.4: Set Up Exports
+
+Configure the export file for other components to use it
+
+### Phase 3: Testing & Quality
+#### Step 3.1: Write Tests
+
+- Create tests that simulate users using the component
+
+- Test different variations, different steps
+
+- Verify that it works correctly
+
+#### Step 3.2: Run Quality Checks
+
+- Verify TypeScript types are correct
+
+- Run the tests to make sure they pass
+
+- Check that the code follows the style guidelines
+
+- Confirm the component builds successfully
+
+### Phase 4: Integration & Review
+#### Step 4.1: Use in Application
+
+- Import the component where it's needed
+
+- Test it in different real-world scenarios
+
+#### Step 4.2: Submit for Review
+
+- Create a pull request with the new component
+
+- Include: the component code, tests, documentation, and screenshots
+
+- Pending for team review revision
+
+### Special Cases
+ #### For Business Logic Components:
+
+- Create a separate hook to handle data and logic
+
+- Keep the display component clean and focused on UI
+
+#### For Complex Components:
+
+- Break into smaller sub-components
+
+- Each sub-component follows the same workflow
+
    
 ## Component testing methodology
 
