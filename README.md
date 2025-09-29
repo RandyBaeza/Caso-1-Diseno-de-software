@@ -477,32 +477,9 @@ Auth0
 
 ---
 
-## 2.6 Testing
-
-Jest + React Testing Library (+ optional Cypress)
-
-
-
-- Unit and component tests work well with TypeScript.
-- Cypress can test full workflows in the browser.
-
-Considerations:
-
-- Needs some initial setup.
-
 ---
 
-
-
-
-
-Unit/Component
--  RTL+Jest encourages testing component behavior like a user would, leading to more resilient tests. Perfect for testing individual UI components and custom hooks.
-- Alternatives considered: Enzyme: Largely forgotten in favor of RTL. Vitest: A great alternative to Jest but has a slightly smaller ecosystem.
-
----
-
-## 2.7 Styling & UI
+## 2.6 Styling & UI
 
 Tailwind CSS + shadcn-ui
 
@@ -532,7 +509,7 @@ Component Library
 -  shadcn/ui provides a collection of copy-paste React components built with Tailwind, allowing rapid early-stage development while retaining full control over the source code and styling.
 - Alternatives considered: MUI/Ant Design: Rejected due to their heavy bundle size and the significant effort required to customize their design to a unique brand.
 
-## 2.8 Additional Tools
+## 2.7 Additional Tools
 
 ESLint + Prettier
 
