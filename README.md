@@ -486,7 +486,7 @@ index.html --> Entry point (single HTML file)
 Setup:
 
 
-	npm install zustand
+		npm install zustand
 
 #### Example:	
 - Store examples: src/stores/
