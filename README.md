@@ -387,153 +387,379 @@ Vite
 -  Selected for its development experience and optimized production builds.
 - Alternatives considered: Next.js: Amazing for its built-in routing, API routes, and SEO benefits. However, rejected because the core application functionality (video calls, authenticated dashboards) is behind a login wall, negating SEO benefits for key flows.
 
-## 2.2 Application Architecture
-Vite (Single Page Application - SPA)
 
 
 
- - Extremely fast development server and optimized builds.
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA                                         aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA                                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
- - Simple setup, lighter than full frameworks like Next.js.
 
- - Works seamlessly with React and TypeScript.
+## 2. Application Architecture
+ ### 2.2 Vite Setup & Configuration
+ - For dev server + bundler to run/build the React SPA quickly.
+How to set up the development environment:
 
-Considerations:
+How to install:
 
- - No built-in Server-Side Rendering (SSR) or Static Site Generation (SSG).
 
- - SEO may be limited compared to SSR solutions.
+	npm create vite@latest 20mincoach 
+	cd 20mincoach
+	npm install
 
- - Requires a separate backend (API) for server-side functionality.
 
----
+How to run:
 
-## 2.3 State Management
+	npm run dev
 
-React Query + Zustand
+	
+#### Vital files:
 
+vite.config.ts -> Main build configuration
 
+tsconfig.json --> TypeScript rules
 
-- React Query handles server data fetching and caching.
-- Zustand is simple for global UI state (theme, filters).
+index.html --> Entry point (single HTML file)
 
-Considerations:
+### What developers need to know:
 
-- Two libraries to learn, but simpler than alternatives like Redux.
+- Npm run build creates files in /dist folder
 
----
+#### Adding environment variables: Create .env files:
 
+.env.development - For local development
 
+.env.production - For live app
 
+### Routing file structure:
 
 
-### 2.3.1 Server State
--  React Query handles caching, background updates, loading/error states, and pagination out-of-the-box, eliminating the need for repetitive code.
-- Alternatives considered: Manual useEffect fetching: Rejected as it is error-prone and requires building a complex caching and update logic from scratch. Redux: React Query is a more focused and simpler tool for the specific job of data fetching.
+	src/
+	  pages/
+	    Home.tsx
+	    CoachSearch.tsx
+	    VideoCall.tsx
+	    Profile.tsx
 
 
-### 2.3.2 UI/Client State
--  Zustand offers a minimalistic, unopinionated API, perfect for lightweight global state that isn't server-related, such as theme preferences.
-- Alternatives considered: Redux: Rejected due to its conceptual overhead. For global state needs, it is overkill.
+## 2.3 State Management Implementation
+### 2.3.1 Server State with React Query
+ - For fetch, cache, and update server/API data.
 
+#### Setup:
 
 
-## 2.4 Real-Time Communication
+	npm install @tanstack/react-query
 
-Socket.IO + PeerJS
 
+#### Configuration file: queryClient.ts
 
 
-- Socket.IO works just fine for notifications.
-- PeerJS ideal for video calls.
-- Both support TypeScript.
+	import { QueryClient } from '@tanstack/react-query';
+	
+	export const queryClient = new QueryClient({
+	  defaultOptions: {
+	    queries: {
+	      staleTime: 5 * 3, 
+	      retry: 2,
+	    },
+	  },
+	});
 
-Considerations:
 
-- Some setup required for real-time features.
+#### How to use in components:
 
----
 
-## 2.5 Authentication
+- src/hooks/useCoaches.ts:
 
-Auth0 (with React SDK)
+		import { useQuery } from '@tanstack/react-query';
+		import { coachApi } from '../services/coachApi';
+		
+		export const useCoaches = (searchTerm: string) => {
+		  return useQuery({
+		    queryKey: ['coaches', searchTerm],
+		    queryFn: () => coachApi.search(searchTerm),
+		    enabled: !!searchTerm,
+		  });
+		};
+  		const { data: coaches, isLoading, error } = useCoaches('mechanic');
 
 
+### 2.3.2 Client State with Zustand
+ - For simple global state for UI
+Setup:
 
- - Easy login setup with roles and multi factor authentication.
 
- - React SDK integrates well with SPAs.
+	npm install zustand
 
-Considerations:
+#### Example:	
+- Store examples: src/stores/
 
- - Dependence on external service.
+- Theme store: src/stores/themeStore.ts
 
- - Some features may require a premium, paid plan.
 
+		import { create } from 'zustand';
+		
+		interface ThemeState {
+		  isDark: boolean;
+		  toggleTheme: () => void;
+		}
+		
+		export const useThemeStore = create<ThemeState>((set) => ({
+		  isDark: false,
+		  toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
+		}));
 
-Auth0
--  Chosen to accelerate development and enhance security. It provides the required MFA, social logins, and a secure token management system, saving months of development and security review time.
-- Alternatives considered: Custom JWT/Bcrypt Backend: Rejected due to the security risks. Supabase: Excellent choice, but Auth0 was selected for its maturity, extensive feature set, and proven reliability at scale.
 
----
+#### User session store: src/stores/sessionStore.ts
 
----
 
-## 2.6 Styling & UI
+	interface SessionState {
+	  user: User | null;
+	  currentCoach: Coach | null;
+	  setUser: (user: User) => void;
+	  setCurrentCoach: (coach: Coach) => void;
+	}
+	
+	export const useSessionStore = create<SessionState>((set) => ({
+	  user: null,
+	  currentCoach: null,
+	  setUser: (user) => set({ user }),
+	  setCurrentCoach: (coach) => set({ currentCoach: coach }),
+	}));
 
-Tailwind CSS + shadcn-ui
+	
+#### Usage in components:
 
 
+	const { isDark, toggleTheme } = useThemeStore();
+	const { user, setUser } = useSessionStore();
 
- - Fast prototyping and consistent design.
 
- - shadcn-ui provides prebuilt, accessible components styled with Tailwind.
+## 2.4 Real-Time Communication Setup
+### Socket.IO for Notifications
+#### Installation:
 
- - Works nicely with Vite, React, and TypeScript.
 
-Considerations:
+	npm install socket.io-client
 
- - Tailwind classes can get long, but easy to learn.
 
+## Configuration: src/services/socketService.ts
 
 
+	import { io, Socket } from 'socket.io-client';
+	
+	class SocketService {
+	  private socket: Socket | null = null;
+	  
+	  connect(userId: string) {
+	    this.socket = io(import.meta.env.VITE_SOCKET_URL, {
+	      auth: { userId }
+	    });
+	    
+	    this.socket.on('coach-request', (data) => {
+	      // Handle incoming coach requests
+	    });
+	  }
+	  
+	  sendCoachRequest(coachId: string) {
+	    this.socket?.emit('request-coach', { coachId });
+	  }
+	}
+	
+	export const socketService = new SocketService();
+
+
+### PeerJS for Video Calls
+#### Installation:
+
+
+	npm install peerjs
+
+
+#### Video call setup: src/services/videoService.ts
+
+
+	import Peer from 'peerjs';
+	
+	export class VideoCallService {
+	  private peer: Peer | null = null;
+	  
+	  initialize(userId: string) {
+	    this.peer = new Peer(userId, {
+	      host: import.meta.env.VITE_PEER_HOST,
+	      port: import.meta.env.VITE_PEER_PORT,
+	    });
+	  }
+	  
+	  startCall(coachPeerId: string): MediaStream {
+	    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+	      .then((stream) => {
+	        const call = this.peer?.call(coachPeerId, stream);
+	        return stream;
+	      });
+	  }
+	}
+
+	
+## 2.5 Authentication Implementation
+ - For user authentication, roles, and multi-factor login.
+### Auth0 Setup:
 
 
+#### Installation:
+
+
+	npm install @auth0/auth0-react
+
+#### Main configuration: src/main.tsx:
+
+
+
+	import { Auth0Provider } from '@auth0/auth0-react';
+	
+	ReactDOM.render(
+	  <Auth0Provider
+	    domain="dev-dwut2n5nvuu4bl0n.us.auth0.com"
+	    clientId="h5wipav5LmusIRE1kBUFUu4VNxbHTlD7"
+	    authorizationParams={{
+	      redirect_uri: window.location.origin,
+	      audience: "https://twenty-min-connect.lovable.app/users"
+	    }}
+	    cacheLocation="localstorage"
+	  >
+	    <App />
+	  </Auth0Provider>,
+	  document.getElementById('root')
+	);
+
+	
+#### Using Auth0 in components: src/components/LoginButton.tsx
+
+
+	import { useAuth0 } from '@auth0/auth0-react';
+	
+	export const LoginButton = () => {
+	  const { loginWithRedirect, isAuthenticated } = useAuth0();
+	  
+	  if (isAuthenticated) return null;
+	  
+	  return (
+	    <button onClick={() => loginWithRedirect()}>
+	      Sign In
+	    </button>
+	  );
+	};
+#### Protecting routes: src/components/ProtectedRoute.tsx
+
+
+	import { withAuthenticationRequired } from '@auth0/auth0-react';
+	
+	const ProtectedRoute = ({ component }: { component: ComponentType }) => {
+	  const Component = withAuthenticationRequired(component, {
+	    onRedirecting: () => <div>Loading...</div>,
+	  });
+	  
+	  return <Component />;
+	};
+	
+## 2.6 Styling Implementation
+### Tailwind CSS Setup
+ - For utility-first CSS for fast, consistent styling.
+### Configuration file: tailwind.config.js
+
+
+	module.exports = {
+	  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+	  theme: {
+	    extend: {
+	      colors: {
+	        primary: '#3B82F6',
+	        secondary: '#1E40AF',
+	      },
+	    },
+	  },
+	  plugins: [],
+	};
+
+	
+#### Main CSS file: src/index.css
+
+
+	@tailwind base;
+	@tailwind components;
+	@tailwind utilities;
+
+
+#### shadcn/ui Components
+ - For ready-made React components styled with Tailwind.
+#### Installation and setup:
+
+
+	npx shadcn-ui@latest init
+	npx shadcn-ui@latest add button card input
+
+#### Using components:
+
+
+	import { Button } from '@/components/ui/button';
+	import { Card, CardContent } from '@/components/ui/card';
+	
+	const CoachCard = ({ coach }) => (
+	  <Card>
+	    <CardContent>
+	      <h3>{coach.name}</h3>
+	      <Button onClick={requestSession}>
+	        Request Session
+	      </Button>
+	    </CardContent>
+	  </Card>
+	);
+
+	
+## 2.7 Development Tools
+### ESLint & Prettier Setup
+ - ESLint – For linting to catch errors and enforce code rules.
+
+ - Prettier – For automatic code formatting for consistent style.
+#### Configuration files:
+
+	.eslintrc.cjs - Linting rules
+	
+	.prettierrc - Code formatting rules
+
+#### ESLint rules example:
+
+
+	module.exports = {
+	  rules: {
+	    'react-hooks/exhaustive-deps': 'error',
+	    '@typescript-eslint/no-unused-vars': 'error',
+	    'prefer-const': 'error'
+	  }
+	};
+#### Package.json scripts:
+
+
+	{
+	  "scripts": {
+	    "lint": "eslint src --ext .ts,.tsx",
+	    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+	    "format": "prettier --write src/"
+	  }
+	}
+	
+#### VS Code setup: Create .vscode/settings.json
+
+
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnSave": true
+}
 
-CSS Framework
--  Tailwind CSS enables rapid UI development with a utility-first approach and ensures design consistency.
-- Alternatives considered: Styled-Components/Emotion: Rejected because they introduce runtime overhead and require context switching between CSS and JS.
-
-
-Component Library
--  shadcn/ui provides a collection of copy-paste React components built with Tailwind, allowing rapid early-stage development while retaining full control over the source code and styling.
-- Alternatives considered: MUI/Ant Design: Rejected due to their heavy bundle size and the significant effort required to customize their design to a unique brand.
-
-## 2.7 Additional Tools
-
-ESLint + Prettier
-
-
-
-- Keeps code style consistent.
-- Built-in support for TypeScript.
-
-Considerations:
-
-- Extra config, but improves team workflow.
-
-
-
-EsLint
-- The standard for identifying and fixing problems in JavaScript/TypeScript code.
-- Alternatives considered: TSLint: Discarded in favor of ESLint with TypeScript support.
-
-
-Prettier
--  Automatically formats code on save, eliminating all debates over code style.
-- Alternatives considered: None.
-
----
 
 ---
 
