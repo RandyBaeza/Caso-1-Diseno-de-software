@@ -808,7 +808,7 @@ Communication: This layer integrates with version control systems to trigger bui
 
 
 
-![Diagrama de layers](images/DArquitectura.png)
+![Diagrama de layers](images/DArquitectura.jpeg)
 
 
 ---
