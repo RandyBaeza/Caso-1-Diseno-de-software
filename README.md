@@ -1088,38 +1088,38 @@ Location: src/middleware/
 	
 #### src/middleware/errorMiddleware.ts
 
-export const useErrorMiddleware = () => {
-  const handleApiError = (error: any) => {
-    if (error.response?.status === 401) {
-      // Redirect to login
-      window.location.href = '/login';
-      return 'Please log in again';
-    }
-    
-    if (error.response?.status === 403) {
-      return 'You do not have permission for this action';
-    }
-    
-    return error.response?.data?.message || 'Something went wrong';
-  };
-
-  return { handleApiError };
-};
+	export const useErrorMiddleware = () => {
+	  const handleApiError = (error: any) => {
+	    if (error.response?.status === 401) {
+	      // Redirect to login
+	      window.location.href = '/login';
+	      return 'Please log in again';
+	    }
+	    
+	    if (error.response?.status === 403) {
+	      return 'You do not have permission for this action';
+	    }
+	    
+	    return error.response?.data?.message || 'Something went wrong';
+	  };
+	
+	  return { handleApiError };
+	};
 
 #### src/middleware/logMiddleware.ts
 
-export const useLogMiddleware = () => {
-  const logEvent = (event: string, data?: any) => {
-    console.log(`[${new Date().toISOString()}] ${event}`, data);
-    
-    // Send to logging service in production
-    if (import.meta.env.PROD) {
-      // Add your logging service here
-    }
-  };
-
-  return { logEvent };
-};
+	export const useLogMiddleware = () => {
+	  const logEvent = (event: string, data?: any) => {
+	    console.log(`[${new Date().toISOString()}] ${event}`, data);
+	    
+	    // Send to logging service in production
+	    if (import.meta.env.PROD) {
+	      // Add your logging service here
+	    }
+	  };
+	
+	  return { logEvent };
+	};
 
 
 ### 3.1.8 Business
