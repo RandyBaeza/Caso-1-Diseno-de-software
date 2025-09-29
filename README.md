@@ -764,241 +764,913 @@ Setup:
 
 
 
+# 3 N-Layer Architecture Design
+
+
+
+
+
 ## 3.1 Detailed Layer Design
 
 
 
 ### 3.1.1 Models
 
-Responsibilities: Define the structure  of all data moving throughout the application.
 
-Contents:
- - TypeScript Interfaces/Types: Define the core entities (User, Coach, Session, BookingRequest).
- - Data Transfer Object (DTO) Interfaces: Define the structure of data sent to and received from the API. 
- - Enums: For fixed sets of values (SessionStatus, UserRole).
+ - Location: scr/types/
  
-Communication: All other layers import and use these types. They act as a foundation.
+ ### Example:
+ 
+ ####  src/types/user.ts:
+  
+	  export interface User {
+	  id: string;
+	  email: string;
+	  name: string;
+	  role: 'basic' | 'premium';
+	  credits: number;
+	}
 
+	export type UserRole = 'basic' | 'premium';
+
+#### src/types/coach.ts
+
+
+	export interface Coach {
+	  id: string;
+	  name: string;
+	  specialty: string;
+	  rating: number;
+	  available: boolean;
+	}
+
+	export interface CoachSearchFilters {
+	  specialty?: string;
+	  minRating?: number;
+	}
+
+#### src/types/api.ts
+- Data from backend API:
+
+
+
+	export interface CoachDTO {
+	  id: string;
+	  user_name: string;
+	  specialty_area: string;
+	  average_rating: number;
+	  is_available: boolean;
+	}
+
+
+ -Data to sent to API:
+
+	export interface SessionRequestDTO {
+	  coach_id: string;
+	  user_id: string;
+	}
+	
+#### src/types/index.ts
+
+	export * from './user';
+	export * from './coach';
+	export * from './api';
+
+
+#### Usage example:
+
+	import type { Coach, User } from '../types';
+
+	const MyComponent = ({ coach }: { coach: Coach }) => {
+	  
+	}
 
 
 ### 3.1.2 API Client Layer
 
-Responsibilities: Provide a 1 configured HTTP client for all communication with the backend REST API. 
-Handles cross-cutting concerns like parsing errors.
+Location: src/lip/api/
 
-Contents:
- - A configured Axios instance.
- - Request Interceptor: Automatically adds the user's authentication token (from Auth0) to the Authorization header. This for every outgoing request.
- - Response Interceptor: Globally handles common API errors.
- 
-Communication: Injected into the Services Layer. The API client calls the backend and returns raw data.
+#### src/lib/api/client.ts
 
+	import axios from 'axios';
+
+	const apiClient = axios.create({
+	  baseURL: import.meta.env.VITE_API_URL,
+	  timeout: 10000,
+	});
+
+   - Add auth token automatically
+   
+	   apiClient.interceptors.request.use((config) => {
+	  const token = localStorage.getItem('auth_token');
+	  if (token) {
+		config.headers.Authorization = `Bearer ${token}`;
+	  }
+	  return config;
+	});
+	
+	- Handle common errors:
+	
+		apiClient.interceptors.response.use(
+	  (response) => response,
+	  (error) => {
+		if (error.response?.status === 401) {
+		  window.location.href = '/login';
+		}
+		return Promise.reject(error);
+	  }
+	);
+
+	export default apiClient;
 
 
 ### 3.1.3 Services Layer
 
-Responsibilities: Keeps together all the logic for interaction with external systems, like the backend API.
+Location: src/services/
 
-Contents:
- - API Services: Classes or modules using API Client with methods for each endpoint (getUserData, registerCoach...). 
- - Real-Time Services: Modules for initializing and managing the connections of Socket.IO and PeerJS.
- - Auth Service: A module that wraps the Auth0 SDK, providing a clean interface for login, logout, and getting user info.
+#### src/services/CoachService.ts
 
-Communication:
- - Called by: Hooks, Zustand stores, or components directly for simpler cases.
- - Calls: The API Client Layer and external SDKs.
- - Returns: Promises with Models.
+	import apiClient from '../lib/api/client';
+	import type { Coach, CoachSearchFilters } from '../types';
+	import type { CoachDTO } from '../types/api';
 
+	export class CoachService {
+	  async searchCoaches(filters: CoachSearchFilters): Promise<Coach[]> {
+		const response = await apiClient.get('/coaches', { params: filters });
+		return response.data.map((dto: CoachDTO) => ({
+		  id: dto.id,
+		  name: dto.user_name,
+		  specialty: dto.specialty_area,
+		  rating: dto.average_rating,
+		  available: dto.is_available,
+		}));
+	  }
+
+	  async requestSession(coachId: string): Promise<void> {
+		await apiClient.post('/sessions/request', { coach_id: coachId });
+	  }
+	}
+
+	export const coachService = new CoachService();
+	
+	
+#### src/services/sessionService.ts
+
+	import apiClient from '../lib/api/client';
+
+	export const sessionService = {
+	  async startVideoCall(sessionId: string): Promise<string> {
+		const response = await apiClient.post(`/sessions/${sessionId}/start-call`);
+		return response.data.peerId;
+	  },
+	  
+	  async endSession(sessionId: string): Promise<void> {
+		await apiClient.post(`/sessions/${sessionId}/end`);
+	  }
+	};
+	
 
 
 ### 3.1.4 State Layer
 
-Responsibilities: Manage the application's state reactively.
 
-Contents:
- - Zustand Stores: For global UI state that needs to be shared across the app (e.g. light/dark mode, general colors, general search filters).
- - React Query Cache : The primary state manager for data fetched from the API. It handles caching, background updates, and stale data out of the box.
+Location:  
+      - src/stores/  -> Zustand
+	 
 
-Communication:
- - Zustand: Stores can call Services to perform actions.
- - React Query: Hooks call query functions (which are in the Services Layer) to fetch data.
- - Provides state to: Components and Hooks.
+#### src/stores/themeStore.ts
 
+	import { create } from 'zustand';
+
+	interface ThemeState {
+	  isDark: boolean;
+	  toggleTheme: () => void;
+	}
+
+	export const useThemeStore = create<ThemeState>((set) => ({
+	  isDark: false,
+	  toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
+	}));
+	
+#### src/stores/sessionStore.ts
+
+	import { create } from 'zustand';
+	import type { Coach } from '../types';
+
+	interface SessionState {
+	  currentCoach: Coach | null;
+	  setCurrentCoach: (coach: Coach) => void;
+	}
+
+	export const useSessionStore = create<SessionState>((set) => ({
+	  currentCoach: null,
+	  setCurrentCoach: (coach) => set({ currentCoach: coach }),
+	}));
 
 
 ### 3.1.5 Controller Layer
 
-Responsibilities: Contain the complex logic for components. They act as the glue between the presentation layer and the state and services layer).
+ - src/hooks/   -> React Query
 
-Contents:
- - Custom Hooks: Reusable hooks that compose multiple state operations, handle form state.
- - This is where the majority of the application's behavior lives.
-Communication:
- - Uses: State Layer hooks (React Query, Zustand) and Services.
- - Provides: Data and functions to Components.
+#### src/hooks/useCoachSearch.ts
 
+	import { useQuery } from '@tanstack/react-query';
+	import { coachService } from '../services/coachService';
+	import type { CoachSearchFilters } from '../types';
+
+	export const useCoachSearch = (filters: CoachSearchFilters) => {
+	  return useQuery({
+		queryKey: ['coaches', filters],
+		queryFn: () => coachService.searchCoaches(filters),
+	  });
+	};
+	
+#### src/hooks/useSessionManager.ts
+
+	import { useMutation } from '@tanstack/react-query';
+	import { coachService } from '../services/coachService';
+
+	export const useSessionManager = () => {
+	  const requestSession = useMutation({
+		mutationFn: (coachId: string) => coachService.requestSession(coachId),
+	  });
+
+	  return {
+		requestSession: requestSession.mutate,
+		isLoading: requestSession.isPending,
+	  };
+	};
 
  
 ### 3.1.6 Presentation Layer
 
-Responsibilities: Define what the user sees on the screen.
+Location: src/components/ and src/pages/
 
-Contents:
- - Pages: Top-level components that act as routers for specific views.
- - Components: Reusable UI components (buttons, cards, modals). 
- - Layouts: Components that define the common structure of pages (header, footer, sidebar).
- 
-Communication:
- - Imports and uses: Hooks from the Controller Layer.
- - Receives data and callbacks via props from parent components or hooks.
- - Should not contain direct calls to services or state management logic. These are provided by hooks.
+#### src/components/CoachCard.tsx
 
+	import type { Coach } from '../types';
+
+	interface CoachCardProps {
+	  coach: Coach;
+	  onSelect: (coach: Coach) => void;
+	}
+
+	export const CoachCard: React.FC<CoachCardProps> = ({ coach, onSelect }) => {
+	  return (
+		<div className="border p-4 rounded-lg">
+		  <h3 className="font-bold">{coach.name}</h3>
+		  <p>{coach.specialty}</p>
+		  <button 
+			onClick={() => onSelect(coach)}
+			className="bg-blue-500 text-white px-4 py-2 rounded"
+		  >
+			Select Coach
+		  </button>
+		</div>
+	  );
+	};
+	
+#### src/pages/CoachSearch.tsx
+
+	import { useState } from 'react';
+	import { useCoachSearch } from '../hooks/useCoachSearch';
+	import { CoachCard } from '../components/CoachCard';
+	import { useSessionStore } from '../stores/sessionStore';
+
+	export const CoachSearch: React.FC = () => {
+	  const [specialty, setSpecialty] = useState('');
+	  const { data: coaches, isLoading } = useCoachSearch({ specialty });
+	  const { setCurrentCoach } = useSessionStore();
+
+	  return (
+		<div className="p-4">
+		  <input
+			type="text"
+			placeholder="Search coaches..."
+			value={specialty}
+			onChange={(e) => setSpecialty(e.target.value)}
+			className="border p-2 rounded w-full mb-4"
+		  />
+		  
+		  {isLoading && <div>Loading...</div>}
+		  
+		  <div className="space-y-4">
+			{coaches?.map((coach) => (
+			  <CoachCard 
+				key={coach.id} 
+				coach={coach}
+				onSelect={setCurrentCoach}
+			  />
+			))}
+		  </div>
+		</div>
+	  );
+	};
 
 
 ### 3.1.7 Middleware
 
-Responsibilities: This layer will support the different middlewares for intermediate data (not the service APIs, those belonging to other layers such as Services Layer).
+Location: src/middleware/
 
-Contents:
- - Permission middleware: The permission middleware will be called from the permission validator and will prepare the data to call the authentication service and return the response.
- - Error handling middleware: This middleware will be called from the error listener and prepare the data to be sent by a call to the exception handling layer.
- - Log middleware: The log middleware will be called from the log triggerer and prepare the data to be sent by a call to the logging layer.
- 
-Communication: All middlewares will listen and send data through hooks.
+#### src/middleware/authMiddleware.ts
 
+	import { useAuth } from '../hooks/useAuth';
+
+	export const usePermissionMiddleware = () => {
+	  const { hasPermission } = useAuth();
+
+	  const checkPermission = (permission: string): boolean => {
+		return hasPermission(permission);
+	  };
+
+	  return { checkPermission };
+	};
+	
+#### src/middleware/errorMiddleware.ts
+
+export const useErrorMiddleware = () => {
+  const handleApiError = (error: any) => {
+    if (error.response?.status === 401) {
+      // Redirect to login
+      window.location.href = '/login';
+      return 'Please log in again';
+    }
+    
+    if (error.response?.status === 403) {
+      return 'You do not have permission for this action';
+    }
+    
+    return error.response?.data?.message || 'Something went wrong';
+  };
+
+  return { handleApiError };
+};
+
+#### src/middleware/logMiddleware.ts
+
+export const useLogMiddleware = () => {
+  const logEvent = (event: string, data?: any) => {
+    console.log(`[${new Date().toISOString()}] ${event}`, data);
+    
+    // Send to logging service in production
+    if (import.meta.env.PROD) {
+      // Add your logging service here
+    }
+  };
+
+  return { logEvent };
+};
 
 
 ### 3.1.8 Business
 
-Responsibilities: The business layer will handle and ensure the proper logic execution for the system, such as ensuring server-side changes or processes based on the authenticated and validated actions of users.
+Location: src/business/
 
-Contents:
- - Call connector: Handles the logic for preparing a service user and coach to mutually connect on calls and to disconnect them once they ask to or the assigned timespace gets exhausted.
- - Coach search motor: Handles the logic for finding a coach based on user requests, taking to account applied filters, ratings, availability and giving priority to geographically closer coaches.
- - Billing handler: The billing handler will process transactions within the app and ensure the payments are successful.
- - Subscription handler: It will hold the login for changes over user subscription’s credit amount or state.
- - Account handler: It will hold the logic for account-related operations, such as registering a new user, updating user information or deleting an account. The account data updates may be over the user rating, administrative enforcement or user in-app requests (such as changing email or name).
- 
-Communication: All business layer components will get called through hooks from the controller layer after the requests that trigger controller layer actions are validated and authenticated. Whenever a procedure on this layer is completed, it will return feedback to the controller layer for the user and interface/service use.
+#### src/buisness/sessionCoordiantor.ts
+
+	import { sessionService } from '../services/sessionService';
+	import { useLogMiddleware } from '../middleware/logMiddleware';
+
+	export class SessionCoordinator {
+	  private log = useLogMiddleware();
+
+	  async connectUserToCoach(userId: string, coachId: string): Promise<string> {
+		try {
+		  this.log.logEvent('session_connect_attempt', { userId, coachId });
+		  
+		  const peerId = await sessionService.startVideoCall(`${userId}-${coachId}`);
+		  
+		
+		  setTimeout(() => {
+			this.endSession(userId, coachId);
+		  }, 20 * 60 * 1000);
+
+		  this.log.logEvent('session_connected', { userId, coachId, peerId });
+		  return peerId;
+		} catch (error) {
+		  this.log.logEvent('session_connect_failed', { userId, coachId, error });
+		  throw error;
+		}
+	  }
+
+	  async endSession(userId: string, coachId: string): Promise<void> {
+		await sessionService.endSession(`${userId}-${coachId}`);
+		this.log.logEvent('session_ended', { userId, coachId });
+	  }
+	}
+
+	export const sessionCoordinator = new SessionCoordinator();
 
 
+#### src/business/coachMatcher.ts
+
+	import type { Coach, CoachSearchFilters } from '../types';
+
+	export class CoachMatcher {
+	  findBestMatch(coaches: Coach[], filters: CoachSearchFilters): Coach | null {
+		let filteredCoaches = coaches.filter(coach => 
+		  coach.available && 
+		  coach.rating >= (filters.minRating || 0)
+		);
+
+		if (filters.specialty) {
+		  filteredCoaches = filteredCoaches.filter(coach =>
+			coach.specialty.toLowerCase().includes(filters.specialty!.toLowerCase())
+		  );
+		}
+
+		// Sort by rating (highest first)
+		filteredCoaches.sort((a, b) => b.rating - a.rating);
+
+		return filteredCoaches[0] || null;
+	  }
+
+	  calculateMatchScore(coach: Coach, userNeeds: string): number {
+		let score = coach.rating;
+		
+		// Boost score if specialty matches user needs
+		if (coach.specialty.toLowerCase().includes(userNeeds.toLowerCase())) {
+		  score += 2;
+		}
+		
+		return score;
+	  }
+	}
+
+	export const coachMatcher = new CoachMatcher();
 
 ### 3.1.9 Listeners
 
-Responsibilities: This layer will support the different listeners.
+Location: src/listeners/
 
-Contents:
- - UI to Controller listener: The UI to Controller listener will read user interaction events and send them to the controller layer to handle them.
- - Error listener: The error listener will listen to errors throughout all layers and send responses to the exception handling layer.
- - Log triggerer: The log triggerer will listen for events that need logging and respond to the logging class.
- 
-Communication: The listeners will listen to the interface components through hooks and make calls to their respective handlers. UI to Controller listeners will listen the Presentation Layer user interactions and redirect their data to the Controller layer calls.
+	import { useLogMiddleware } from '../middleware/logMiddleware';
 
+	export const useEventListeners = () => {
+	  const log = useLogMiddleware();
 
+	  const setupUIListeners = (onUserAction: (action: string, data: any) => void) => {
+	  
+		// Listen for page visibility changes
+		
+		document.addEventListener('visibilitychange', () => {
+		  onUserAction('visibility_change', { 
+			isVisible: !document.hidden 
+		  });
+		});
+
+		// Listen for online/offline status
+		
+		window.addEventListener('online', () => {
+		  onUserAction('connection_restored', {});
+		});
+
+		window.addEventListener('offline', () => {
+		  onUserAction('connection_lost', {});
+		});
+	  };
+
+	  return { setupUIListeners };
+	};
+	
+#### src/listeners/errorListeners.ts
+
+export const useErrorListeners = () => {
+  const setupErrorListeners = (onError: (error: Error, context: string) => void) => {
+    // Global error handler
+    window.addEventListener('error', (event) => {
+      onError(event.error, 'window_error');
+    });
+
+    // Unhandled promise rejections
+    window.addEventListener('unhandledrejection', (event) => {
+      onError(event.reason, 'unhandled_rejection');
+    });
+  };
+
+  return { setupErrorListeners };
+};
 
 ### 3.1.10  Validators
 
-Responsibilities: This layer will support the different validators.
+Location: src/validators/
 
-Contents:
- - Permission validator: This validator will be called from the controller layer on user interactions and calls the permission middleware to check whether a user has active permissions for a specific action. If a permission is invalid, the Security layer should handle the invalidation over the triggering action.
- - Input validators: This validator will be called by the controller layer over user input to check if the inputted data format is correct. If the input is incorrect, the controller should use that information to give the user feedback and stop the data from passing deeper onto the system.
- - Connection validator: This validator will be called by the controller layer and measure the internet connection quality to help the system be aware if there are connection problems or risks during normal activity or coaching sessions. If the connection is unstable, the user should be warned on the presentation layer and resource use optimized for efficiency on the controller layer.
- - Compatibility validator: This validator will be called by the controller layer and check if a function of the system is compatible with the user’s local technology. If a function is incompatible, the controller layer should dishabilitate it for the time being and send a warning through the presentation layer.
+#### src/validators/permissionValidator.ts
 
-Communication: This layer will communicate through the use of function calls from other processes that may require validation and return responses as boolean data.
+	import { usePermissionMiddleware } from '../middleware/authMiddleware';
 
+	export const usePermissionValidator = () => {
+	  const { checkPermission } = usePermissionMiddleware();
 
+	  const validatePermission = (permission: string): boolean => {
+		const hasPerm = checkPermission(permission);
+		
+		if (!hasPerm) {
+		  console.warn(`Permission denied: ${permission}`);
+		  return false;
+		}
+		
+		return true;
+	  };
+
+	  return { validatePermission };
+	};
+	
+#### src/validators/inputValidator.ts
+
+	export const useInputValidator = () => {
+	  const validateSearchInput = (input: string): { isValid: boolean; message: string } => {
+		if (input.length < 2) {
+		  return { isValid: false, message: 'Search term must be at least 2 characters' };
+		}
+		
+		if (input.length > 100) {
+		  return { isValid: false, message: 'Search term too long' };
+		}
+		
+		// Check for potentially harmful characters
+		const harmfulPattern = /[<>{}]/;
+		if (harmfulPattern.test(input)) {
+		  return { isValid: false, message: 'Invalid characters in search' };
+		}
+		
+		return { isValid: true, message: '' };
+	  };
+
+	  const validateSessionRequest = (coachId: string, userId: string): boolean => {
+		return !!coachId && !!userId;
+	  };
+
+	  return { validateSearchInput, validateSessionRequest };
+	};
+	
+#### src/validators/connectionValidator.ts
+
+export const useConnectionValidator = () => {
+  const checkConnectionQuality = async (): Promise<'good' | 'fair' | 'poor'> => {
+    if (!navigator.onLine) {
+      return 'poor';
+    }
+
+    // Simple connection check - in real app, use more sophisticated method
+    try {
+      const start = performance.now();
+      await fetch('https://www.google.com/favicon.ico', { 
+        mode: 'no-cors',
+        cache: 'no-cache'
+      });
+      const latency = performance.now() - start;
+
+      if (latency < 100) return 'good';
+      if (latency < 500) return 'fair';
+      return 'poor';
+    } catch {
+      return 'poor';
+    }
+  };
+
+  return { checkConnectionQuality };
+};
 
 ### 3.1.11 Styles
 
-Responsibilities: This layer will manage different visual stylings for the interface components.
 
-Contents:
- - Style manager: This class will provide seamless switching and handling between different visual component style templates. In case that switching fails or a custom style cannot be loaded, the changes must be reverted or temporarily set to default, respectively.
- - Style template rules: Each template should use two or three colors (excluding gradients, images and slight tonal variation), one color exactly should catch more attention than the others and the general luminosity should be balanced among all visual components.
- - Dark/light support strategy: The light and dark mode will be stored as different styles. Depending on the device style settings, the style manager may apply such styles accordingly over the visual elements.
- 
-Communication: This layer will receive styling requests as function calls with parameters from the controller layer and apply changes on the presentation layer through calls to modify component style.
+Location: src/styles/
 
+#### src/styles/themeManager.ts
+
+
+	export class ThemeManager {
+	  private currentTheme: 'light' | 'dark' = 'light';
+
+	  setTheme(theme: 'light' | 'dark') {
+		this.currentTheme = theme;
+		document.documentElement.setAttribute('data-theme', theme);
+		localStorage.setItem('theme', theme);
+	  }
+
+	  getTheme(): 'light' | 'dark' {
+		const saved = localStorage.getItem('theme') as 'light' | 'dark';
+		return saved || this.currentTheme;
+	  }
+
+	  toggleTheme() {
+		const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+		this.setTheme(newTheme);
+	  }
+
+	  // Apply theme to specific component
+	  applyComponentTheme(componentId: string, theme: 'light' | 'dark') {
+		const element = document.getElementById(componentId);
+		if (element) {
+		  element.setAttribute('data-theme', theme);
+		}
+	  }
+	}
+
+	export const themeManager = new ThemeManager();
+	
+#### Update Tailwind config: tailwind.config.js
+
+	module.exports = {
+	  darkMode: 'class',
+	  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+	  theme: {
+		extend: {
+		  colors: {
+			primary: '#3B82F6',
+			secondary: '#1E40AF',
+		  },
+		},
+	  },
+	};
+	
+#### Add to main CSS: src/index.css
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  [data-theme="dark"] {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+  }
+}
 
 
 ### 3.1.12 Utilities
 
-Responsibilities: This layer will give miscellaneous utilities used on different modules of the system.
+Location: src/utils/
 
-Contents:
- - Date/Time Utilities: Functions for date formatting and timezone management.
- - String Manipulation Utilities: Formatting, truncation and validation of user inputs and display texts.
- - Array/Collection Utilities: All kinds of actions managing collections of data such as user lists, session history, and available time slots.
- - Validation Helpers: Common validation patterns for data like emails, phone numbers, passwords.
- - Math Utilities: Functions for pricing calculations, percentage calculations, and statistical analysis of coaching users.
+#### src/utils/dateUtils.ts
 
-Communication: This layer will be called via function imports from any other layer requiring utility functions. Utilities are stateless and return immediate results without side effects.
+	export const formatSessionTime = (date: Date): string => {
+	  return date.toLocaleTimeString('en-US', { 
+		hour: '2-digit', 
+		minute: '2-digit' 
+	  });
+	};
 
+	export const getSessionEndTime = (startTime: Date): Date => {
+	  return new Date(startTime.getTime() + 20 * 60000); // 20 minutes
+	};
+	
+	
+#### src/utils/validation.ts
 
+export const isValidEmail = (email: string): boolean => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+export const isValidPassword = (password: string): boolean => {
+  return password.length >= 8;
+};
 
 ### 3.1.13 Exception Handling
 
-Responsibilities: This layer will make sure exceptions are handled correctly. This implies operating over the data received from the exception listeners and executing necessary functions for healthy system operation.
+#### src/error/exceptionHandler.ts
 
-Contents:
- - Exception handler: The exception handler will be called with the error middleware and context as parameters by the exception listener and then call the appropriate exception handling processes.
- - Exception handling processes: These processes will define the necessary calls over functional layers to ensure software stability and maintainability under specific error and error groups. The processes should call loggers that match their exception type.
+	import { useLogMiddleware } from '../middleware/logMiddleware';
 
-Communication: The handler will be called from the error middleware and then further calls will be passed to other functional layers from the exception handling processes.
+	export class ExceptionHandler {
+	  private log = useLogMiddleware();
+
+	  handle(error: Error, context: string, severity: 'low' | 'medium' | 'high' = 'medium') {
+		this.log.logEvent('exception_occurred', {
+		  error: error.message,
+		  context,
+		  severity,
+		  stack: error.stack
+		});
+
+		// Different handling based on severity
+		switch (severity) {
+		  case 'high':
+			this.handleCriticalError(error, context);
+			break;
+		  case 'medium':
+			this.handleRecoverableError(error, context);
+			break;
+		  case 'low':
+			this.handleMinorError(error, context);
+			break;
+		}
+	  }
+
+	  private handleCriticalError(error: Error, context: string) {
+		// Show error page or restart app
+		console.error('Critical error:', error);
+	  }
+
+	  private handleRecoverableError(error: Error, context: string) {
+		// Show user-friendly message
+		console.warn('Recoverable error:', error);
+	  }
+
+	  private handleMinorError(error: Error, context: string) {
+		// Just log it
+		console.info('Minor error:', error);
+	  }
+	}
+
+	export const exceptionHandler = new ExceptionHandler();
 
 
+#### src/utils/mathUtils.ts
+
+export const calculateSessionCost = (baseRate: number, duration: number = 20): number => {
+  const hourlyRate = baseRate;
+  const minuteRate = hourlyRate / 60;
+  return Math.round(minuteRate * duration * 100) / 100; // Round to 2 decimal places
+};
+
+export const calculateCoachEarnings = (
+  sessionRate: number, 
+  platformFee: number = 0.2 // 20% platform fee
+): { coachEarnings: number; platformFee: number } => {
+  const platformFeeAmount = sessionRate * platformFee;
+  const coachEarnings = sessionRate - platformFeeAmount;
+  
+  return {
+    coachEarnings: Math.round(coachEarnings * 100) / 100,
+    platformFee: Math.round(platformFeeAmount * 100) / 100
+  };
+};
+
+export const calculateAverageRating = (ratings: number[]): number => {
+  if (ratings.length === 0) return 0;
+  
+  const sum = ratings.reduce((total, rating) => total + rating, 0);
+  return Math.round((sum / ratings.length) * 10) / 10; // Round to 1 decimal
+};
+
+export const calculateDiscount = (
+  originalPrice: number, 
+  discountPercentage: number
+): number => {
+  const discountAmount = originalPrice * (discountPercentage / 100);
+  return Math.round(discountAmount * 100) / 100;
+};
 
 ### 3.1.14 Logging
 
-Responsibilities: This layer defines the format of system logs. It also provides the logging structure for creating and storing such logs.
+#### src/logging/logger.ts
 
-Contents:
- - Logger handler: The logger handler will be called by the log middleware along with the information and type of log, then call the respective logger depending on the log type.
- - Loggers: These loggers will provide format and define the structure for each type of log. The information to log will be received from the logger handler and then passed to the log middleware to store it. All loggers should apply a clear, concise and easy-to-understand format. Particular loggers should be called by all important steps on processes that do not rely on user interaction.
+	export class Logger {
+	  private logLevel: 'debug' | 'info' | 'warn' | 'error' = 'info';
 
-Communication: The layer will be called from the log middleware, then will respond with another call towards the log middleware.
+	  setLogLevel(level: 'debug' | 'info' | 'warn' | 'error') {
+		this.logLevel = level;
+	  }
 
+	  debug(message: string, data?: any) {
+		if (this.shouldLog('debug')) {
+		  console.debug(`[DEBUG] ${message}`, data);
+		}
+	  }
 
+	  info(message: string, data?: any) {
+		if (this.shouldLog('info')) {
+		  console.info(`[INFO] ${message}`, data);
+		}
+	  }
+
+	  warn(message: string, data?: any) {
+		if (this.shouldLog('warn')) {
+		  console.warn(`[WARN] ${message}`, data);
+		}
+	  }
+
+	  error(message: string, data?: any) {
+		if (this.shouldLog('error')) {
+		  console.error(`[ERROR] ${message}`, data);
+		}
+	  }
+
+	  private shouldLog(level: string): boolean {
+		const levels = ['debug', 'info', 'warn', 'error'];
+		return levels.indexOf(level) >= levels.indexOf(this.logLevel);
+	  }
+	}
+
+	export const logger = new Logger();
 
 ### 3.1.15 Security
 
-Responsibilities: This layer is to protect the system from potentially harmful actions and warrant the security of sensible or restricted data.
+#### src/security/authManager.ts
 
-Contents:
- - Authentication Manager: Authentication state across the application.Handles login, logout and user session management using Auth0 integration.
- - Authorization Service: Enforces role-based access throughout the app. It does it by verifying user permissions for specific actions, routes, and data access.
- - Data Encryption Handler: Provides encryption and decryption services for sensitive data stored locally.
- - Security Headers Manager: Configures and manages security-related HTTP headers and for all outgoing requests.
- - Input Sanitization Service: Cleanses and validates all user inputs to prevent errors  and mitigate vulnerabilities before processing.
+	import { useAuth0 } from '@auth0/auth0-react';
 
-Communication: This layer will be called by the middleware layer for request authentication, by controllers for permission checks, and by services for data protection. It will work with Auth0 SDK and browser security APIs.
+	export const useAuthManager = () => {
+	  const { user, getAccessTokenSilently } = useAuth0();
 
+	  const getSecureToken = async (): Promise<string> => {
+		try {
+		  return await getAccessTokenSilently();
+		} catch (error) {
+		  throw new Error('Failed to get secure token');
+		}
+	  };
+
+	  const hasRequiredRole = (requiredRole: string): boolean => {
+		const roles = user?.['https://20mincoach.com/roles'] || [];
+		return roles.includes(requiredRole);
+	  };
+
+	  const encryptSensitiveData = (data: string): string => {
+		// Simple base64 encoding - in production use proper encryption
+		return btoa(unescape(encodeURIComponent(data)));
+	  };
+
+	  const decryptSensitiveData = (encryptedData: string): string => {
+		try {
+		  return decodeURIComponent(escape(atob(encryptedData)));
+		} catch {
+		  throw new Error('Failed to decrypt data');
+		}
+	  };
+
+	  return {
+		getSecureToken,
+		hasRequiredRole,
+		encryptSensitiveData,
+		decryptSensitiveData
+	  };
+};
 
 
 ### 3.1.16 Linter Configuration
 
-Responsibilities: This layer will hold the necessary data and functions for the linter to work according to the desired configuration.
+#### ESLint config: .eslintrc.cjs
 
-Contents:
- - Prettier Formatting Config: Code formatting rules for consistent indentation, spacing, line breaks, and code organization across the team.
- - TypeScript Strict Configuration: Type checking rules ensuring type safety, strict null checks, and proper interface implementation.
+	module.exports = {
+	  extends: [
+		'@tanstack/eslint-config-react',
+		'@tanstack/eslint-config-query'
+	  ],
+	  rules: {
+		'react-hooks/exhaustive-deps': 'error',
+		'@typescript-eslint/no-unused-vars': 'error',
+		'prefer-const': 'error',
+		'no-console': ['warn', { allow: ['warn', 'error'] }],
+		'react/prop-types': 'off' // We use TypeScript
+	  },
+	  ignorePatterns: ['dist/', 'node_modules/']
+	};
 
-Communication: This layer operates at the development tooling level, integrating with IDEs, build processes, and version control systems. It provides feedback to developers through editor warnings and CI/CD pipeline reports.
+#### Prettier config: .prettierrc
 
-
+	{
+	  "semi": true,
+	  "singleQuote": true,
+	  "tabWidth": 2,
+	  "trailingComma": "es5",
+	  "printWidth": 100,
+	  "bracketSpacing": true
+	}
 
 ### 3.1.17 Build and Deployment Pipelining
 
-Responsibilities: This layer will handle the building and deployment process of the system, seeking to maximize efficiency and minimize errors on the process.
+#### Vite config: vite.config.ts
 
-Contents: 
- - Vite Build Configuration: Environment-specific build settings for development, staging, and production.
- - Environment Variable Management: Secure handling of environment-specific configurations, API endpoints, and feature flags across different deployment targets.
- - CI/CD Pipeline Definitions: Automated workflows for running tests, building artifacts, security scanning, and deploying to respective environments.
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-Communication: This layer integrates with version control systems to trigger builds on code changes, communicates with hosting platforms for deployment, and provides build status feedback to the development team through notifications and dashboards.
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          auth: ['@auth0/auth0-react'],
+          utils: ['axios', 'zustand']
+        }
+      }
+    }
+  },
+  server: {
+    port: 3000,
+    open: true
+  }
+});
+
+#### Enviroment files:
+
+.env.development:
+
+	VITE_API_URL=http://localhost:3001
+	VITE_AUTH0_DOMAIN=dev-dwut2n5nvuu4bl0n.us.auth0.com
+	VITE_AUTH0_CLIENT_ID=h5wipav5LmusIRE1kBUFUu4VNxbHTlD7
+	
+.env.production:
+
+	VITE_API_URL=https://api.20mincoach.com
+	VITE_AUTH0_DOMAIN=prod-dwut2n5nvuu4bl0n.us.auth0.com
+	VITE_AUTH0_CLIENT_ID=prod-client-id-here
 
 ---
 
