@@ -19,17 +19,17 @@ For testing purposes, the following accounts are available:
 New users registering through the prototype will receive BasicUser permissions.
 <hr>
 
-## Frontend Source Code
+## 1.1 Frontend Source Code
 
 - The repository includes the complete `src/` folder with the full project structure, including the source code created for the prototype.
 - All Proof of Concepts (PoCs) and requested classes are stored inside the `src/` folder.
 - All files, templates, and source code provided as guidance are placed in the appropriate layer folder where they are used in the final implementation.
-## Prototype
+## 1.2 Prototype
 The prototype was created using the AI-based tool [Lovable](https://lovable.dev/)
 
 Two main screens were created as part of the prototype:
 
-### 1. Coach Search Screen ([CoachSearch.tsx](./src/src/pages/CoachSearch.tsx))
+### 1.2.1 Coach Search Screen ([CoachSearch.tsx](./src/src/pages/CoachSearch.tsx))
 
 - Allows users to enter their coaching needs via a search input or voice.
 - Displays popular coaching categories for quick selection.
@@ -39,7 +39,7 @@ Two main screens were created as part of the prototype:
 
 ![Coach Search](./images/CoachSearch.png)
 
-### 2. Coach Results Screen ([CoachResults.tsx](./src/src/pages/CoachResults.tsx))
+### 1.2.2 Coach Results Screen ([CoachResults.tsx](./src/src/pages/CoachResults.tsx))
 
 - Displays information for a single coach at a time.
 - Allows the user to request a session with the displayed coach.
@@ -51,7 +51,7 @@ Two main screens were created as part of the prototype:
 
 Both screens follow the selected frontend technologies (React, TypeScript, Tailwind, shadcn/ui) and were used for a UX test.
 
-## UX Testing
+## 1.3 UX Testing
 The UX test was performed using [Maze](https://maze.co/), utilizing a Figma prototype of the screens created.
 
 Link to perform the test: https://t.maze.co/445485876?guerilla=true
@@ -64,7 +64,7 @@ Test participants:
 
 Two main tasks were defined for participants:
 
-### Task #1: "Haz clic en el campo de búsqueda (el que dice “Describe qué necesitas y en qué te podemos ayudar...”)"
+### 1.3.1 Task #1: "Haz clic en el campo de búsqueda (el que dice “Describe qué necesitas y en qué te podemos ayudar...”)"
 Description: "Estás en la página principal. El primer paso es buscar qué tipo de ayuda necesitas."
 #### Heatmap showing user interactions during Task #1
 ![Heatmap Task 1](./images/heatmaptask1.jpg)
@@ -72,24 +72,24 @@ Description: "Estás en la página principal. El primer paso es buscar qué tipo
 #### Key metrics from Task #1
 ![Metrics Task 1](./images/metricstask1.png)
 
-### Task #2: "Haz clic en el botón “Solicitar sesión” del coach mostrado en el resultado."
+### 1.3.2 Task #2: "Haz clic en el botón “Solicitar sesión” del coach mostrado en el resultado."
 Description: "Imagina que encontraste un coach que te interesa y quieres iniciar una sesión con él."
 #### Heatmap showing user interactions during Task #2
 ![Heatmap Task 2](./images/heatmaptask2.jpg)
 #### Key metrics from Task #2
 ![Metrics Task 2](./images/metricstask2.png)
 
-## Authentication & Authorization
+## 1.4 uthentication & Authorization
 A login screen was implemented, using [Auth0](https://auth0.com/) as the authentication and authorization provider.
 
 ![Login](./images/login.png)
 
-### How to Create an Application in Auth0
-1. Log in to the **Auth0 Dashboard**.
+### 1.4.1 How to Create an Application in Auth0
+1.4.1.1 Log in to the **Auth0 Dashboard**.
 
-2. Create a new **Single Page Application (SPA)**.
+1.4.1.2 Create a new **Single Page Application (SPA)**.
 
-3. Configure the **Allowed Callback URLs** and **Logout URLs** to point to the local environment and deployed app.
+1.4.1.3 Configure the **Allowed Callback URLs** and **Logout URLs** to point to the local environment and deployed app.
 
 <br>
 
@@ -97,7 +97,7 @@ To Configure the Allowed Callback URLs go to the **Auth0 Dashboard** → **Appli
 
 ![URL Callback](./images/urlcallbacks.png)
 
-### Roles & Permissions
+### 1.4.2 Roles & Permissions
 Two actions from the prototype screens were assigned to role-based permissions. In the **Auth0 Management Console**, the following roles were set up:
 
 ![Roles](./images/roles.png)
@@ -110,80 +110,80 @@ Two actions from the prototype screens were assigned to role-based permissions. 
 
 ![Premium Rol](./images/premiumrol.png)
 
-### How to Create a Role
+### 1.4.3 How to Create a Role
 
-1. Go to the **Auth0 Dashboard** → **User Management** → **Roles**.
+1.4.3.1 Go to the **Auth0 Dashboard** → **User Management** → **Roles**.
 
-2. Click **+ Create Role**.
+1.4.3.2 Click **+ Create Role**.
 
-3. Enter Name, Description and click Create.
+1.4.3.3 Enter Name, Description and click Create.
 
-4. Assign permissions.
+1.4.3.4 Assign permissions.
     - Select your newly created Role and open the Permissions tab. 
     - Click Add Permissions.
 
-5. Assign users to the role.
+1.4.3.5 Assign users to the role.
 
-### How to Create an API
-1. Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
+### 1.4.4 How to Create an API
+1.4.4.1 Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
 
-2. Click **+ Create API**.
+1.4.4.2 Click **+ Create API**.
 
-3. Enter: 
+1.4.4.3 Enter: 
       - **Name** → e.g., `20MinCoachUsersAPI` 
       - **Identifier** → a unique URI, e.g., `https://twenty-min-connect.lovable.app/users`. This value will be used as the **audience** parameter on authorization calls
       - **Signing Algorithm** → leave as **RS256**
-4. Click **Create**.
+1.4.4.4 Click **Create**.
 
-5. Select your newly created API and open the Settings tab.
+1.4.4.5 Select your newly created API and open the Settings tab.
       - **Enable RBAC**
       - **Enable Add Permissions in the Access Token**
 
-### How to Create a Permission
-1. Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
+### 1.4.3 How to Create a Permission
+1.4.5.1 Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
 
-2. Select your API, then open the **Permissions** tab.
+1.4.5.2 Select your API, then open the **Permissions** tab.
 
-3. Enter: 
+1.4.5.3 Enter: 
       - **Permission** → e.g., `read: appointments` 
       - **Description** → e.g., `Read your appointments`
-4. Click **+ Add**.
+1.4.5.4 Click **+ Add**.
 
-### How to Customize the Login
-1. Go to the **Auth0 Dashboard** → **Branding** → **Universal Login**.
+### 1.4.6 How to Customize the Login
+1.4.6.1 Go to the **Auth0 Dashboard** → **Branding** → **Universal Login**.
 
-2. Options to customize:
+1.4.6.2 Options to customize:
     - **Logo and Background** → upload your app logo and set background image or color.
     - **Primary Colors** → set theme colors to match your app.
     - **Custom Text** → modify headings, placeholders, and button text.
 
-3. Save the changes.
+1.4.6.3 Save the changes.
 
-#### How to Change Default Language
-1. Go to the **Auth0 Dashboard** → **Settings**
+#### 1.4.7 How to Change Default Language
+1.4.7.1 Go to the **Auth0 Dashboard** → **Settings**
 
-2. Open the **General** tab.
+1.4.7.2 Open the **General** tab.
 
-3. Scroll down to the **Languages** section.
+1.4.7.3 Scroll down to the **Languages** section.
 
-4. Select your desired **default language**.
+1.4.7.4 Select your desired **default language**.
 
-5. Save the changes.
+1.4.7.5 Save the changes.
 
-### How to Enable Two-Factor Authentication
-1. Go to the **Auth0 Dashboard** → **Security** → **Multi-factor Auth**.
+### 1.4.8 How to Enable Two-Factor Authentication
+1.4.8.1 Go to the **Auth0 Dashboard** → **Security** → **Multi-factor Auth**.
 
-2. Choose the factors to enable.
+1.4.8.2 Choose the factors to enable.
 
 ![MFA](./images/mfa.png)
 
-3. Define policies.
+1.4.8.3 Define policies.
 
 ![MFA2](./images/mfa2.png)
 
-4. Save the changes.
+1.4.8.4 Save the changes.
 
-5. Test by logging in with a user account to verify that MFA is prompted.
+1.4.8.5 Test by logging in with a user account to verify that MFA is prompted.
 
 ![MFA screen](./images/mfascreen.png)
 
@@ -191,9 +191,9 @@ Two actions from the prototype screens were assigned to role-based permissions. 
 
 You can test the authentication and prototype using the following link: https://twenty-min-connect.lovable.app/
 
-### How to Integrate Auth0 in React
+### 1.4.9 How to Integrate Auth0 in React
 
-1. Create an auth0Config file ([auth.ts](./src/src/lib/auth.ts)) with your credentials:
+1.4.9.1 Create an auth0Config file ([auth.ts](./src/src/lib/auth.ts)) with your credentials:
 
 ``` ts
 const domain = w.__AUTH0_DOMAIN__ || localStorage.getItem("auth0Domain") || "dev-dwut2n5nvuu4bl0n.us.auth0.com";
@@ -207,7 +207,7 @@ const audience = w.__AUTH0_AUDIENCE__ || localStorage.getItem("auth0Audience") |
 
 ![Auth Domain](./images/authdomain.png)
 
-2. Wrap your app with `Auth0Provider` in [App.tsx](./src/src/App.tsx):
+1.4.9.2 Wrap your app with `Auth0Provider` in [App.tsx](./src/src/App.tsx):
 
 ``` tsx
 const App = () => (
@@ -225,7 +225,7 @@ const App = () => (
 );
 ```
 
-3. Use the **Auth0 hooks** (like [usePermissions.ts](./src/src/hooks/usePermissions.ts)) to manage authentication in your components:
+1.4.9.3 Use the **Auth0 hooks** (like [usePermissions.ts](./src/src/hooks/usePermissions.ts)) to manage authentication in your components:
 
 ``` ts
 import { useAuth0 } from '@auth0/auth0-react';
@@ -241,7 +241,7 @@ const LogoutButton = () => {
 };
 ```
 
-4. Protect routes or components using authentication state:
+1.4.9.4 Protect routes or components using authentication state:
 
 ``` ts
 const Profile = () => {
@@ -251,7 +251,7 @@ const Profile = () => {
 };
 ```
 
-### Testing the Authentication & Authorization Implementation
+### 1.4.10 Testing the Authentication & Authorization Implementation
 
 Test users were created and assigned to the corresponding roles.
 
@@ -273,27 +273,27 @@ When logging in with a **PremiumUser** account and scrolling to the bottom of th
 
 ![Auth Premium](./images/premium.png)
 
-## Testing 
+## 1.5 Testing 
 
-### Strategy
+### 1.5.1 Strategy
 For this project we apply **unit testing** as the main testing approach. Focusing on testing small, isolated units of code (components, hooks, and utilities).
 
-### Technology
+### 1.5.2 Technology
 - **Jest:** As the test runner and assertion library.
 - **React Testing Library:** For React component testing.
 - **ts-jest:** To integrate Jest with TypeScript.
 
-### Implemented Tests
+### 1.5.3 Implemented Tests
 
 Three unit tests were implemented across two different classes/modules:
 
-#### 1. ProtectedRoute component 
+#### 1.5.3.1 ProtectedRoute component 
 See the full test implementation here: [ProtectedRoute.test.tsx](./src/src/__tests__/ProtectedRoute.test.tsx)
 - Validates loading state (isLoading).
 - Validates unauthenticated state (redirect to login).
 - Validates authenticated state (renders children).
 
-#### 2. Auth configuration and utilities
+#### 1.5.3.2 Auth configuration and utilities
 See the full test implementation here: [AuthLib.test.ts](./src/src/__tests__/AuthLib.test.ts)
 - Validates default values (domain, clientId, audience, redirectUri).
 - Validates override via window variables.
@@ -309,7 +309,7 @@ The following npm scripts were added to [package.json:](./src/package.json)
 }
 ```
 
-### Example of Test Results
+### 1.5.4 Example of Test Results
 #### Passing test:
 ![Passing test](./images/test1.png)
 #### Failing test:
@@ -318,12 +318,12 @@ When expected default audience was missing, the test failed (Expected: ... Recei
 
 ![Failing test](./images/test2.png)
 
-### How to Add New Unit Tests
-1. **Create a new test file** inside `src/__tests__/` with the suffix `.test.ts` or `.test.tsx`.  
+### 1.5.5 How to Add New Unit Tests
+1.5.5.1 **Create a new test file** inside `src/__tests__/` with the suffix `.test.ts` or `.test.tsx`.  
 
-2. **Import the module/component** to test.
+1.5.5.2 **Import the module/component** to test.
 
-3. **Write tests** using Jest’s `test` or `it` blocks, and `expect` assertions.
+1.5.5.3 **Write tests** using Jest’s `test` or `it` blocks, and `expect` assertions.
 ```tsx
 import { myFunction } from "../lib/myModule";
 
@@ -331,7 +331,7 @@ test("returns correct value", () => {
   expect(myFunction(2, 3)).toBe(5);
 });
 ```
-4. Run tests with:
+1.5.5.4 Run tests with:
 ``` bash
 npm test    # Run all tests
 npm run test:watch  # Run tests in watch mode
@@ -345,13 +345,13 @@ npm run test:coverage   # Run tests with coverage report
 
 ---
 
-# Tech Decision - 20minCoach (Frontend)
+# 2 Tech Decision - 20minCoach (Frontend)
 
 
 
 ---
 
-## 1. Frontend Framework
+## 2.1 Frontend Framework
 
 React + TypeScript
 
@@ -387,7 +387,7 @@ Vite
 -  Selected for its development experience and optimized production builds.
 - Alternatives considered: Next.js: Amazing for its built-in routing, API routes, and SEO benefits. However, rejected because the core application functionality (video calls, authenticated dashboards) is behind a login wall, negating SEO benefits for key flows.
 
-## 2. Application Architecture
+## 2.2 Application Architecture
 Vite (Single Page Application - SPA)
 
 
@@ -408,7 +408,7 @@ Considerations:
 
 ---
 
-## 3. State Management
+## 2.3 State Management
 
 React Query + Zustand
 
@@ -427,18 +427,18 @@ Considerations:
 
 
 
-### 3.1 Server State
+### 2.3.1 Server State
 -  React Query handles caching, background updates, loading/error states, and pagination out-of-the-box, eliminating the need for repetitive code.
 - Alternatives considered: Manual useEffect fetching: Rejected as it is error-prone and requires building a complex caching and update logic from scratch. Redux: React Query is a more focused and simpler tool for the specific job of data fetching.
 
 
-### 3.2 UI/Client State
+### 2.3.2 UI/Client State
 -  Zustand offers a minimalistic, unopinionated API, perfect for lightweight global state that isn't server-related, such as theme preferences.
 - Alternatives considered: Redux: Rejected due to its conceptual overhead. For global state needs, it is overkill.
 
 
 
-## 4. Real-Time Communication
+## 2.4 Real-Time Communication
 
 Socket.IO + PeerJS
 
@@ -454,7 +454,7 @@ Considerations:
 
 ---
 
-## 5. Authentication
+## 2.5 Authentication
 
 Auth0 (with React SDK)
 
@@ -477,7 +477,7 @@ Auth0
 
 ---
 
-## 6. Testing
+## 2.6 Testing
 
 Jest + React Testing Library (+ optional Cypress)
 
@@ -502,7 +502,7 @@ Unit/Component
 
 ---
 
-## 7. Styling & UI
+## 2.7 Styling & UI
 
 Tailwind CSS + shadcn-ui
 
@@ -532,7 +532,7 @@ Component Library
 -  shadcn/ui provides a collection of copy-paste React components built with Tailwind, allowing rapid early-stage development while retaining full control over the source code and styling.
 - Alternatives considered: MUI/Ant Design: Rejected due to their heavy bundle size and the significant effort required to customize their design to a unique brand.
 
-## 8. Additional Tools
+## 2.8 Additional Tools
 
 ESLint + Prettier
 
@@ -560,17 +560,17 @@ Prettier
 
 ---
 
-# N-Layer Architecture Design
+# 3 N-Layer Architecture Design
 
 
 
 
 
-## 1. Detailed Layer Design
+## 3.1 Detailed Layer Design
 
 
 
-### Layer 1: Models
+### 3.1.1 Models
 
 Responsibilities: Define the structure  of all data moving throughout the application.
 
@@ -583,7 +583,7 @@ Communication: All other layers import and use these types. They act as a founda
 
 
 
-### Layer 2: API Client Layer
+### 3.1.2 API Client Layer
 
 Responsibilities: Provide a 1 configured HTTP client for all communication with the backend REST API. 
 Handles cross-cutting concerns like parsing errors.
@@ -597,7 +597,7 @@ Communication: Injected into the Services Layer. The API client calls the backen
 
 
 
-### Layer 3: Services Layer
+### 3.1.3 Services Layer
 
 Responsibilities: Keeps together all the logic for interaction with external systems, like the backend API.
 
@@ -613,7 +613,7 @@ Communication:
 
 
 
-### Layer 4: State Layer
+### 3.1.4 State Layer
 
 Responsibilities: Manage the application's state reactively.
 
@@ -628,7 +628,7 @@ Communication:
 
 
 
-### Layer 5: Controller Layer
+### 3.1.5 Controller Layer
 
 Responsibilities: Contain the complex logic for components. They act as the glue between the presentation layer and the state and services layer).
 
@@ -641,7 +641,7 @@ Communication:
 
 
  
-### Layer 6: Presentation Layer
+### 3.1.6 Presentation Layer
 
 Responsibilities: Define what the user sees on the screen.
 
@@ -657,7 +657,7 @@ Communication:
 
 
 
-### Layer 7: Middleware
+### 3.1.7 Middleware
 
 Responsibilities: This layer will support the different middlewares for intermediate data (not the service APIs, those belonging to other layers such as Services Layer).
 
@@ -670,7 +670,7 @@ Communication: All middlewares will listen and send data through hooks.
 
 
 
-### Layer 8: Business
+### 3.1.8 Business
 
 Responsibilities: The business layer will handle and ensure the proper logic execution for the system, such as ensuring server-side changes or processes based on the authenticated and validated actions of users.
 
@@ -685,7 +685,7 @@ Communication: All business layer components will get called through hooks from 
 
 
 
-### Layer 9: Listeners
+### 3.1.9 Listeners
 
 Responsibilities: This layer will support the different listeners.
 
@@ -698,7 +698,7 @@ Communication: The listeners will listen to the interface components through hoo
 
 
 
-### Layer 10:  Validators
+### 3.1.10  Validators
 
 Responsibilities: This layer will support the different validators.
 
@@ -712,7 +712,7 @@ Communication: This layer will communicate through the use of function calls fro
 
 
 
-### Layer 11: Styles
+### 3.1.11 Styles
 
 Responsibilities: This layer will manage different visual stylings for the interface components.
 
@@ -725,7 +725,7 @@ Communication: This layer will receive styling requests as function calls with p
 
 
 
-### Layer 12: Utilities
+### 3.1.12 Utilities
 
 Responsibilities: This layer will give miscellaneous utilities used on different modules of the system.
 
@@ -740,7 +740,7 @@ Communication: This layer will be called via function imports from any other lay
 
 
 
-### Layer 13: Exception Handling
+### 3.1.13 Exception Handling
 
 Responsibilities: This layer will make sure exceptions are handled correctly. This implies operating over the data received from the exception listeners and executing necessary functions for healthy system operation.
 
@@ -752,7 +752,7 @@ Communication: The handler will be called from the error middleware and then fur
 
 
 
-### Layer 14: Logging
+### 3.1.14 Logging
 
 Responsibilities: This layer defines the format of system logs. It also provides the logging structure for creating and storing such logs.
 
@@ -764,7 +764,7 @@ Communication: The layer will be called from the log middleware, then will respo
 
 
 
-### Layer 15: Security
+### 3.1.15 Security
 
 Responsibilities: This layer is to protect the system from potentially harmful actions and warrant the security of sensible or restricted data.
 
@@ -779,7 +779,7 @@ Communication: This layer will be called by the middleware layer for request aut
 
 
 
-### Layer 16: Linter Configuration
+### 3.1.16 Linter Configuration
 
 Responsibilities: This layer will hold the necessary data and functions for the linter to work according to the desired configuration.
 
@@ -791,7 +791,7 @@ Communication: This layer operates at the development tooling level, integrating
 
 
 
-### Layer 17: Build and Deployment Pipelining
+### 3.1.17 Build and Deployment Pipelining
 
 Responsibilities: This layer will handle the building and deployment process of the system, seeking to maximize efficiency and minimize errors on the process.
 
@@ -804,7 +804,7 @@ Communication: This layer integrates with version control systems to trigger bui
 
 ---
 
-## 2. Communication Patterns and Data Flow
+## 3.2 Communication Patterns and Data Flow
 
 
 
@@ -813,7 +813,7 @@ Communication: This layer integrates with version control systems to trigger bui
 
 ---
 
-## 3. Separation of Concerns & Maintainability Rationale
+## 3.3 Separation of Concerns & Maintainability Rationale
 
 This architecture was chosen explicitly to achieve the following goals:
  - Testability: Each layer can be tested in isolation.
@@ -826,10 +826,10 @@ This architecture was chosen explicitly to achieve the following goals:
 
 ---
 
-# Visual Components Strategy
+# 4 Visual Components Strategy
 
 
-## 3.1 Component Organization Strategy 
+## 4.1 Component Organization Strategy 
 
 For the core strategy, combine:
 
@@ -849,7 +849,7 @@ Strategic Decisions:
 
  - Page Layer: Top-level components representing full screens
 
-## Technology-Driven Organization
+## 4.1.1 Technology-Driven Organization
 
 - React + TypeScript: All will be function components with interfaces using strict TypeScript
 
@@ -857,7 +857,7 @@ Strategic Decisions:
 
 - shadcn/ui: Base component library
 
-## Separation of Concerns
+## 4.1.2 Separation of Concerns
 
 - Presentational Components: Only handle appearance (in ui/ folder)
 
@@ -865,7 +865,7 @@ Strategic Decisions:
 
 - Layout Components: Structural components (in layout/ folder)
 
-## Scalability Approach
+## 4.1.3 Scalability Approach
 
 - Shared code architecture: Components organized in a way that could be extracted to a separate package
 
@@ -873,7 +873,7 @@ Strategic Decisions:
 
 - Documentation: Each component folder must include usage examples
 
-## Organizational Principles:
+## 4.1.4 Organizational Principles:
 
 - Single Responsibility: Each component should do one thing well
 
@@ -882,7 +882,7 @@ Strategic Decisions:
 - Prop-Based Customization: Configure components through props, not CSS overrides
 
 
-## Folder Structure Strategy:
+## 4.1.4 Folder Structure Strategy:
 
 
 	src/components/
@@ -896,11 +896,11 @@ Strategic Decisions:
 - Scalable, maintainable and consistent.
 
    
-## Reusable Component Structure
+## 4.2 Reusable Component Structure
 
 In order to achieve reusability on the project’s own library structure, the component files and construction must follow the next structure, bigger and more complex components mainly being composed of more detailed or atomic components:
 
-### Key definitions for the structure:
+### 4.2.1 Key definitions for the structure:
  - Responsibilities: A responsibility is considered a group of functions, properties, logic or styling that focus on a single specific objective. Major responsibilities are responsibilities that cannot form other responsibilities, but can be grouped together. Minor responsibilities are those that cannot be divided into smaller responsibilities. This concept may be subjective at first, but the closer a responsibility matches those definitions, the more correct it is.
 
  - Component: A component is a piece of software that fulfills a single responsibility.
@@ -913,7 +913,7 @@ In order to achieve reusability on the project’s own library structure, the co
 
  - Category: The category is an indicator of the level of hierarchy of a component. The category value is equal to the amount of times it is directly or indirectly composing another component. For example, modules are category 0, components for any module are category 1 and further subcomponents will have even greater category values and are considered subcomponents.
 
-### Structure Organization
+### 4.2.2 Structure Organization
 
  - React components must have a prop-driven design.
 
@@ -939,11 +939,11 @@ In order to achieve reusability on the project’s own library structure, the co
 
 
 
-## 3.3 Component Development Workflow
+## 4.3 Component Development Workflow
 
 
-### Phase 1: Planning & Analysis
-#### Step 1.1: Determine Component Type
+### 4.3.1 Planning & Analysis
+#### 4.3.1.1 Determine Component Type
 
 Decide the component type: Is this basic UI , a layout, or  business?
 
@@ -953,7 +953,7 @@ Choose the correct folder:
 	domain/ ->  business logic
 	layout/ ->  structure
 
-#### Step 1.2: Define the purpose for the component
+#### 4.3.1.2 Define the purpose for the component
 
 - Explain briefly what the component does
 
@@ -961,26 +961,26 @@ Choose the correct folder:
 
 - Identify which existing components it will use inside it
 
-#### Step 1.3: Check Existing Components
+#### Step 4.3.1.3 Check Existing Components
 
 - Look in the component library to see if something similar already exists
 
 - If there is something similar, note what needs to be customized
 
-### Phase 2: Implementation
-#### Step 2.1: Create Folder Structure
+### 4.3.2 Implementation
+#### 4.3.2.1 Create Folder Structure
 
-- 1.Create a new folder with the component name
+- Create a new folder with the component name
 
-- 2.Create these files inside: the main component, test,export, and documentation.
+- Create these files inside: the main component, test,export, and documentation.
 
-#### Step 2.2: Define Component Interface
+#### 4.3.2.2 Define Component Interface
 
-- Specify exactly what data the component expects to receive
+-  Specify exactly what data the component expects to receive
 
-- Include accessibility requirements
+-  Include accessibility requirements
 
-#### Step 2.3: Build the Component
+#### 4.3.2.3 Build the Component
 
 - Use Tailwind CSS classes for styling according to the design system
 
@@ -988,12 +988,12 @@ Choose the correct folder:
 
 - If possible, compose it from smaller components
 
-#### Step 2.4: Set Up Exports
+#### 4.3.2.4 Set Up Exports
 
 Configure the export file for other components to use it
 
-### Phase 3: Testing & Quality
-#### Step 3.1: Write Tests
+### 4.3.3 Testing & Quality
+#### 4.3.3.1 Write Tests
 
 - Create tests that simulate users using the component
 
@@ -1001,7 +1001,7 @@ Configure the export file for other components to use it
 
 - Verify that it works correctly
 
-#### Step 3.2: Run Quality Checks
+#### 4.3.3.2 Run Quality Checks
 
 - Verify TypeScript types are correct
 
@@ -1011,14 +1011,14 @@ Configure the export file for other components to use it
 
 - Confirm the component builds successfully
 
-### Phase 4: Integration & Review
-#### Step 4.1: Use in Application
+### 4.3.4 Integration & Review
+#### 4.3.4.1 Use in Application
 
 - Import the component where it's needed
 
 - Test it in different real-world scenarios
 
-#### Step 4.2: Submit for Review
+#### 4.3.4.2 Submit for Review
 
 - Create a pull request with the new component
 
@@ -1026,28 +1026,28 @@ Configure the export file for other components to use it
 
 - Pending for team review revision
 
-### Special Cases
- #### For Business Logic Components:
+### 4.3.5 Special Cases
+ #### 4.3.5.1 For Business Logic Components:
 
 - Create a separate hook to handle data and logic
 
 - Keep the display component clean and focused on UI
 
-#### For Complex Components:
+#### 4.3.5.2 For Complex Components:
 
 - Break into smaller sub-components
 
 - Each sub-component follows the same workflow
 
    
-## Component testing methodology
+## 4.4 Component testing methodology
 
 Testing must be performed on all components, once implemented, until needed quality is reached. The set of steps for testing varies for different components, further below are those sets that rely on the type of component.
 Take into account that the component’s functionality, appearance or dependencies may vary from different browsers or devices. All steps must be performed at least once on one device and browser compatible with the component. Also all steps that may be affected by such variation must be tested for all target browsers and devices.
 After any step or test, the information of each must be reported on the designated space for the testing process in the project backlog. If use cases were also tested, update their data on the use case repository.
 
-### Format:
-#### Step:
+### 4.4.1 Format:
+#### 4.4.1.1 Step:
 	<Step_performed>
 	<Date_of_test>. Performed by <tester_name>
     
@@ -1060,7 +1060,7 @@ After any step or test, the information of each must be reported on the designat
 	Result:
 		(Here goes a conclusion over the state of the component, including how well it fulfills its responsibility, how well it is integrated into the system and needed or potential changes)
 
-#### Test:
+#### 4.4.1.2 Test:
     <Component_name>, <component hierarchy> [the hierarchy, as for example, layer/module/component]. Test No°<number_of_test_over_the_component>
     From <Start_date_of_test> to <Ending_date_of_test>.
     
@@ -1072,8 +1072,8 @@ After any step or test, the information of each must be reported on the designat
 	Summary:
 		(Here goes a summary of all conclusions)
 
-### Steps to perform:
-#### Visual components:
+### 4.4.2 Steps to perform:
+#### 4.4.2.1 Visual components:
 
 These steps must be helped by the use of Jest and React Testing Library. Cypress is preferably used for testing the components on the full web app. Snapshots may be used for testing components, be sure to follow the test isolation principle.
 
@@ -1085,12 +1085,15 @@ These steps must be helped by the use of Jest and React Testing Library. Cypress
        - Confirm its appearance matches the component visual design: Does it render as on the design? Does it stay visually matching after interactions, visual updates or processes?
        - Test if different styles compatible with the system work as intended over the component: Does the shown style match the style applied? Does the component behave functionally the same with the different style?
 
-#### Model components:
+#### 4.4.2.2 Model components:
+
    - Internal functions: Do functions over data fulfill their design? Are all expected functions implemented? Do they execute their purpose accordingly?
    - Data types: Does data have the correct data types? Does it include all expected data?
    - Data format: Is data being stored as the expected format? Is data being organized according to design?
    - Access methods: Are access methods working as expected? Are all expected methods implemented?
-#### Other components:
+   - 
+#### 4.4.2.3 Other components:
+
    - Execution: Do its processes, logic and behaviour work as expected? Do they receive and return intended values? Are they stable? Does its construction follow design?
    - Data: If it holds or creates data, does it use the right values and data types? Is its data managed correctly? 
    - Access methods: Are access methods working as expected? Are all expected methods implemented?
