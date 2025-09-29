@@ -1234,21 +1234,21 @@ Location: src/listeners/
 	
 #### src/listeners/errorListeners.ts
 
-export const useErrorListeners = () => {
-  const setupErrorListeners = (onError: (error: Error, context: string) => void) => {
-    // Global error handler
-    window.addEventListener('error', (event) => {
-      onError(event.error, 'window_error');
-    });
+	export const useErrorListeners = () => {
+	  const setupErrorListeners = (onError: (error: Error, context: string) => void) => {
+	    // Global error handler
+	    window.addEventListener('error', (event) => {
+	      onError(event.error, 'window_error');
+	    });
 
     // Unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
       onError(event.reason, 'unhandled_rejection');
     });
-  };
-
-  return { setupErrorListeners };
-};
+	  };
+	
+	  return { setupErrorListeners };
+	};
 
 ### 3.1.10  Validators
 
@@ -1305,31 +1305,31 @@ Location: src/validators/
 	
 #### src/validators/connectionValidator.ts
 
-export const useConnectionValidator = () => {
-  const checkConnectionQuality = async (): Promise<'good' | 'fair' | 'poor'> => {
-    if (!navigator.onLine) {
-      return 'poor';
-    }
-
-    // Simple connection check - in real app, use more sophisticated method
-    try {
-      const start = performance.now();
-      await fetch('https://www.google.com/favicon.ico', { 
-        mode: 'no-cors',
-        cache: 'no-cache'
-      });
-      const latency = performance.now() - start;
-
-      if (latency < 100) return 'good';
-      if (latency < 500) return 'fair';
-      return 'poor';
-    } catch {
-      return 'poor';
-    }
-  };
-
-  return { checkConnectionQuality };
-};
+	export const useConnectionValidator = () => {
+	  const checkConnectionQuality = async (): Promise<'good' | 'fair' | 'poor'> => {
+	    if (!navigator.onLine) {
+	      return 'poor';
+	    }
+	
+	    // Simple connection check - in real app, use more sophisticated method
+	    try {
+	      const start = performance.now();
+	      await fetch('https://www.google.com/favicon.ico', { 
+	        mode: 'no-cors',
+	        cache: 'no-cache'
+	      });
+	      const latency = performance.now() - start;
+	
+	      if (latency < 100) return 'good';
+	      if (latency < 500) return 'fair';
+	      return 'poor';
+	    } catch {
+	      return 'poor';
+	    }
+	  };
+	
+	  return { checkConnectionQuality };
+	};
 
 ### 3.1.11 Styles
 
@@ -1386,17 +1386,17 @@ Location: src/styles/
 	
 #### Add to main CSS: src/index.css
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-  }
-
-  [data-theme="dark"] {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-  }
-}
+	@layer base {
+	  :root {
+	    --background: 0 0% 100%;
+	    --foreground: 222.2 84% 4.9%;
+	  }
+	
+	  [data-theme="dark"] {
+	    --background: 222.2 84% 4.9%;
+	    --foreground: 210 40% 98%;
+	  }
+	}
 
 
 ### 3.1.12 Utilities
@@ -1419,13 +1419,13 @@ Location: src/utils/
 	
 #### src/utils/validation.ts
 
-export const isValidEmail = (email: string): boolean => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
-
-export const isValidPassword = (password: string): boolean => {
-  return password.length >= 8;
-};
+	export const isValidEmail = (email: string): boolean => {
+	  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+	};
+	
+	export const isValidPassword = (password: string): boolean => {
+	  return password.length >= 8;
+	};
 
 ### 3.1.13 Exception Handling
 
@@ -1479,39 +1479,39 @@ export const isValidPassword = (password: string): boolean => {
 
 #### src/utils/mathUtils.ts
 
-export const calculateSessionCost = (baseRate: number, duration: number = 20): number => {
-  const hourlyRate = baseRate;
-  const minuteRate = hourlyRate / 60;
-  return Math.round(minuteRate * duration * 100) / 100; // Round to 2 decimal places
-};
-
-export const calculateCoachEarnings = (
-  sessionRate: number, 
-  platformFee: number = 0.2 // 20% platform fee
-): { coachEarnings: number; platformFee: number } => {
-  const platformFeeAmount = sessionRate * platformFee;
-  const coachEarnings = sessionRate - platformFeeAmount;
-  
-  return {
-    coachEarnings: Math.round(coachEarnings * 100) / 100,
-    platformFee: Math.round(platformFeeAmount * 100) / 100
-  };
-};
-
-export const calculateAverageRating = (ratings: number[]): number => {
-  if (ratings.length === 0) return 0;
-  
-  const sum = ratings.reduce((total, rating) => total + rating, 0);
-  return Math.round((sum / ratings.length) * 10) / 10; // Round to 1 decimal
-};
-
-export const calculateDiscount = (
-  originalPrice: number, 
-  discountPercentage: number
-): number => {
-  const discountAmount = originalPrice * (discountPercentage / 100);
-  return Math.round(discountAmount * 100) / 100;
-};
+	export const calculateSessionCost = (baseRate: number, duration: number = 20): number => {
+	  const hourlyRate = baseRate;
+	  const minuteRate = hourlyRate / 60;
+	  return Math.round(minuteRate * duration * 100) / 100; // Round to 2 decimal places
+	};
+	
+	export const calculateCoachEarnings = (
+	  sessionRate: number, 
+	  platformFee: number = 0.2 // 20% platform fee
+	): { coachEarnings: number; platformFee: number } => {
+	  const platformFeeAmount = sessionRate * platformFee;
+	  const coachEarnings = sessionRate - platformFeeAmount;
+	  
+	  return {
+	    coachEarnings: Math.round(coachEarnings * 100) / 100,
+	    platformFee: Math.round(platformFeeAmount * 100) / 100
+	  };
+	};
+	
+	export const calculateAverageRating = (ratings: number[]): number => {
+	  if (ratings.length === 0) return 0;
+	  
+	  const sum = ratings.reduce((total, rating) => total + rating, 0);
+	  return Math.round((sum / ratings.length) * 10) / 10; // Round to 1 decimal
+	};
+	
+	export const calculateDiscount = (
+	  originalPrice: number, 
+	  discountPercentage: number
+	): number => {
+	  const discountAmount = originalPrice * (discountPercentage / 100);
+	  return Math.round(discountAmount * 100) / 100;
+	};
 
 ### 3.1.14 Logging
 
@@ -1634,29 +1634,29 @@ export const calculateDiscount = (
 
 #### Vite config: vite.config.ts
 
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          auth: ['@auth0/auth0-react'],
-          utils: ['axios', 'zustand']
-        }
-      }
-    }
-  },
-  server: {
-    port: 3000,
-    open: true
-  }
-});
+	import { defineConfig } from 'vite';
+	import react from '@vitejs/plugin-react';
+	
+	export default defineConfig({
+	  plugins: [react()],
+	  build: {
+	    outDir: 'dist',
+	    sourcemap: true,
+	    rollupOptions: {
+	      output: {
+	        manualChunks: {
+	          vendor: ['react', 'react-dom'],
+	          auth: ['@auth0/auth0-react'],
+	          utils: ['axios', 'zustand']
+	        }
+	      }
+	    }
+	  },
+	  server: {
+	    port: 3000,
+	    open: true
+	  }
+	});
 
 #### Enviroment files:
 
