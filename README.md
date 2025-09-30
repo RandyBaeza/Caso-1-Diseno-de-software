@@ -1916,46 +1916,10 @@ Strategic Decisions:
    
 ## 4.2 Reusable Component Structure
 
-In order to achieve reusability on the project’s own library structure, the component files and construction must follow the next structure, bigger and more complex components mainly being composed of more detailed or atomic components:
+Visual component files must be placed following the next hierarchy:
+src/presentation_layer/page/template/organism/molecule
 
-### 4.2.1 Key definitions for the structure:
- - Responsibilities: A responsibility is considered a group of functions, properties, logic or styling that focus on a single specific objective. Major responsibilities are responsibilities that cannot form other responsibilities, but can be grouped together. Minor responsibilities are those that cannot be divided into smaller responsibilities. This concept may be subjective at first, but the closer a responsibility matches those definitions, the more correct it is.
-
- - Component: A component is a piece of software that fulfills a single responsibility.
-
- - Composing: A component composes another one if an instance of the composing component is being created, stored and handled within the composed component. Calls, hook connections, imports, or stored references by themselves are not considered composing.
-
- - Module: A module is a special type of component that fulfills a major responsibility. For example, the logging layer has the logger handler and specialized individual loggers as modules, for their major responsibilities are handling log requests and creating logs respectively (even though both are related to logs, each of them focuses on different specific objectives).
-
- - Terminal components: A component is terminal if it is not composed of any other component. Terminal components only can have minor responsibilities.
-
- - Category: The category is an indicator of the level of hierarchy of a component. The category value is equal to the amount of times it is directly or indirectly composing another component. For example, modules are category 0, components for any module are category 1 and further subcomponents will have even greater category values and are considered subcomponents.
-
-### 4.2.2 Structure Organization
-
- - React components must have a prop-driven design.
-
- - Tailwind components must be utility-first classes.
-
- - On the src folder, there has to be a package for each layer. Inside those packages, more packages will be created for each module. For each module, there will be packages for each component that compose the module, and those may also have their own subpackages for higher category components in order to achieve proper separation of concerns. The resulting format for folders, hierarchy and construction would be src/layer/module/category1_component/category2_subcomponents/…
-
- - If a component would compose two or more components, they must be placed within a package located at the same category level as the composed components and named <parent_package>_components. For example, if component3 composes …/package/component1 and …/package/component2, it would be located as …/package/package_components/component3.
-   - Additionally, if a component would compose two or more components from distinct layers, it would be assigned to src/utility/components instead.
-
- - If a terminal component would fulfill a responsibility that is not minor, it has to be composed of components that fulfill the division of such responsibility instead.
-
- - All components should strongly consider:
-   - Use of design patterns
-   - Abstraction
-   - Clear documentation
-   - General ways to access their responsibilities (as with generics or encapsulated methods)
-   - Configurable behaviour or appearance (if used on more than one scenario or at least mildly complex)
-   - Easy to understand implementation
-
-   
-
-
-
+For any component used by two components of higher hierarchy, it must be inside a package as <higher_hierarchy>/<next_hierarchy>/.../<component_hierarchy>. For example, if two templates of the same page were to use the same molecule on their organisms, that molecule file would be stored on <page_name>/molecules/organisms/.
 
 ## 4.3 Component Development Workflow
 
@@ -2060,9 +2024,8 @@ Configure the export file for other components to use it
    
 ## 4.4 Component testing methodology
 
-Testing must be performed on all components, once implemented, until needed quality is reached. The set of steps for testing varies for different components, further below are those sets that rely on the type of component.
-Take into account that the component’s functionality, appearance or dependencies may vary from different browsers or devices. All steps must be performed at least once on one device and browser compatible with the component. Also all steps that may be affected by such variation must be tested for all target browsers and devices.
-After any step or test, the information of each must be reported on the designated space for the testing process in the project backlog. If use cases were also tested, update their data on the use case repository.
+All components must be tested once implemented. Further below are the testing steps for different type of components. Steps affected by different browsers or devices must be tested for all compatible ones. After any step or test they must be reported in the project testing backlog.
+
 
 ### 4.4.1 Format:
 #### 4.4.1.1 Step:
@@ -2093,27 +2056,25 @@ After any step or test, the information of each must be reported on the designat
 ### 4.4.2 Steps to perform:
 #### 4.4.2.1 Visual components:
 
-These steps must be helped by the use of Jest and React Testing Library. Cypress is preferably used for testing the components on the full web app. Snapshots may be used for testing components, be sure to follow the test isolation principle.
+Testing must be done with Jest, React Testing Library and Cypress. Snapshots may also be used.
 
    1. Revise functionality
-       - Test colocation on corresponding interface: Is it shown in the expected position? Is it shown when expected? Does its colocation follow design after interactions, visual updates or processes? Do screen readers access it as expected?
+       - Test colocation: Is it shown in the expected position? Is it shown when expected? Does its colocation follow design after interactions, visual updates or processes? Do screen readers access it as expected?
        - If it has available interactions, test all of them based on their responsibility: Do interactions behave as expected? Do they work with different control devices (touch, mice, keyboards)? Do they work the amount of time they should? Do they keep working after interactions, visual updates or processes?
-       - If it needs code to be executed on another layer, make sure that code is already tested and working as intended, then check whether it is being called properly and receiving the correct data: Is the data sent to the controller correct? Is the data received from the controller correct? Is the data being handled as expected on the component?
+       - If it needs code from another layer, ensure that code is already working as intended: Is the data sent to the controller correct? Is the data received from the controller correct? Is the data being handled as expected on the component?
    3. Revise appearance
-       - Confirm its appearance matches the component visual design: Does it render as on the design? Does it stay visually matching after interactions, visual updates or processes?
-       - Test if different styles compatible with the system work as intended over the component: Does the shown style match the style applied? Does the component behave functionally the same with the different style?
+       - Confirm its appearance matches design: Does it render as on the design? Does it stay visually matching after interactions, visual updates or processes?
+       - Test different styles compatibility: Does the shown style match the style applied? Does the component behave functionally the same with the different style?
 
 #### 4.4.2.2 Model components:
 
-   - Internal functions: Do functions over data fulfill their design? Are all expected functions implemented? Do they execute their purpose accordingly?
-   - Data types: Does data have the correct data types? Does it include all expected data?
-   - Data format: Is data being stored as the expected format? Is data being organized according to design?
-   - Access methods: Are access methods working as expected? Are all expected methods implemented?
-   - 
+   - Internal functions: Do functions fulfill their design? Are all functions implemented?
+   - Data types: Do data types match design?
+   - Data format: Is data format or structure as designed?
+   - Access methods: Do access methods work? Are all methods implemented?
 #### 4.4.2.3 Other components:
 
-   - Execution: Do its processes, logic and behaviour work as expected? Do they receive and return intended values? Are they stable? Does its construction follow design?
-   - Data: If it holds or creates data, does it use the right values and data types? Is its data managed correctly? 
-   - Access methods: Are access methods working as expected? Are all expected methods implemented?
-   - If it needs code to be executed on another layer, make sure that code is already tested and working as intended, then check whether it is being called properly and receiving the correct data: Is the data sent to the correct? Is the data received correct? Is the data being handled as expected on the component?
-
+   - Execution: Does it work as design? Do they receive and return the correct values?
+   - Data: Data: Are values and data types correct, if any? Is data managed correctly? 
+   - Access methods: Do access methods follow design? Are all methods implemented?
+   - If it needs code from another layer, make sure that code is already working as intended: Is the data sent correct? Is the data received correct? Is the data being handled as on design?
