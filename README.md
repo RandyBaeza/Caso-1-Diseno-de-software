@@ -537,8 +537,8 @@ Vite
 
 
 
-## 2. Application Architecture
- ### 2.2 Vite Setup & Configuration
+## 2.2 Application Architecture
+ ### 2.2.1 Vite Setup & Configuration
  - For dev server + bundler to run/build the React SPA quickly.
 How to set up the development environment:
 
@@ -563,7 +563,7 @@ tsconfig.json --> TypeScript rules
 
 index.html --> Entry point (single HTML file)
 
-### What developers need to know:
+### 2.2.2 What developers need to know:
 
 - Npm run build creates files in /dist folder
 
@@ -573,7 +573,7 @@ index.html --> Entry point (single HTML file)
 
 .env.production - For live app
 
-### Routing file structure:
+### 2.2.3 Routing file structure:
 
 
 	src/
@@ -588,13 +588,13 @@ index.html --> Entry point (single HTML file)
 ### 2.3.1 Server State with React Query
  - For fetch, cache, and update server/API data.
 
-#### Setup:
+#### 2.3.1.1 Setup:
 
 
 	npm install @tanstack/react-query
 
 
-#### Configuration file: queryClient.ts
+#### 2.3.1.2 Configuration file: queryClient.ts
 
 
 	import { QueryClient } from '@tanstack/react-query';
@@ -609,7 +609,7 @@ index.html --> Entry point (single HTML file)
 	});
 
 
-#### How to use in components:
+#### 2.3.1.3 How to use in components:
 
 
 - src/hooks/useCoaches.ts:
