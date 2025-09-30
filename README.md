@@ -744,68 +744,9 @@ Setup:
 	}
 
 	
-## 2.5 Authentication Implementation
- - For user authentication, roles, and multi-factor login.
-### Auth0 Setup:
-
-
-#### Installation:
-
-
-	npm install @auth0/auth0-react
-
-#### Main configuration: src/main.tsx:
-
-
-
-	import { Auth0Provider } from '@auth0/auth0-react';
-	
-	ReactDOM.render(
-	  <Auth0Provider
-	    domain="dev-dwut2n5nvuu4bl0n.us.auth0.com"
-	    clientId="h5wipav5LmusIRE1kBUFUu4VNxbHTlD7"
-	    authorizationParams={{
-	      redirect_uri: window.location.origin,
-	      audience: "https://twenty-min-connect.lovable.app/users"
-	    }}
-	    cacheLocation="localstorage"
-	  >
-	    <App />
-	  </Auth0Provider>,
-	  document.getElementById('root')
-	);
 
 	
-#### Using Auth0 in components: src/components/LoginButton.tsx
-
-
-	import { useAuth0 } from '@auth0/auth0-react';
-	
-	export const LoginButton = () => {
-	  const { loginWithRedirect, isAuthenticated } = useAuth0();
-	  
-	  if (isAuthenticated) return null;
-	  
-	  return (
-	    <button onClick={() => loginWithRedirect()}>
-	      Sign In
-	    </button>
-	  );
-	};
-#### Protecting routes: src/components/ProtectedRoute.tsx
-
-
-	import { withAuthenticationRequired } from '@auth0/auth0-react';
-	
-	const ProtectedRoute = ({ component }: { component: ComponentType }) => {
-	  const Component = withAuthenticationRequired(component, {
-	    onRedirecting: () => <div>Loading...</div>,
-	  });
-	  
-	  return <Component />;
-	};
-	
-## 2.6 Styling Implementation
+## 2.5 Styling Implementation
 ### Tailwind CSS Setup
  - For utility-first CSS for fast, consistent styling.
 ### Configuration file: tailwind.config.js
@@ -859,7 +800,7 @@ Setup:
 	);
 
 	
-## 2.7 Development Tools
+## 2.6 Development Tools
 ### ESLint & Prettier Setup
  - ESLint – For linting to catch errors and enforce code rules.
 
@@ -2120,33 +2061,14 @@ Choose the correct folder:
 
 Configure the export file for other components to use it
 
-### 4.3.3 Testing & Quality
-#### 4.3.3.1 Write Tests
-
-- Create tests that simulate users using the component
-
-- Test different variations, different steps
-
-- Verify that it works correctly
-
-#### 4.3.3.2 Run Quality Checks
-
-- Verify TypeScript types are correct
-
-- Run the tests to make sure they pass
-
-- Check that the code follows the style guidelines
-
-- Confirm the component builds successfully
-
-### 4.3.4 Integration & Review
-#### 4.3.4.1 Use in Application
+### 4.3.3 Integration & Review
+#### 4.3.3.1 Use in Application
 
 - Import the component where it's needed
 
 - Test it in different real-world scenarios
 
-#### 4.3.4.2 Submit for Review
+#### 4.3.3.2 Submit for Review
 
 - Create a pull request with the new component
 
@@ -2154,14 +2076,14 @@ Configure the export file for other components to use it
 
 - Pending for team review revision
 
-### 4.3.5 Special Cases
- #### 4.3.5.1 For Business Logic Components:
+### 4.3.4 Special Cases
+ #### 4.3.4.1 For Business Logic Components:
 
 - Create a separate hook to handle data and logic
 
 - Keep the display component clean and focused on UI
 
-#### 4.3.5.2 For Complex Components:
+#### 4.3.4.2 For Complex Components:
 
 - Break into smaller sub-components
 
