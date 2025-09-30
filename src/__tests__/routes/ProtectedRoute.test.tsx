@@ -1,13 +1,13 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { ProtectedRoute } from "../components/auth/ProtectedRoute";
+import { ProtectedRoute } from "../../components/auth/ProtectedRoute";
 
 // Mock del useAuth
 jest.mock("../contexts/AuthContext", () => ({
   useAuth: jest.fn(),
 }));
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 const mockedUseAuth = useAuth as jest.Mock;
 
 describe("ProtectedRoute", () => {

@@ -30,17 +30,22 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <CoachSearch />
-                </ProtectedRoute>
-              } />
-              <Route path="/coach-results" element={
-                <ProtectedRoute>
-                  <CoachResults />
-                </ProtectedRoute>
-              } />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <CoachSearch />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/coach-results"
+                element={
+                  <ProtectedRoute>
+                    <CoachResults />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
@@ -51,3 +56,4 @@ const App = () => (
 );
 
 export default App;
+

@@ -19,17 +19,17 @@ For testing purposes, the following accounts are available:
 New users registering through the prototype will receive BasicUser permissions.
 <hr>
 
+# 1 Proof of Concepts
 ## 1.1 Frontend Source Code
 
-- The repository includes the complete `src/` folder with the full project structure, including the source code created for the prototype.
-- All Proof of Concepts (PoCs) and requested classes are stored inside the `src/` folder.
-- All files, templates, and source code provided as guidance are placed in the appropriate layer folder where they are used in the final implementation.
+The repository includes the complete `src/` folder with the full project structure. Including Proof of Concepts, the source code created for the prototype, files and templates provided as guidance.
+
 ## 1.2 Prototype
 The prototype was created using the AI-based tool [Lovable](https://lovable.dev/)
 
 Two main screens were created as part of the prototype:
 
-### 1.2.1 Coach Search Screen ([CoachSearch.tsx](./src/src/pages/CoachSearch.tsx))
+### 1.2.1 Coach Search Screen ([CoachSearch.tsx](./src/pages/CoachSearch.tsx))
 
 - Allows users to enter their coaching needs via a search input or voice.
 - Displays popular coaching categories for quick selection.
@@ -39,7 +39,7 @@ Two main screens were created as part of the prototype:
 
 ![Coach Search](./images/CoachSearch.png)
 
-### 1.2.2 Coach Results Screen ([CoachResults.tsx](./src/src/pages/CoachResults.tsx))
+### 1.2.2 Coach Results Screen ([CoachResults.tsx](./src/pages/CoachResults.tsx))
 
 - Displays information for a single coach at a time.
 - Allows the user to request a session with the displayed coach.
@@ -49,10 +49,10 @@ Two main screens were created as part of the prototype:
 
 ![Coach Results](./images/CoachResults.png)
 
-Both screens follow the selected frontend technologies (React, TypeScript, Tailwind, shadcn/ui) and were used for a UX test.
 
 ## 1.3 UX Testing
-The UX test was performed using [Maze](https://maze.co/), utilizing a Figma prototype of the screens created.
+
+The UX test is performed using [Maze](https://maze.co/), utilizing a Figma prototype of the screens created.
 
 Link to perform the test: https://t.maze.co/445485876?guerilla=true
 
@@ -64,7 +64,7 @@ Test participants:
 
 Two main tasks were defined for participants:
 
-### 1.3.1 Task #1: "Haz clic en el campo de búsqueda (el que dice “Describe qué necesitas y en qué te podemos ayudar...”)"
+### Task #1: "Haz clic en el campo de búsqueda (el que dice “Describe qué necesitas y en qué te podemos ayudar...”)"
 Description: "Estás en la página principal. El primer paso es buscar qué tipo de ayuda necesitas."
 #### Heatmap showing user interactions during Task #1
 ![Heatmap Task 1](./images/heatmaptask1.jpg)
@@ -72,24 +72,57 @@ Description: "Estás en la página principal. El primer paso es buscar qué tipo
 #### Key metrics from Task #1
 ![Metrics Task 1](./images/metricstask1.png)
 
-### 1.3.2 Task #2: "Haz clic en el botón “Solicitar sesión” del coach mostrado en el resultado."
+### Task #2: "Haz clic en el botón “Solicitar sesión” del coach mostrado en el resultado."
 Description: "Imagina que encontraste un coach que te interesa y quieres iniciar una sesión con él."
 #### Heatmap showing user interactions during Task #2
 ![Heatmap Task 2](./images/heatmaptask2.jpg)
 #### Key metrics from Task #2
 ![Metrics Task 2](./images/metricstask2.png)
 
-## 1.4 uthentication & Authorization
-A login screen was implemented, using [Auth0](https://auth0.com/) as the authentication and authorization provider.
+### 1.3.1 How to Create a UX Test
+
+1. Create a [Figma](https://www.figma.com/es-es/) Prototype of the screens
+
+	- Make sure screens are linked and interactive.
+
+2. Go to [Maze](https://maze.co/)
+
+3. Start a **New Maze Project**
+
+4. Click “**Create Maze**” → “**Prototype Test**”.
+
+5. Import Your Figma Prototype
+
+6. Set Up **Tasks**
+
+	- Define clear tasks for users, e.g., “Sign up for an account.”
+	- Select the start screen and success criteria.
+
+7. Enable camera and screen recording for the tests.
+
+8. Preview
+
+	- Use the Preview button to check that all links work correctly.
+
+9. Share Your Test
+
+	- Click “Share” to generate a link and send it to users for testing.
+
+10. Collect and Analyze Results
+
+
+
+## 1.4 Authentication & Authorization
+Use [Auth0](https://auth0.com/) as the authentication and authorization provider.
 
 ![Login](./images/login.png)
 
 ### 1.4.1 How to Create an Application in Auth0
-1.4.1.1 Log in to the **Auth0 Dashboard**.
+1. Log in to the **Auth0 Dashboard**.
 
-1.4.1.2 Create a new **Single Page Application (SPA)**.
+2. Create a new **Single Page Application (SPA)**.
 
-1.4.1.3 Configure the **Allowed Callback URLs** and **Logout URLs** to point to the local environment and deployed app.
+3. Configure the **Allowed Callback URLs** and **Logout URLs** to point to the local environment and deployed app.
 
 <br>
 
@@ -98,92 +131,118 @@ To Configure the Allowed Callback URLs go to the **Auth0 Dashboard** → **Appli
 ![URL Callback](./images/urlcallbacks.png)
 
 ### 1.4.2 Roles & Permissions
-Two actions from the prototype screens were assigned to role-based permissions. In the **Auth0 Management Console**, the following roles were set up:
+Two actions from the prototype screens are assigned to role-based permissions. In the **Auth0 Management Console**, go to **User Management** → **Roles**. The following roles are set up:
 
 ![Roles](./images/roles.png)
 
-**basicUser:** Allowed to perform only read: content.
+**Auth0 Dashboard** → **User Management** → **Users** → **basicUser:** 
+
+Allowed to perform only "read: content".
 
 ![Basic Rol](./images/basicrol.png)
 
-**premiumUser:** Allowed to perform both read: content and read: premium_content.
+**Auth0 Dashboard** → **User Management** → **Users** → **premiumUser:** 
+
+Allowed to perform both "read: content" and "read: premium_content".
 
 ![Premium Rol](./images/premiumrol.png)
 
-### 1.4.3 How to Create a Role
+### 1.4.3 How to Create a Permission
+1. Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
 
-1.4.3.1 Go to the **Auth0 Dashboard** → **User Management** → **Roles**.
+2. Select your API, then open the **Permissions** tab.
 
-1.4.3.2 Click **+ Create Role**.
+3. Enter: 
+      - **Permission** → e.g., `read: appointments` 
+      - **Description** → e.g., `Read your appointments`
+4. Click **+ Add**.
 
-1.4.3.3 Enter Name, Description and click Create.
+### 1.4.4 How to Create a Role
 
-1.4.3.4 Assign permissions.
+1. Go to the **Auth0 Dashboard** → **User Management** → **Roles**.
+
+2. Click **+ Create Role**.
+
+3. Enter Name, Description and click Create.
+
+4. Assign permissions.
     - Select your newly created Role and open the Permissions tab. 
     - Click Add Permissions.
 
-1.4.3.5 Assign users to the role.
+5. Assign users to the role.
 
-### 1.4.4 How to Create an API
-1.4.4.1 Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
+### 1.4.5 How to Create a User and Assign Roles
 
-1.4.4.2 Click **+ Create API**.
+1. Go to the **Auth0 Dashboard** → **User Management** → **Users**.
 
-1.4.4.3 Enter: 
+2. Click **+ Create User**.
+
+3. Enter **Email**, **Password** and **Connection** (e.g., “Username-Password-Authentication”).
+
+4. Click Create.
+
+5. After the user is created, open the user profile.
+
+6. Go to the **Roles** tab.
+
+7. Click **Assign Roles**.
+
+8. Select the desired role (e.g., BasicUser or PremiumUser).
+
+9. Click **Assign**.
+
+
+### 1.4.6 How to Create an API
+1. Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
+
+2. Click **+ Create API**.
+
+3. Enter: 
       - **Name** → e.g., `20MinCoachUsersAPI` 
       - **Identifier** → a unique URI, e.g., `https://twenty-min-connect.lovable.app/users`. This value will be used as the **audience** parameter on authorization calls
       - **Signing Algorithm** → leave as **RS256**
-1.4.4.4 Click **Create**.
+4. Click **Create**.
 
-1.4.4.5 Select your newly created API and open the Settings tab.
+5. Select your newly created API and open the Settings tab.
       - **Enable RBAC**
       - **Enable Add Permissions in the Access Token**
 
-### 1.4.3 How to Create a Permission
-1.4.5.1 Go to the **Auth0 Dashboard** → **Applications** → **APIs**.
 
-1.4.5.2 Select your API, then open the **Permissions** tab.
+### 1.4.7 How to Customize the Login
+1. Go to the **Auth0 Dashboard** → **Branding** → **Universal Login**.
 
-1.4.5.3 Enter: 
-      - **Permission** → e.g., `read: appointments` 
-      - **Description** → e.g., `Read your appointments`
-1.4.5.4 Click **+ Add**.
-
-### 1.4.6 How to Customize the Login
-1.4.6.1 Go to the **Auth0 Dashboard** → **Branding** → **Universal Login**.
-
-1.4.6.2 Options to customize:
+2. Options to customize:
     - **Logo and Background** → upload your app logo and set background image or color.
     - **Primary Colors** → set theme colors to match your app.
     - **Custom Text** → modify headings, placeholders, and button text.
 
-1.4.6.3 Save the changes.
+3. Save the changes.
 
-#### 1.4.7 How to Change Default Language
-1.4.7.1 Go to the **Auth0 Dashboard** → **Settings**
+#### 1.4.6.1 How to Change Default Language
+1. Go to the **Auth0 Dashboard** → **Settings**
 
-1.4.7.2 Open the **General** tab.
+2. Open the **General** tab.
 
-1.4.7.3 Scroll down to the **Languages** section.
+3. Scroll down to the **Languages** section.
 
-1.4.7.4 Select your desired **default language**.
+4. Select your desired **default language**.
 
-1.4.7.5 Save the changes.
+5. Save the changes.
 
 ### 1.4.8 How to Enable Two-Factor Authentication
-1.4.8.1 Go to the **Auth0 Dashboard** → **Security** → **Multi-factor Auth**.
+1. Go to the **Auth0 Dashboard** → **Security** → **Multi-factor Auth**.
 
-1.4.8.2 Choose the factors to enable.
+2. You will see this page, choose the factors to enable.
 
 ![MFA](./images/mfa.png)
 
-1.4.8.3 Define policies.
+3. Scroll down and define policies.
 
 ![MFA2](./images/mfa2.png)
 
-1.4.8.4 Save the changes.
+4. Save the changes.
 
-1.4.8.5 Test by logging in with a user account to verify that MFA is prompted.
+5. Test by logging in with a user account to verify that MFA is prompted.
 
 ![MFA screen](./images/mfascreen.png)
 
@@ -193,12 +252,11 @@ You can test the authentication and prototype using the following link: https://
 
 ### 1.4.9 How to Integrate Auth0 in React
 
-1.4.9.1 Create an auth0Config file ([auth.ts](./src/src/lib/auth.ts)) with your credentials:
-
+1. Create an [.env](./.env) file in the root of the project to save the credentials
 ``` ts
-const domain = w.__AUTH0_DOMAIN__ || localStorage.getItem("auth0Domain") || "dev-dwut2n5nvuu4bl0n.us.auth0.com";
-const clientId = w.__AUTH0_CLIENT_ID__ || localStorage.getItem("auth0ClientId") || "h5wipav5LmusIRE1kBUFUu4VNxbHTlD7";
-const audience = w.__AUTH0_AUDIENCE__ || localStorage.getItem("auth0Audience") || "https://twenty-min-connect.lovable.app/users";
+	REACT_APP_AUTH0_DOMAIN=dev-dwut2n5nvuu4bl0n.us.auth0.com
+	REACT_APP_AUTH0_CLIENT_ID=h5wipav5LmusIRE1kBUFUu4VNxbHTlD7
+	REACT_APP_AUTH0_AUDIENCE=https://twenty-min-connect.lovable.app/users
 ```
   - **Domain** and **Client ID** are provided by Auth0 when you create your application.
 - **Audience** refers to the API you created in Auth0 and is used to request access tokens for that API.
@@ -207,9 +265,23 @@ const audience = w.__AUTH0_AUDIENCE__ || localStorage.getItem("auth0Audience") |
 
 ![Auth Domain](./images/authdomain.png)
 
-1.4.9.2 Wrap your app with `Auth0Provider` in [App.tsx](./src/src/App.tsx):
+2. Create an ([auth.ts](./src/lib/auth.ts)) file in `src/lib/` with the configuration
+
+``` ts
+export const auth0Config = {
+  domain: process.env.REACT_APP_AUTH0_DOMAIN || "",
+  clientId: process.env.REACT_APP_AUTH0_CLIENT_ID || "",
+  audience: process.env.REACT_APP_AUTH0_AUDIENCE || "",
+  redirectUri: window.location.origin,
+};
+```
+
+3. Wrap your app with `Auth0Provider` in [App.tsx](./src/App.tsx):
 
 ``` tsx
+import { Auth0Provider } from "@auth0/auth0-react";
+import { auth0Config } from "@/lib/auth";
+
 const App = () => (
   <Auth0Provider
     domain={auth0Config.domain}
@@ -220,12 +292,12 @@ const App = () => (
       scope: "read:content read:premium_content",
     }}
   >
-    <App />
+    <YourApp />
   </Auth0Provider>
 );
 ```
 
-1.4.9.3 Use the **Auth0 hooks** (like [usePermissions.ts](./src/src/hooks/usePermissions.ts)) to manage authentication in your components:
+4. Use the **Auth0 hooks** (like [usePermissions.ts](./src/hooks/usePermissions.ts)) to manage authentication in your components:
 
 ``` ts
 import { useAuth0 } from '@auth0/auth0-react';
@@ -241,7 +313,7 @@ const LogoutButton = () => {
 };
 ```
 
-1.4.9.4 Protect routes or components using authentication state:
+5. Protect routes or components using authentication state:
 
 ``` ts
 const Profile = () => {
@@ -251,9 +323,12 @@ const Profile = () => {
 };
 ```
 
+**Note:** Avoid storing credentials in `localStorage` or any client-side storage. Always rely on Auth0 for secure token handling.
+
 ### 1.4.10 Testing the Authentication & Authorization Implementation
 
 Test users were created and assigned to the corresponding roles.
+To see the users go to the **Auth0 Dashboard** → **User Management** → **Users**
 
 ![Auth Test](./images/authtest.png)
 
@@ -276,25 +351,43 @@ When logging in with a **PremiumUser** account and scrolling to the bottom of th
 ## 1.5 Testing 
 
 ### 1.5.1 Strategy
-For this project we apply **unit testing** as the main testing approach. Focusing on testing small, isolated units of code (components, hooks, and utilities).
+Apply **unit testing** as the main testing approach. Focus on testing small, isolated units of code (components, hooks, and utilities).\
+Additionally, end-to-end testing using Cypress must be employed to validate full user flows and interactions in the running application.
 
 ### 1.5.2 Technology
 - **Jest:** As the test runner and assertion library.
 - **React Testing Library:** For React component testing.
 - **ts-jest:** To integrate Jest with TypeScript.
+- **Cypress:** End-to-end testing framework for simulating user interactions and verifying full application flows, including authentication, navigation, and API integration.
 
-### 1.5.3 Implemented Tests
+### 1.5.3 Test Folder Structure
+Tests are organized by module/area at `src/__tests__/`
+```
+src/
+ └─ __tests__/
+      ├─ auth/
+      │    ├─ AuthLib.test.ts
+      │    └─ AuthContext.test.ts
+      ├─ routes/
+      │    └─ ProtectedRoute.test.tsx
+      ├─ controllers/
+      │    └─ SearchController.test.tsx
+      └─ pages/
+           └─ CoachSearch.test.tsx
+```
 
-Three unit tests were implemented across two different classes/modules:
+### 1.5.4 Example Implemented Unit Tests
 
-#### 1.5.3.1 ProtectedRoute component 
-See the full test implementation here: [ProtectedRoute.test.tsx](./src/src/__tests__/ProtectedRoute.test.tsx)
+Three unit tests are implemented across two different classes/modules:
+
+#### 1.  ProtectedRoute component 
+See the full test implementation here: [ProtectedRoute.test.tsx](./src/__tests__/routes/ProtectedRoute.test.tsx)
 - Validates loading state (isLoading).
 - Validates unauthenticated state (redirect to login).
 - Validates authenticated state (renders children).
 
-#### 1.5.3.2 Auth configuration and utilities
-See the full test implementation here: [AuthLib.test.ts](./src/src/__tests__/AuthLib.test.ts)
+#### 2 Auth configuration and utilities
+See the full test implementation here: [AuthLib.test.ts](./src/__tests__/auth/AuthLib.test.ts)
 - Validates default values (domain, clientId, audience, redirectUri).
 - Validates override via window variables.
 - Validates override via localStorage.
@@ -309,7 +402,7 @@ The following npm scripts were added to [package.json:](./src/package.json)
 }
 ```
 
-### 1.5.4 Example of Test Results
+### 1.5.5 Example of Unit Test Results
 #### Passing test:
 ![Passing test](./images/test1.png)
 #### Failing test:
@@ -318,12 +411,12 @@ When expected default audience was missing, the test failed (Expected: ... Recei
 
 ![Failing test](./images/test2.png)
 
-### 1.5.5 How to Add New Unit Tests
-1.5.5.1 **Create a new test file** inside `src/__tests__/` with the suffix `.test.ts` or `.test.tsx`.  
+### 1.5.6 How to Add New Unit Tests
+1. **Create a new test file** inside the corresponding module folder in `src/__tests__/` with the suffix `.test.ts` or `.test.tsx`.  
 
-1.5.5.2 **Import the module/component** to test.
+2. **Import the module/component** to test.
 
-1.5.5.3 **Write tests** using Jest’s `test` or `it` blocks, and `expect` assertions.
+3. **Write tests** using Jest’s `test` or `it` blocks, and `expect` assertions.
 ```tsx
 import { myFunction } from "../lib/myModule";
 
@@ -331,14 +424,67 @@ test("returns correct value", () => {
   expect(myFunction(2, 3)).toBe(5);
 });
 ```
-1.5.5.4 Run tests with:
+4. Run tests with:
 ``` bash
 npm test    # Run all tests
 npm run test:watch  # Run tests in watch mode
 npm run test:coverage   # Run tests with coverage report
 ```
 
+### 1.5.7 Component testing methodology
 
+All components must be tested once implemented. Further below are the testing steps for different type of components. Steps affected by different browsers or devices must be tested for all compatible ones. After any step or test they must be reported in the project testing backlog.
+
+
+#### 1.5.7.1 Format
+##### 1.5.7.1.1 Step:
+	<Step_performed>
+	<Date_of_test>. Performed by <tester_name>
+    
+	Contextual information:
+		(Here goes the information of the device/s and browser/s used, any external factors or relevant configuration on these must be pointed out)
+        
+	Process:
+		(Here goes a detailed description of how the step was tested, including any observations and middle steps).
+        
+	Result:
+		(Here goes a conclusion over the state of the component, including how well it fulfills its responsibility, how well it is integrated into the system and needed or potential changes)
+
+##### 1.5.7.1.2 Test:
+    <Component_name>, <component hierarchy> [the hierarchy, as for example, layer/module/component]. Test No°<number_of_test_over_the_component>
+    From <Start_date_of_test> to <Ending_date_of_test>.
+    
+    Testers:
+        List of tester names
+
+	<list of steps>
+
+	Summary:
+		(Here goes a summary of all conclusions)
+
+#### 1.5.7.2 Steps to perform
+##### 1.5.7.2.1 Visual components:
+
+   1. Revise functionality
+       - **Test colocation:** Is it shown in the expected position? Is it shown when expected? Does its colocation follow design after interactions, visual updates or processes? Do screen readers access it as expected?
+       - **If it has available interactions, test all of them based on their responsibility:** Do interactions behave as expected? Do they work with different control devices (touch, mice, keyboards)? Do they work the amount of time they should? Do they keep working after interactions, visual updates or processes?
+       - **If it needs code from another layer, ensure that code is already working as intended:** Is the data sent to the controller correct? Is the data received from the controller correct? Is the data being handled as expected on the component?
+   3. Revise appearance
+       - **Confirm its appearance matches design:** Does it render as on the design? Does it stay visually matching after interactions, visual updates or processes?
+       - **Test different styles compatibility:** Does the shown style match the style applied? Does the component behave functionally the same with the different style?
+
+##### 1.5.7.2.2 Model components:
+
+   - **Internal functions:** Do functions fulfill their design? Are all functions implemented?
+   - **Data types:** Do data types match design?
+   - **Data format:** Is data format or structure as designed?
+   - **Access methods:** Do access methods work? Are all methods implemented?
+##### 1.5.7.2.3 Other components:
+
+   - **Execution:** Does it work as design? Do they receive and return the correct values?
+   - **Data:** Are values and data types correct, if any? Is data managed correctly? 
+   - **Access methods:** Do access methods follow design? Are all methods implemented?
+   - **If it needs code from another layer, make sure that code is already working as intended:** Is the data sent correct? Is the data received correct? Is the data being handled as on design?
 
 
 ---
@@ -2021,60 +2167,4 @@ Configure the export file for other components to use it
 
 - Each sub-component follows the same workflow
 
-   
-## 4.4 Component testing methodology
-
-All components must be tested once implemented. Further below are the testing steps for different type of components. Steps affected by different browsers or devices must be tested for all compatible ones. After any step or test they must be reported in the project testing backlog.
-
-
-### 4.4.1 Format:
-#### 4.4.1.1 Step:
-	<Step_performed>
-	<Date_of_test>. Performed by <tester_name>
-    
-	Contextual information:
-		(Here goes the information of the device/s and browser/s used, any external factors or relevant configuration on these must be pointed out)
-        
-	Process:
-		(Here goes a detailed description of how the step was tested, including any observations and middle steps).
-        
-	Result:
-		(Here goes a conclusion over the state of the component, including how well it fulfills its responsibility, how well it is integrated into the system and needed or potential changes)
-
-#### 4.4.1.2 Test:
-    <Component_name>, <component hierarchy> [the hierarchy, as for example, layer/module/component]. Test No°<number_of_test_over_the_component>
-    From <Start_date_of_test> to <Ending_date_of_test>.
-    
-    Testers:
-        List of tester names
-
-	<list of steps>
-
-	Summary:
-		(Here goes a summary of all conclusions)
-
-### 4.4.2 Steps to perform:
-#### 4.4.2.1 Visual components:
-
-Testing must be done with Jest, React Testing Library and Cypress. Snapshots may also be used.
-
-   1. Revise functionality
-       - Test colocation: Is it shown in the expected position? Is it shown when expected? Does its colocation follow design after interactions, visual updates or processes? Do screen readers access it as expected?
-       - If it has available interactions, test all of them based on their responsibility: Do interactions behave as expected? Do they work with different control devices (touch, mice, keyboards)? Do they work the amount of time they should? Do they keep working after interactions, visual updates or processes?
-       - If it needs code from another layer, ensure that code is already working as intended: Is the data sent to the controller correct? Is the data received from the controller correct? Is the data being handled as expected on the component?
-   3. Revise appearance
-       - Confirm its appearance matches design: Does it render as on the design? Does it stay visually matching after interactions, visual updates or processes?
-       - Test different styles compatibility: Does the shown style match the style applied? Does the component behave functionally the same with the different style?
-
-#### 4.4.2.2 Model components:
-
-   - Internal functions: Do functions fulfill their design? Are all functions implemented?
-   - Data types: Do data types match design?
-   - Data format: Is data format or structure as designed?
-   - Access methods: Do access methods work? Are all methods implemented?
-#### 4.4.2.3 Other components:
-
-   - Execution: Does it work as design? Do they receive and return the correct values?
-   - Data: Data: Are values and data types correct, if any? Is data managed correctly? 
-   - Access methods: Do access methods follow design? Are all methods implemented?
-   - If it needs code from another layer, make sure that code is already working as intended: Is the data sent correct? Is the data received correct? Is the data being handled as on design?
+ 
