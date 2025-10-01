@@ -19,6 +19,39 @@ For testing purposes, the following accounts are available:
 New users registering through the prototype will receive BasicUser permissions.
 <hr>
 
+# Project Folder Structure
+
+``` bash
+src/
+├── assets/               # Images, fonts, static files
+├── components/           # Atomic Design components
+│   ├── atoms/            # Basic UI elements (Button, Input, Label)
+│   ├── molecules/        # Groups of atoms (FormGroup, CardItem)
+│   ├── organisms/        # Complex UI components (Header, CardList)
+│   ├── templates/        # Page layout templates
+│   └── auth/             # Auth-related UI components (LoginForm, SignupForm)
+├── business/             # Business logic classes and coordinators
+├── controllers/          # Handles API calls and orchestrates services
+├── error/                # Global error handling (ExceptionHandler)
+├── hooks/                # React hooks (useCoachSearch, useSessionManager)
+├── lib/                  # Utilities and shared helper functions
+│   └── api/              # API clients, fetch utilities, axios configs
+├── listeners/            # Event and error listeners
+├── logging/              # Logging utilities and classes
+├── middleware/           # Middleware logic (auth, error, logging)
+├── models/               # TypeScript interfaces and models
+├── pages/                # Full page components
+├── security/             # Security helpers (Auth, encryption)
+├── stores/               # Zustand or other state management stores
+├── utils/                # Utility functions (validation, dateUtils)
+├── validators/           # Input and permission validators
+└── __tests__/            # Test files
+    ├── auth/             # Auth-related tests
+    └── routes/           # API route tests
+
+```
+
+
 # 1 Proof of Concepts
 ## 1.1 Frontend Source Code
 
@@ -120,9 +153,15 @@ Use [Auth0](https://auth0.com/) as the authentication and authorization provider
 ### 1.4.1 How to Create an Application in Auth0
 1. Log in to the **Auth0 Dashboard**.
 
-2. Create a new **Single Page Application (SPA)**.
+2. Go to **Applications** → **Applications**.
 
-3. Configure the **Allowed Callback URLs** and **Logout URLs** to point to the local environment and deployed app.
+3. Click **+ Create Application**.
+
+4. Enter the Name and choose an application type (20minCoach it's a **Single Page Application (SPA)**).
+
+5. Click Create
+
+6. Configure the **Allowed Callback URLs** and **Logout URLs** to point to the local environment and deployed app.
 
 <br>
 
@@ -137,13 +176,13 @@ Two actions from the prototype screens are assigned to role-based permissions. I
 
 **Auth0 Dashboard** → **User Management** → **Users** → **basicUser:** 
 
-Allowed to perform only "read: content".
+basicUser is allowed to perform only "read: content".
 
 ![Basic Rol](./images/basicrol.png)
 
 **Auth0 Dashboard** → **User Management** → **Users** → **premiumUser:** 
 
-Allowed to perform both "read: content" and "read: premium_content".
+premiumUser is allowed to perform both "read: content" and "read: premium_content".
 
 ![Premium Rol](./images/premiumrol.png)
 
@@ -218,7 +257,7 @@ Allowed to perform both "read: content" and "read: premium_content".
 
 3. Save the changes.
 
-#### 1.4.6.1 How to Change Default Language
+#### 1.4.7.1 How to Change Default Language
 1. Go to the **Auth0 Dashboard** → **Settings**
 
 2. Open the **General** tab.
@@ -252,6 +291,10 @@ You can test the authentication and prototype using the following link: https://
 
 ### 1.4.9 How to Integrate Auth0 in React
 
+##### Installation:
+``` bash
+npm install @auth0/auth0-react
+```
 1. Create an [.env](./.env) file in the root of the project to save the credentials
 ``` ts
 	REACT_APP_AUTH0_DOMAIN=dev-dwut2n5nvuu4bl0n.us.auth0.com
@@ -513,8 +556,9 @@ Considerations:
 - Slightly more setup than plain React.
 
 ---
-Technology Selection & Justification 
-1. Frontend Framework & Architecture
+#### Technology Selection & Justification 
+
+Frontend Framework & Architecture
 Selected: React 18 + TypeScript, built with Vite
 
 
@@ -544,24 +588,24 @@ How to set up the development environment:
 
 How to install:
 
-
-	npm create vite@latest 20mincoach 
-	cd 20mincoach
-	npm install
-
+``` bash
+npm create vite@latest 20mincoach 
+cd 20mincoach
+npm install
+```
 
 How to run:
-
-	npm run dev
-
+``` bash
+npm run dev
+```
 	
 #### Vital files:
 
-vite.config.ts -> Main build configuration
+[vite.config.ts](./src/vite.config.ts) -> Main build configuration
 
-tsconfig.json --> TypeScript rules
+[tsconfig.json](./src/tsconfig.json) --> TypeScript rules
 
-index.html --> Entry point (single HTML file)
+[index.html](./src/index.html) --> Entry point (single HTML file)
 
 ### 2.2.2 What developers need to know:
 
@@ -578,8 +622,8 @@ index.html --> Entry point (single HTML file)
 
 	src/
 	  pages/
-	    Home.tsx
 	    CoachSearch.tsx
+		CoachResults.tsx
 	    VideoCall.tsx
 	    Profile.tsx
 
@@ -594,88 +638,97 @@ index.html --> Entry point (single HTML file)
 	npm install @tanstack/react-query
 
 
-#### 2.3.1.2 Configuration file: queryClient.ts
+#### 2.3.1.2 Configuration file in `src/lib/queryClient.ts` ([queryClient.ts](./src/lib/queryClient.ts))
+
+``` ts
+import { QueryClient } from '@tanstack/react-query';
+
+export const queryClient = new QueryClient({
+	defaultOptions: {
+	queries: {
+		staleTime: 5 * 3, 
+		retry: 2,
+	},
+	},
+});
+```
+
+#### 2.3.1.3 Example usage in components:
 
 
-	import { QueryClient } from '@tanstack/react-query';
-	
-	export const queryClient = new QueryClient({
-	  defaultOptions: {
-	    queries: {
-	      staleTime: 5 * 3, 
-	      retry: 2,
-	    },
-	  },
+Hook: `src/hooks/useCoaches.ts` ([useCoaches.ts](./src/hooks/useCoaches.ts))
+``` ts
+import { useQuery } from '@tanstack/react-query';
+import { coachApi } from '../services/coachApi';
+
+export const useCoaches = (searchTerm: string) => {
+	return useQuery({
+	queryKey: ['coaches', searchTerm],
+	queryFn: () => coachApi.search(searchTerm),
+	enabled: !!searchTerm,
 	});
+};
+const { data: coaches, isLoading, error } = useCoaches('mechanic');
+```
 
+Service: `src/services/coachApi.ts` ([coachApi.ts](./src/services/coachApi.ts))
+``` ts
+import apiClient from '../lib/api/client';
 
-#### 2.3.1.3 How to use in components:
-
-
-- src/hooks/useCoaches.ts:
-
-		import { useQuery } from '@tanstack/react-query';
-		import { coachApi } from '../services/coachApi';
-		
-		export const useCoaches = (searchTerm: string) => {
-		  return useQuery({
-		    queryKey: ['coaches', searchTerm],
-		    queryFn: () => coachApi.search(searchTerm),
-		    enabled: !!searchTerm,
-		  });
-		};
-  		const { data: coaches, isLoading, error } = useCoaches('mechanic');
-
+export const coachApi = {
+  search: async (term: string) => {
+    const response = await apiClient.get('/coaches', { params: { search: term } });
+    return response.data;
+  },
+};
+```
 
 ### 2.3.2 Client State with Zustand
- - For simple global state for UI
-Setup:
-
+- For simple local/global state for UI and user session.
 
 		npm install zustand
 
 #### Example:	
-- Store examples: src/stores/
 
-- Theme store: src/stores/themeStore.ts
+- Store examples: `src/stores/`
 
+#### Theme store: `src/stores/themeStore.ts` ([themeStore.ts](./src/stores/themeStore.ts))
+``` ts
+  import { create } from 'zustand';
+  
+  interface ThemeState {
+    isDark: boolean;
+    toggleTheme: () => void;
+  }
+  
+  export const useThemeStore = create<ThemeState>((set) => ({
+    isDark: false,
+    toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
+  }));
+  ```
 
-		import { create } from 'zustand';
-		
-		interface ThemeState {
-		  isDark: boolean;
-		  toggleTheme: () => void;
-		}
-		
-		export const useThemeStore = create<ThemeState>((set) => ({
-		  isDark: false,
-		  toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
-		}));
+#### User session store: `src/stores/sessionStore.ts` ([sessionStore.ts](./src/stores/sessionStore.ts))
+```ts
+interface SessionState {
+  user: User | null;
+  currentCoach: Coach | null;
+  setUser: (user: User) => void;
+  setCurrentCoach: (coach: Coach) => void;
+}
 
+export const useSessionStore = create<SessionState>((set) => ({
+  user: null,
+  currentCoach: null,
+  setUser: (user) => set({ user }),
+  setCurrentCoach: (coach) => set({ currentCoach: coach }),
+}));
+```
 
-#### User session store: src/stores/sessionStore.ts
-
-
-	interface SessionState {
-	  user: User | null;
-	  currentCoach: Coach | null;
-	  setUser: (user: User) => void;
-	  setCurrentCoach: (coach: Coach) => void;
-	}
-	
-	export const useSessionStore = create<SessionState>((set) => ({
-	  user: null,
-	  currentCoach: null,
-	  setUser: (user) => set({ user }),
-	  setCurrentCoach: (coach) => set({ currentCoach: coach }),
-	}));
-
-	
 #### Usage in components:
-
-
-	const { isDark, toggleTheme } = useThemeStore();
-	const { user, setUser } = useSessionStore();
+``` ts
+const { isDark, toggleTheme } = useThemeStore();
+const { user, setUser } = useSessionStore();
+```
 
 
 ## 2.4 Real-Time Communication Setup
@@ -686,31 +739,31 @@ Setup:
 	npm install socket.io-client
 
 
-## Configuration: src/services/socketService.ts
+#### Configuration: `src/services/socketService.ts` ([socketService.ts](./src/services/socketService.ts))
 
+``` ts
+import { io, Socket } from 'socket.io-client';
 
-	import { io, Socket } from 'socket.io-client';
+class SocketService {
+	private socket: Socket | null = null;
 	
-	class SocketService {
-	  private socket: Socket | null = null;
-	  
-	  connect(userId: string) {
-	    this.socket = io(import.meta.env.VITE_SOCKET_URL, {
-	      auth: { userId }
-	    });
-	    
-	    this.socket.on('coach-request', (data) => {
-	      // Handle incoming coach requests
-	    });
-	  }
-	  
-	  sendCoachRequest(coachId: string) {
-	    this.socket?.emit('request-coach', { coachId });
-	  }
+	connect(userId: string) {
+	this.socket = io(import.meta.env.VITE_SOCKET_URL, {
+		auth: { userId }
+	});
+	
+	this.socket.on('coach-request', (data) => {
+		// Handle incoming coach requests
+	});
 	}
 	
-	export const socketService = new SocketService();
+	sendCoachRequest(coachId: string) {
+	this.socket?.emit('request-coach', { coachId });
+	}
+}
 
+export const socketService = new SocketService();
+```
 
 ### PeerJS for Video Calls
 #### Installation:
@@ -719,60 +772,60 @@ Setup:
 	npm install peerjs
 
 
-#### Video call setup: src/services/videoService.ts
+#### Video call setup: `src/services/videoService.ts` ([videoService.ts](./src/services/videoService.ts))
 
+``` ts
+import Peer from 'peerjs';
 
-	import Peer from 'peerjs';
+export class VideoCallService {
+	private peer: Peer | null = null;
 	
-	export class VideoCallService {
-	  private peer: Peer | null = null;
-	  
-	  initialize(userId: string) {
-	    this.peer = new Peer(userId, {
-	      host: import.meta.env.VITE_PEER_HOST,
-	      port: import.meta.env.VITE_PEER_PORT,
-	    });
-	  }
-	  
-	  startCall(coachPeerId: string): MediaStream {
-	    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-	      .then((stream) => {
-	        const call = this.peer?.call(coachPeerId, stream);
-	        return stream;
-	      });
-	  }
+	initialize(userId: string) {
+	this.peer = new Peer(userId, {
+		host: import.meta.env.VITE_PEER_HOST,
+		port: import.meta.env.VITE_PEER_PORT,
+	});
 	}
-
+	
+	startCall(coachPeerId: string): MediaStream {
+	navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+		.then((stream) => {
+		const call = this.peer?.call(coachPeerId, stream);
+		return stream;
+		});
+	}
+}
+```
 	
 
 	
 ## 2.5 Styling Implementation
 ### Tailwind CSS Setup
  - For utility-first CSS for fast, consistent styling.
-### Configuration file: tailwind.config.js
+### Configuration file: src/[tailwind.config.js](./src/tailwind.config.ts)
 
-
-	module.exports = {
-	  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-	  theme: {
-	    extend: {
-	      colors: {
-	        primary: '#3B82F6',
-	        secondary: '#1E40AF',
-	      },
-	    },
-	  },
-	  plugins: [],
-	};
-
+``` js
+module.exports = {
+	content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+	theme: {
+	extend: {
+		colors: {
+		primary: '#3B82F6',
+		secondary: '#1E40AF',
+		},
+	},
+	},
+	plugins: [],
+};
+```
 	
-#### Main CSS file: src/index.css
+#### Main CSS file: src/[index.css](./src/index.css)
 
-
-	@tailwind base;
-	@tailwind components;
-	@tailwind utilities;
-
+``` css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
 
 #### shadcn/ui Components
  - For ready-made React components styled with Tailwind.
@@ -784,21 +837,21 @@ Setup:
 
 #### Using components:
 
+``` js
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
-	import { Button } from '@/components/ui/button';
-	import { Card, CardContent } from '@/components/ui/card';
-	
-	const CoachCard = ({ coach }) => (
-	  <Card>
-	    <CardContent>
-	      <h3>{coach.name}</h3>
-	      <Button onClick={requestSession}>
-	        Request Session
-	      </Button>
-	    </CardContent>
-	  </Card>
-	);
-
+const CoachCard = ({ coach }) => (
+	<Card>
+	<CardContent>
+		<h3>{coach.name}</h3>
+		<Button onClick={requestSession}>
+		Request Session
+		</Button>
+	</CardContent>
+	</Card>
+);
+``` 
 	
 ## 2.6 Development Tools
 ### ESLint & Prettier Setup
@@ -807,40 +860,50 @@ Setup:
  - Prettier – For automatic code formatting for consistent style.
 #### Configuration files:
 
-	.eslintrc.cjs - Linting rules
-	
-	.prettierrc - Code formatting rules
+[eslint.config.js](./src/eslint.config.js) -> Linting rules
+
+.prettierrc -> Code formatting rules
 
 #### ESLint rules example:
 
+``` js
+import { FlatCompat } from '@eslint/eslintrc';
 
-	module.exports = {
-	  rules: {
-	    'react-hooks/exhaustive-deps': 'error',
-	    '@typescript-eslint/no-unused-vars': 'error',
-	    'prefer-const': 'error'
-	  }
-	};
-#### Package.json scripts:
+const compat = new FlatCompat({ /* options */ });
 
+export default [
+  ...compat.extends('eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
+  {
+    rules: {
+      'react-hooks/exhaustive-deps': 'error',
+      '@typescript-eslint/no-unused-vars': 'error',
+      'prefer-const': 'error',
+    },
+  },
+];
+```
 
-	{
-	  "scripts": {
-	    "lint": "eslint src --ext .ts,.tsx",
-	    "lint:fix": "eslint src --ext .ts,.tsx --fix",
-	    "format": "prettier --write src/"
-	  }
+#### [Package.json](./src/package.json) scripts:
+``` json
+{
+	"scripts": {
+	"lint": "eslint src --ext .ts,.tsx",
+	"lint:fix": "eslint src --ext .ts,.tsx --fix",
+	"format": "prettier --write src/"
 	}
-	
+}
+```
+
 #### VS Code setup: Create .vscode/settings.json
 
-
-	{
-	  "editor.codeActionsOnSave": {
-	    "source.fixAll.eslint": true
-	  },
-	  "editor.formatOnSave": true
-	}
+``` json
+{
+	"editor.codeActionsOnSave": {
+	"source.fixAll.eslint": true
+	},
+	"editor.formatOnSave": true
+}
+```
 
 
 ---
@@ -855,901 +918,782 @@ Setup:
 ### 3.1.1 Models
 
 
- - Location: scr/types/
+ - Location: scr/[models](./src/models/)/
  
  ### Example:
+
+ #### `src/models/Category.ts` ([Category.ts](./src/models/Category.ts))
  
- ####  src/types/user.ts:
-  
-	  export interface User {
-	  id: string;
-	  email: string;
-	  name: string;
-	  role: 'basic' | 'premium';
-	  credits: number;
-	}
 
-	export type UserRole = 'basic' | 'premium';
+ #### `src/models/Coach.ts` ([Coach.ts](./src/models/Coach.ts))
+ 
+ ####  `src/models/user.ts`:
+``` ts
+export interface User {
+	id: string;
+	email: string;
+	name: string;
+	role: 'basic' | 'premium';
+	credits: number;
+}
 
-#### src/types/coach.ts
+export type UserRole = 'basic' | 'premium';
+```
 
-
-	export interface Coach {
-	  id: string;
-	  name: string;
-	  specialty: string;
-	  rating: number;
-	  available: boolean;
-	}
-
-	export interface CoachSearchFilters {
-	  specialty?: string;
-	  minRating?: number;
-	}
-
-#### src/types/api.ts
+#### `src/models/api.ts`
 - Data from backend API:
 
 
-	
-		export interface CoachDTO {
-		  id: string;
-		  user_name: string;
-		  specialty_area: string;
-		  average_rating: number;
-		  is_available: boolean;
-		}
-
-
- -Data to sent to API:
-
-	export interface SessionRequestDTO {
-	  coach_id: string;
-	  user_id: string;
-	}
-	
-#### src/types/index.ts
-
-	export * from './user';
-	export * from './coach';
-	export * from './api';
-
+``` ts	
+export interface CoachDTO {
+	id: string;
+	user_name: string;
+	specialty_area: string;
+	average_rating: number;
+	is_available: boolean;
+}
+```
+ - Data to sent to API:
+``` ts
+export interface SessionRequestDTO {
+	coach_id: string;
+	user_id: string;
+}
+```
+#### `src/models/index.ts`
+``` ts
+export * from './user';
+export * from './coach';
+export * from './api';
+```
 
 #### Usage example:
-
-	import type { Coach, User } from '../types';
+``` ts
+	import type { Coach, User } from '../models';
 
 	const MyComponent = ({ coach }: { coach: Coach }) => {
-	  
+	
 	}
-
+```
 
 ### 3.1.2 API Client Layer
 
-Location: src/lip/api/
+Location: src/lib/[api](./src/lib/api/)/
 
-#### src/lib/api/client.ts
+#### Configuration file: `src/lib/api/client.ts` ([client.ts](./src/lib/api/client.ts))
+``` ts
+import axios from 'axios';
 
-	import axios from 'axios';
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 10000,
+});
 
-	const apiClient = axios.create({
-	  baseURL: import.meta.env.VITE_API_URL,
-	  timeout: 10000,
-	});
+// Optional: add interceptors if needed, e.g., for logging or global error handling
+// Auth tokens are handled via Auth0 using getAccessTokenSilently() in the components/hooks that call the API
 
-   - Add auth token automatically
-   
-		   apiClient.interceptors.request.use((config) => {
-		  const token = localStorage.getItem('auth_token');
-		  if (token) {
-			config.headers.Authorization = `Bearer ${token}`;
-		  }
-		  return config;
-			});
-	
-	- Handle common errors:
-	
-		apiClient.interceptors.response.use(
-	  (response) => response,
-	  (error) => {
-		if (error.response?.status === 401) {
-		  window.location.href = '/login';
-		}
-		return Promise.reject(error);
-	  }
-	);
+export default apiClient;
+```
+- This client centralizes all API calls to the backend.
 
-	export default apiClient;
+- Authentication headers are added per request using **Auth0** tokens obtained with `getAccessTokenSilently()`.
 
+- Common API errors can be handled in the components or hooks that use this client (e.g., 401 unauthorized, network errors).
 
 ### 3.1.3 Services Layer
 
-Location: src/services/
+Location: src/[services](./src/services/)/
 
-#### src/services/CoachService.ts
+#### `src/services/coachApi.ts` ([coachApi.ts](./src/services/coachApi.ts))
+``` ts
+import apiClient from '../lib/api/client';
 
-	import apiClient from '../lib/api/client';
-	import type { Coach, CoachSearchFilters } from '../types';
-	import type { CoachDTO } from '../types/api';
+export const coachApi = {
+  search: async (term: string) => {
+    const response = await apiClient.get('/coaches', { params: { search: term } });
+    return response.data;
+  },
+};
+```
+#### `src/services/socketService.ts` ([socketService.ts](./src/services/socketService.ts))
+``` ts
+import { io, Socket } from 'socket.io-client';
 
-	export class CoachService {
-	  async searchCoaches(filters: CoachSearchFilters): Promise<Coach[]> {
-		const response = await apiClient.get('/coaches', { params: filters });
-		return response.data.map((dto: CoachDTO) => ({
-		  id: dto.id,
-		  name: dto.user_name,
-		  specialty: dto.specialty_area,
-		  rating: dto.average_rating,
-		  available: dto.is_available,
-		}));
-	  }
+class SocketService {
+  private socket: Socket | null = null;
 
-	  async requestSession(coachId: string): Promise<void> {
-		await apiClient.post('/sessions/request', { coach_id: coachId });
-	  }
-	}
-
-	export const coachService = new CoachService();
-	
-	
-#### src/services/sessionService.ts
-
-	import apiClient from '../lib/api/client';
-
-	export const sessionService = {
-	  async startVideoCall(sessionId: string): Promise<string> {
-		const response = await apiClient.post(`/sessions/${sessionId}/start-call`);
-		return response.data.peerId;
-	  },
-	  
-	  async endSession(sessionId: string): Promise<void> {
-		await apiClient.post(`/sessions/${sessionId}/end`);
-	  }
-	};
-	
-
+  connect(userId: string) {
+    this.socket = io(import.meta.env.VITE_SOCKET_URL, {
+      auth: { userId },
+    });
+    this.socket.on('coach-request', (data) => {
+      console.log('Incoming coach request:', data);
+      // Handle incoming coach requests here
+    });
+  }
+  sendCoachRequest(coachId: string) {
+    this.socket?.emit('request-coach', { coachId });
+  }
+  disconnect() {
+    this.socket?.disconnect();
+    this.socket = null;
+  }
+}
+export const socketService = new SocketService();
+```
 
 ### 3.1.4 State Layer
 
 
-Location:  
-      - src/stores/  -> Zustand
-	 
+Location: src/[stores](./src/stores/)/  -> Zustand
 
-#### src/stores/themeStore.ts
+#### `src/stores/themeStore.ts` ([themeStore.ts](./src/stores/themeStore.ts))
+``` ts
+import { create } from 'zustand';
 
-	import { create } from 'zustand';
+interface ThemeState {
+	isDark: boolean;
+	toggleTheme: () => void;
+}
 
-	interface ThemeState {
-	  isDark: boolean;
-	  toggleTheme: () => void;
-	}
+export const useThemeStore = create<ThemeState>((set) => ({
+	isDark: false,
+	toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
+}));
+```
 
-	export const useThemeStore = create<ThemeState>((set) => ({
-	  isDark: false,
-	  toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
-	}));
-	
-#### src/stores/sessionStore.ts
+#### `src/stores/sessionStore.ts` ([sessionStore.ts](./src/stores/sessionStore.ts))
+``` ts
+import { create } from 'zustand';
+import type { Coach } from '../models';
 
-	import { create } from 'zustand';
-	import type { Coach } from '../types';
+interface SessionState {
+	currentCoach: Coach | null;
+	setCurrentCoach: (coach: Coach) => void;
+}
 
-	interface SessionState {
-	  currentCoach: Coach | null;
-	  setCurrentCoach: (coach: Coach) => void;
-	}
-
-	export const useSessionStore = create<SessionState>((set) => ({
-	  currentCoach: null,
-	  setCurrentCoach: (coach) => set({ currentCoach: coach }),
-	}));
-
+export const useSessionStore = create<SessionState>((set) => ({
+	currentCoach: null,
+	setCurrentCoach: (coach) => set({ currentCoach: coach }),
+}));		
+```
 
 ### 3.1.5 Controller Layer
 
- - src/hooks/   -> React Query
+Location: src/[hooks](./src/hooks/)/   -> React Query
 
-#### src/hooks/useCoachSearch.ts
+#### `src/hooks/useCoachSearch.ts` ([useCoachSearch.ts](./src/hooks/useCoachSearch.ts))
+``` ts
+import { useQuery } from '@tanstack/react-query';
+import { coachService } from '../services/coachService';
+import type { CoachSearchFilters } from '../models';
 
-	import { useQuery } from '@tanstack/react-query';
-	import { coachService } from '../services/coachService';
-	import type { CoachSearchFilters } from '../types';
-
-	export const useCoachSearch = (filters: CoachSearchFilters) => {
-	  return useQuery({
-		queryKey: ['coaches', filters],
-		queryFn: () => coachService.searchCoaches(filters),
-	  });
-	};
+export const useCoachSearch = (filters: CoachSearchFilters) => {
+  return useQuery({
+	queryKey: ['coaches', filters],
+	queryFn: () => coachService.searchCoaches(filters),
+  });
+};
+```
 	
-#### src/hooks/useSessionManager.ts
+#### `src/hooks/useSessionManager.ts` ([useSessionManager.ts](./src/hooks/useSessionManager.ts))
+``` ts
+import { useMutation } from '@tanstack/react-query';
+import { coachService } from '../services/coachService';
 
-	import { useMutation } from '@tanstack/react-query';
-	import { coachService } from '../services/coachService';
+export const useSessionManager = () => {
+  const requestSession = useMutation({
+	mutationFn: (coachId: string) => coachService.requestSession(coachId),
+  });
 
-	export const useSessionManager = () => {
-	  const requestSession = useMutation({
-		mutationFn: (coachId: string) => coachService.requestSession(coachId),
-	  });
-
-	  return {
-		requestSession: requestSession.mutate,
-		isLoading: requestSession.isPending,
-	  };
-	};
-
+  return {
+	requestSession: requestSession.mutate,
+	isLoading: requestSession.isPending,
+  };
+};
+```
  
 ### 3.1.6 Presentation Layer
 
-Location: src/components/ and src/pages/
+Location: `src/components/` and `src/pages/`
 
-#### src/components/CoachCard.tsx
+- #### src/components/[atoms](./src/components/atoms/)/
+- #### src/components/[molecules](./src/components/molecules/)/
+- #### src/components/[organisms](./src/components/organisms/)/
+- #### src/components/[templates](./src/components/templates/)/
+- #### src/[pages](./src/pages/)/
 
-	import type { Coach } from '../types';
+#### `src/components/atoms/label.tsx` ([label.tsx](./src/components/atoms/label.tsx))
+``` tsx
+import * as React from "react";
+import * as LabelPrimitive from "@radix-ui/react-label";
+import { cva, type VariantProps } from "class-variance-authority";
 
-	interface CoachCardProps {
-	  coach: Coach;
-	  onSelect: (coach: Coach) => void;
-	}
+import { cn } from "@/lib/utils";
 
-	export const CoachCard: React.FC<CoachCardProps> = ({ coach, onSelect }) => {
-	  return (
-		<div className="border p-4 rounded-lg">
-		  <h3 className="font-bold">{coach.name}</h3>
-		  <p>{coach.specialty}</p>
-		  <button 
-			onClick={() => onSelect(coach)}
-			className="bg-blue-500 text-white px-4 py-2 rounded"
-		  >
-			Select Coach
-		  </button>
-		</div>
-	  );
-	};
-	
-#### src/pages/CoachSearch.tsx
+const labelVariants = cva("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70");
 
-	import { useState } from 'react';
-	import { useCoachSearch } from '../hooks/useCoachSearch';
-	import { CoachCard } from '../components/CoachCard';
-	import { useSessionStore } from '../stores/sessionStore';
+const Label = React.forwardRef<
+  React.ElementRef<typeof LabelPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & VariantProps<typeof labelVariants>
+>(({ className, ...props }, ref) => (
+  <LabelPrimitive.Root ref={ref} className={cn(labelVariants(), className)} {...props} />
+));
+Label.displayName = LabelPrimitive.Root.displayName;
 
-	export const CoachSearch: React.FC = () => {
-	  const [specialty, setSpecialty] = useState('');
-	  const { data: coaches, isLoading } = useCoachSearch({ specialty });
-	  const { setCurrentCoach } = useSessionStore();
+export { Label };
+```
 
-	  return (
-		<div className="p-4">
-		  <input
-			type="text"
-			placeholder="Search coaches..."
-			value={specialty}
-			onChange={(e) => setSpecialty(e.target.value)}
-			className="border p-2 rounded w-full mb-4"
-		  />
-		  
-		  {isLoading && <div>Loading...</div>}
-		  
-		  <div className="space-y-4">
-			{coaches?.map((coach) => (
-			  <CoachCard 
-				key={coach.id} 
-				coach={coach}
-				onSelect={setCurrentCoach}
-			  />
-			))}
-		  </div>
-		</div>
-	  );
-	};
+#### `src/components/organisms/CoachCard.tsx` ([CoachCard.tsx](./src/components/organisms/CoachCard.tsx))
 
+#### `src/pages/CoachResults.tsx` ([CoachResults.tsx](./src/pages/CoachResults.tsx))
 
 ### 3.1.7 Middleware
 
-Location: src/middleware/
+Location: src/[middleware](/src/middleware/)/
 
-#### src/middleware/authMiddleware.ts
+#### `src/middleware/authMiddleware.ts` ([authMiddleware.ts](./src/middleware/authMiddleware.ts))
 
-	import { useAuth } from '../hooks/useAuth';
+``` ts
+import { useAuth } from '../hooks/usePermissions';
 
-	export const usePermissionMiddleware = () => {
-	  const { hasPermission } = useAuth();
+export const usePermissionMiddleware = () => {
+  const { hasPermission } = useAuth();
 
-	  const checkPermission = (permission: string): boolean => {
-		return hasPermission(permission);
-	  };
+  const checkPermission = (permission: string): boolean => {
+	return hasPermission(permission);
+  };
 
-	  return { checkPermission };
-	};
-	
-#### src/middleware/errorMiddleware.ts
+  return { checkPermission };
+};
+```
+#### `src/middleware/errorMiddleware.ts` ([errorMiddleware.ts](/src/middleware/errorMiddleware.ts))
+```ts
+export const useErrorMiddleware = () => {
+  const handleApiError = (error: any) => {
+    if (error.response?.status === 401) {
+      // Redirect to login
+      window.location.href = '/login';
+      return 'Please log in again';
+    }
+    
+    if (error.response?.status === 403) {
+      return 'You do not have permission for this action';
+    }
+    
+    return error.response?.data?.message || 'Something went wrong';
+  };
 
-	export const useErrorMiddleware = () => {
-	  const handleApiError = (error: any) => {
-	    if (error.response?.status === 401) {
-	      // Redirect to login
-	      window.location.href = '/login';
-	      return 'Please log in again';
-	    }
-	    
-	    if (error.response?.status === 403) {
-	      return 'You do not have permission for this action';
-	    }
-	    
-	    return error.response?.data?.message || 'Something went wrong';
-	  };
-	
-	  return { handleApiError };
-	};
+  return { handleApiError };
+};
+```
 
-#### src/middleware/logMiddleware.ts
+#### `src/middleware/logMiddleware.ts` ([logMiddleware.ts](/src/middleware/logMiddleware.ts))
 
-	export const useLogMiddleware = () => {
-	  const logEvent = (event: string, data?: any) => {
-	    console.log(`[${new Date().toISOString()}] ${event}`, data);
-	    
-	    // Send to logging service in production
-	    if (import.meta.env.PROD) {
-	      // Add your logging service here
-	    }
-	  };
-	
-	  return { logEvent };
-	};
+``` ts
+export const useLogMiddleware = () => {
+  const logEvent = (event: string, data?: any) => {
+    console.log(`[${new Date().toISOString()}] ${event}`, data);
+    
+    // Send to logging service in production
+    if (import.meta.env.PROD) {
+      // Add your logging service here
+    }
+  };
+
+  return { logEvent };
+};
+```
 
 
 ### 3.1.8 Business
 
-Location: src/business/
+Location: src/[business](/src/business/)/
 
-#### src/buisness/sessionCoordiantor.ts
+#### `src/business/sessionCoordinator.ts` ([sessionCoordinator.ts](/src/business/sessionCoordinator.ts))
+``` ts
+import { sessionService } from '../services/sessionService';
+import { useLogMiddleware } from '../middleware/logMiddleware';
 
-	import { sessionService } from '../services/sessionService';
-	import { useLogMiddleware } from '../middleware/logMiddleware';
+export class SessionCoordinator {
+	private log = useLogMiddleware();
+	async connectUserToCoach(userId: string, coachId: string): Promise<string> {
+	try {
+		this.log.logEvent('session_connect_attempt', { userId, coachId });
+		const peerId = await sessionService.startVideoCall(`${userId}-${coachId}`);
+	
+		setTimeout(() => {
+		this.endSession(userId, coachId);
+		}, 20 * 60 * 1000);
 
-	export class SessionCoordinator {
-	  private log = useLogMiddleware();
-
-	  async connectUserToCoach(userId: string, coachId: string): Promise<string> {
-		try {
-		  this.log.logEvent('session_connect_attempt', { userId, coachId });
-		  
-		  const peerId = await sessionService.startVideoCall(`${userId}-${coachId}`);
-		  
-		
-		  setTimeout(() => {
-			this.endSession(userId, coachId);
-		  }, 20 * 60 * 1000);
-
-		  this.log.logEvent('session_connected', { userId, coachId, peerId });
-		  return peerId;
-		} catch (error) {
-		  this.log.logEvent('session_connect_failed', { userId, coachId, error });
-		  throw error;
-		}
-	  }
-
-	  async endSession(userId: string, coachId: string): Promise<void> {
-		await sessionService.endSession(`${userId}-${coachId}`);
-		this.log.logEvent('session_ended', { userId, coachId });
-	  }
+		this.log.logEvent('session_connected', { userId, coachId, peerId });
+		return peerId;
+	} catch (error) {
+		this.log.logEvent('session_connect_failed', { userId, coachId, error });
+		throw error;
 	}
+	}
+	async endSession(userId: string, coachId: string): Promise<void> {
+	await sessionService.endSession(`${userId}-${coachId}`);
+	this.log.logEvent('session_ended', { userId, coachId });
+	}
+}
+export const sessionCoordinator = new SessionCoordinator();
+```
 
-	export const sessionCoordinator = new SessionCoordinator();
+#### `src/business/coachMatcher.ts` ([coachMatcher.ts](/src/business/coachMatcher.ts))
+``` ts
+import type { Coach, CoachSearchFilters } from '../models';
 
-
-#### src/business/coachMatcher.ts
-
-	import type { Coach, CoachSearchFilters } from '../types';
-
-	export class CoachMatcher {
-	  findBestMatch(coaches: Coach[], filters: CoachSearchFilters): Coach | null {
-		let filteredCoaches = coaches.filter(coach => 
-		  coach.available && 
-		  coach.rating >= (filters.minRating || 0)
+export class CoachMatcher {
+	findBestMatch(coaches: Coach[], filters: CoachSearchFilters): Coach | null {
+	let filteredCoaches = coaches.filter(coach => 
+		coach.available && 
+		coach.rating >= (filters.minRating || 0)
+	);
+	if (filters.specialty) {
+		filteredCoaches = filteredCoaches.filter(coach =>
+		coach.specialty.toLowerCase().includes(filters.specialty!.toLowerCase())
 		);
-
-		if (filters.specialty) {
-		  filteredCoaches = filteredCoaches.filter(coach =>
-			coach.specialty.toLowerCase().includes(filters.specialty!.toLowerCase())
-		  );
-		}
-
-		// Sort by rating (highest first)
-		filteredCoaches.sort((a, b) => b.rating - a.rating);
-
-		return filteredCoaches[0] || null;
-	  }
-
-	  calculateMatchScore(coach: Coach, userNeeds: string): number {
-		let score = coach.rating;
-		
-		// Boost score if specialty matches user needs
-		if (coach.specialty.toLowerCase().includes(userNeeds.toLowerCase())) {
-		  score += 2;
-		}
-		
-		return score;
-	  }
 	}
-
-	export const coachMatcher = new CoachMatcher();
-
+	// Sort by rating (highest first)
+	filteredCoaches.sort((a, b) => b.rating - a.rating);
+	return filteredCoaches[0] || null;
+	}
+	calculateMatchScore(coach: Coach, userNeeds: string): number {
+	let score = coach.rating;
+	// Boost score if specialty matches user needs
+	if (coach.specialty.toLowerCase().includes(userNeeds.toLowerCase())) {
+		score += 2;
+	}
+	return score;
+	}
+}
+export const coachMatcher = new CoachMatcher();
+```
 ### 3.1.9 Listeners
 
-Location: src/listeners/
+Location: src/[listeners](/src/listeners/)/
 
-	import { useLogMiddleware } from '../middleware/logMiddleware';
+#### `src/listeners/errorListeners.ts` ([useEventListeners.ts](/src/listeners/useEventListeners.ts))
 
-	export const useEventListeners = () => {
-	  const log = useLogMiddleware();
+``` ts
+import { useLogMiddleware } from '../middleware/logMiddleware';
 
-	  const setupUIListeners = (onUserAction: (action: string, data: any) => void) => {
-	  
-		// Listen for page visibility changes
-		
-		document.addEventListener('visibilitychange', () => {
-		  onUserAction('visibility_change', { 
-			isVisible: !document.hidden 
-		  });
-		});
-
-		// Listen for online/offline status
-		
-		window.addEventListener('online', () => {
-		  onUserAction('connection_restored', {});
-		});
-
-		window.addEventListener('offline', () => {
-		  onUserAction('connection_lost', {});
-		});
-	  };
-
-	  return { setupUIListeners };
-	};
+export const useEventListeners = () => {
+  const log = useLogMiddleware();
+  const setupUIListeners = (onUserAction: (action: string, data: any) => void) => {
+	// Listen for page visibility changes
+	document.addEventListener('visibilitychange', () => {
+	  onUserAction('visibility_change', { 
+		isVisible: !document.hidden 
+	  });
+	});
+	// Listen for online/offline status
+	window.addEventListener('online', () => {
+	  onUserAction('connection_restored', {});
+	});
+	window.addEventListener('offline', () => {
+	  onUserAction('connection_lost', {});
+	});
+  };
+  return { setupUIListeners };
+};
+```
 	
-#### src/listeners/errorListeners.ts
-
-	export const useErrorListeners = () => {
-	  const setupErrorListeners = (onError: (error: Error, context: string) => void) => {
-	    // Global error handler
-	    window.addEventListener('error', (event) => {
-	      onError(event.error, 'window_error');
-	    });
-
-    // Unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
-      onError(event.reason, 'unhandled_rejection');
+#### `src/listeners/errorListeners.ts` ([errorListeners.ts](/src/listeners/errorListeners.ts))
+``` ts
+export const useErrorListeners = () => {
+  const setupErrorListeners = (onError: (error: Error, context: string) => void) => {
+    // Global error handler
+    window.addEventListener('error', (event) => {
+      onError(event.error, 'window_error');
     });
-	  };
-	
-	  return { setupErrorListeners };
-	};
+// Unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  onError(event.reason, 'unhandled_rejection');
+});
+  };
+  return { setupErrorListeners };
+};
+```
 
 ### 3.1.10  Validators
 
-Location: src/validators/
+Location: src/[validators](/src/validators/)/
 
-#### src/validators/permissionValidator.ts
+#### `src/validators/permissionValidator.ts` ([permissionValidator.ts](/src/validators/permissionValidator.ts))
 
-	import { usePermissionMiddleware } from '../middleware/authMiddleware';
+``` ts
+import { usePermissionMiddleware } from '../middleware/authMiddleware';
 
-	export const usePermissionValidator = () => {
-	  const { checkPermission } = usePermissionMiddleware();
+export const usePermissionValidator = () => {
+  const { checkPermission } = usePermissionMiddleware();
+  const validatePermission = (permission: string): boolean => {
+	const hasPerm = checkPermission(permission);
+	if (!hasPerm) {
+	  console.warn(`Permission denied: ${permission}`);
+	  return false;
+	}
+	return true;
+  };
+  return { validatePermission };
+};
+```
 
-	  const validatePermission = (permission: string): boolean => {
-		const hasPerm = checkPermission(permission);
-		
-		if (!hasPerm) {
-		  console.warn(`Permission denied: ${permission}`);
-		  return false;
-		}
-		
-		return true;
-	  };
+#### `src/validators/inputValidator.ts` ([inputValidator.ts](/src/validators/inputValidator.ts))
 
-	  return { validatePermission };
-	};
+``` ts
+export const useInputValidator = () => {
+  const validateSearchInput = (input: string): { isValid: boolean; message: string } => {
+	if (input.length < 2) {
+	  return { isValid: false, message: 'Search term must be at least 2 characters' };
+	}
+	if (input.length > 100) {
+	  return { isValid: false, message: 'Search term too long' };
+	}
+	// Check for potentially harmful characters
+	const harmfulPattern = /[<>{}]/;
+	if (harmfulPattern.test(input)) {
+	  return { isValid: false, message: 'Invalid characters in search' };
+	}
+	return { isValid: true, message: '' };
+  };
+  const validateSessionRequest = (coachId: string, userId: string): boolean => {
+	return !!coachId && !!userId;
+  };
+  return { validateSearchInput, validateSessionRequest };
+};
+```
 	
-#### src/validators/inputValidator.ts
+#### `src/validators/connectionValidator.ts` ([connectionValidator.ts](/src/validators/connectionValidator.ts))
 
-	export const useInputValidator = () => {
-	  const validateSearchInput = (input: string): { isValid: boolean; message: string } => {
-		if (input.length < 2) {
-		  return { isValid: false, message: 'Search term must be at least 2 characters' };
-		}
-		
-		if (input.length > 100) {
-		  return { isValid: false, message: 'Search term too long' };
-		}
-		
-		// Check for potentially harmful characters
-		const harmfulPattern = /[<>{}]/;
-		if (harmfulPattern.test(input)) {
-		  return { isValid: false, message: 'Invalid characters in search' };
-		}
-		
-		return { isValid: true, message: '' };
-	  };
-
-	  const validateSessionRequest = (coachId: string, userId: string): boolean => {
-		return !!coachId && !!userId;
-	  };
-
-	  return { validateSearchInput, validateSessionRequest };
-	};
-	
-#### src/validators/connectionValidator.ts
-
-	export const useConnectionValidator = () => {
-	  const checkConnectionQuality = async (): Promise<'good' | 'fair' | 'poor'> => {
-	    if (!navigator.onLine) {
-	      return 'poor';
-	    }
-	
-	    // Simple connection check - in real app, use more sophisticated method
-	    try {
-	      const start = performance.now();
-	      await fetch('https://www.google.com/favicon.ico', { 
-	        mode: 'no-cors',
-	        cache: 'no-cache'
-	      });
-	      const latency = performance.now() - start;
-	
-	      if (latency < 100) return 'good';
-	      if (latency < 500) return 'fair';
-	      return 'poor';
-	    } catch {
-	      return 'poor';
-	    }
-	  };
-	
-	  return { checkConnectionQuality };
-	};
+``` ts
+export const useConnectionValidator = () => {
+  const checkConnectionQuality = async (): Promise<'good' | 'fair' | 'poor'> => {
+    if (!navigator.onLine) {
+      return 'poor';
+    }
+    // Simple connection check - in real app, use more sophisticated method
+    try {
+      const start = performance.now();
+      await fetch('https://www.google.com/favicon.ico', { 
+        mode: 'no-cors',
+        cache: 'no-cache'
+      });
+      const latency = performance.now() - start;
+      if (latency < 100) return 'good';
+      if (latency < 500) return 'fair';
+      return 'poor';
+    } catch {
+      return 'poor';
+    }
+  };
+  return { checkConnectionQuality };
+};
+```
 
 ### 3.1.11 Styles
 
 
-Location: src/styles/
+Location: src/[styles](/src/styles/)/
 
-#### src/styles/themeManager.ts
+#### `src/styles/themeManager.ts` ([themeManager.ts](/src/styles/themeManager.ts))
 
+``` ts
+export class ThemeManager {
+  private currentTheme: 'light' | 'dark' = 'light';
 
-	export class ThemeManager {
-	  private currentTheme: 'light' | 'dark' = 'light';
-
-	  setTheme(theme: 'light' | 'dark') {
-		this.currentTheme = theme;
-		document.documentElement.setAttribute('data-theme', theme);
-		localStorage.setItem('theme', theme);
-	  }
-
-	  getTheme(): 'light' | 'dark' {
-		const saved = localStorage.getItem('theme') as 'light' | 'dark';
-		return saved || this.currentTheme;
-	  }
-
-	  toggleTheme() {
-		const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-		this.setTheme(newTheme);
-	  }
-
-	  // Apply theme to specific component
-	  applyComponentTheme(componentId: string, theme: 'light' | 'dark') {
-		const element = document.getElementById(componentId);
-		if (element) {
-		  element.setAttribute('data-theme', theme);
-		}
-	  }
+  setTheme(theme: 'light' | 'dark') {
+	this.currentTheme = theme;
+	document.documentElement.setAttribute('data-theme', theme);
+	localStorage.setItem('theme', theme);
+  }
+  getTheme(): 'light' | 'dark' {
+	const saved = localStorage.getItem('theme') as 'light' | 'dark';
+	return saved || this.currentTheme;
+  }
+  toggleTheme() {
+	const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+	this.setTheme(newTheme);
+  }
+  // Apply theme to specific component
+  applyComponentTheme(componentId: string, theme: 'light' | 'dark') {
+	const element = document.getElementById(componentId);
+	if (element) {
+	  element.setAttribute('data-theme', theme);
 	}
-
-	export const themeManager = new ThemeManager();
+  }
+}
+export const themeManager = new ThemeManager();
+```
 	
-#### Update Tailwind config: tailwind.config.js
+#### Update Tailwind config: [tailwind.config.js](/src/tailwind.config.ts)
 
-	module.exports = {
-	  darkMode: 'class',
-	  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-	  theme: {
-		extend: {
-		  colors: {
-			primary: '#3B82F6',
-			secondary: '#1E40AF',
-		  },
-		},
+``` ts
+module.exports = {
+  darkMode: 'class',
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+	extend: {
+	  colors: {
+		primary: '#3B82F6',
+		secondary: '#1E40AF',
 	  },
-	};
-	
-#### Add to main CSS: src/index.css
+	},
+  },
+};
+```
+#### Add to main CSS: [index.css](/src/index.css)
 
-	@layer base {
-	  :root {
-	    --background: 0 0% 100%;
-	    --foreground: 222.2 84% 4.9%;
-	  }
-	
-	  [data-theme="dark"] {
-	    --background: 222.2 84% 4.9%;
-	    --foreground: 210 40% 98%;
-	  }
-	}
-
+``` ts
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+  [data-theme="dark"] {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+  }
+}
+```
 
 ### 3.1.12 Utilities
 
-Location: src/utils/
+Location: src/[utils](/src/utils/)/
 
-#### src/utils/dateUtils.ts
+#### `src/utils/dateUtils.ts` ([dateUtils.ts](./src/utils/dateUtils.ts))
 
-	export const formatSessionTime = (date: Date): string => {
-	  return date.toLocaleTimeString('en-US', { 
-		hour: '2-digit', 
-		minute: '2-digit' 
-	  });
-	};
-
-	export const getSessionEndTime = (startTime: Date): Date => {
-	  return new Date(startTime.getTime() + 20 * 60000); // 20 minutes
-	};
+``` ts
+export const formatSessionTime = (date: Date): string => {
+  return date.toLocaleTimeString('en-US', { 
+	hour: '2-digit', 
+	minute: '2-digit' 
+  });
+};
+export const getSessionEndTime = (startTime: Date): Date => {
+  return new Date(startTime.getTime() + 20 * 60000); // 20 minutes
+};
+```
 	
 	
-#### src/utils/validation.ts
+#### `src/utils/validation.ts` ([validation.ts](/src/utils/validation.ts))
 
-	export const isValidEmail = (email: string): boolean => {
-	  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-	};
-	
-	export const isValidPassword = (password: string): boolean => {
-	  return password.length >= 8;
-	};
+``` ts
+export const isValidEmail = (email: string): boolean => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+export const isValidPassword = (password: string): boolean => {
+  return password.length >= 8;
+};
+```
+
+#### `src/utils/mathUtils.ts` ([mathUtils.ts](/src/utils/mathUtils.ts))
 
 ### 3.1.13 Exception Handling
 
-#### src/error/exceptionHandler.ts
+Location: src/[error](/src/error/)/
 
-	import { useLogMiddleware } from '../middleware/logMiddleware';
+#### `src/error/exceptionHandler.ts` ([exceptionHandler.ts](/src/error/exceptionHandler.ts))
 
-	export class ExceptionHandler {
-	  private log = useLogMiddleware();
+``` ts
+import { useLogMiddleware } from '../middleware/logMiddleware';
 
-	  handle(error: Error, context: string, severity: 'low' | 'medium' | 'high' = 'medium') {
-		this.log.logEvent('exception_occurred', {
-		  error: error.message,
-		  context,
-		  severity,
-		  stack: error.stack
-		});
-
-		// Different handling based on severity
-		switch (severity) {
-		  case 'high':
-			this.handleCriticalError(error, context);
-			break;
-		  case 'medium':
-			this.handleRecoverableError(error, context);
-			break;
-		  case 'low':
-			this.handleMinorError(error, context);
-			break;
-		}
-	  }
-
-	  private handleCriticalError(error: Error, context: string) {
-		// Show error page or restart app
-		console.error('Critical error:', error);
-	  }
-
-	  private handleRecoverableError(error: Error, context: string) {
-		// Show user-friendly message
-		console.warn('Recoverable error:', error);
-	  }
-
-	  private handleMinorError(error: Error, context: string) {
-		// Just log it
-		console.info('Minor error:', error);
-	  }
+export class ExceptionHandler {
+  private log = useLogMiddleware();
+  handle(error: Error, context: string, severity: 'low' | 'medium' | 'high' = 'medium') {
+	this.log.logEvent('exception_occurred', {
+	  error: error.message,
+	  context,
+	  severity,
+	  stack: error.stack
+	});
+	// Different handling based on severity
+	switch (severity) {
+	  case 'high':
+		this.handleCriticalError(error, context);
+		break;
+	  case 'medium':
+		this.handleRecoverableError(error, context);
+		break;
+	  case 'low':
+		this.handleMinorError(error, context);
+		break;
 	}
+  }
+  private handleCriticalError(error: Error, context: string) {
+	// Show error page or restart app
+	console.error('Critical error:', error);
+  }
+  private handleRecoverableError(error: Error, context: string) {
+	// Show user-friendly message
+	console.warn('Recoverable error:', error);
+  }
+  private handleMinorError(error: Error, context: string) {
+	// Just log it
+	console.info('Minor error:', error);
+  }
+}
+export const exceptionHandler = new ExceptionHandler();
+```
 
-	export const exceptionHandler = new ExceptionHandler();
-
-
-#### src/utils/mathUtils.ts
-
-	export const calculateSessionCost = (baseRate: number, duration: number = 20): number => {
-	  const hourlyRate = baseRate;
-	  const minuteRate = hourlyRate / 60;
-	  return Math.round(minuteRate * duration * 100) / 100; // Round to 2 decimal places
-	};
-	
-	export const calculateCoachEarnings = (
-	  sessionRate: number, 
-	  platformFee: number = 0.2 // 20% platform fee
-	): { coachEarnings: number; platformFee: number } => {
-	  const platformFeeAmount = sessionRate * platformFee;
-	  const coachEarnings = sessionRate - platformFeeAmount;
-	  
-	  return {
-	    coachEarnings: Math.round(coachEarnings * 100) / 100,
-	    platformFee: Math.round(platformFeeAmount * 100) / 100
-	  };
-	};
-	
-	export const calculateAverageRating = (ratings: number[]): number => {
-	  if (ratings.length === 0) return 0;
-	  
-	  const sum = ratings.reduce((total, rating) => total + rating, 0);
-	  return Math.round((sum / ratings.length) * 10) / 10; // Round to 1 decimal
-	};
-	
-	export const calculateDiscount = (
-	  originalPrice: number, 
-	  discountPercentage: number
-	): number => {
-	  const discountAmount = originalPrice * (discountPercentage / 100);
-	  return Math.round(discountAmount * 100) / 100;
-	};
 
 ### 3.1.14 Logging
+Location: src/[logging](/src/logging/)/
 
-#### src/logging/logger.ts
+#### `src/logging/logger.ts` ([logger.ts](/src/logging/logger.ts))
 
-	export class Logger {
-	  private logLevel: 'debug' | 'info' | 'warn' | 'error' = 'info';
-
-	  setLogLevel(level: 'debug' | 'info' | 'warn' | 'error') {
-		this.logLevel = level;
-	  }
-
-	  debug(message: string, data?: any) {
-		if (this.shouldLog('debug')) {
-		  console.debug(`[DEBUG] ${message}`, data);
-		}
-	  }
-
-	  info(message: string, data?: any) {
-		if (this.shouldLog('info')) {
-		  console.info(`[INFO] ${message}`, data);
-		}
-	  }
-
-	  warn(message: string, data?: any) {
-		if (this.shouldLog('warn')) {
-		  console.warn(`[WARN] ${message}`, data);
-		}
-	  }
-
-	  error(message: string, data?: any) {
-		if (this.shouldLog('error')) {
-		  console.error(`[ERROR] ${message}`, data);
-		}
-	  }
-
-	  private shouldLog(level: string): boolean {
-		const levels = ['debug', 'info', 'warn', 'error'];
-		return levels.indexOf(level) >= levels.indexOf(this.logLevel);
-	  }
+``` ts
+export class Logger {
+  private logLevel: 'debug' | 'info' | 'warn' | 'error' = 'info';
+  setLogLevel(level: 'debug' | 'info' | 'warn' | 'error') {
+	this.logLevel = level;
+  }
+  debug(message: string, data?: any) {
+	if (this.shouldLog('debug')) {
+	  console.debug(`[DEBUG] ${message}`, data);
 	}
-
-	export const logger = new Logger();
+  }
+  info(message: string, data?: any) {
+	if (this.shouldLog('info')) {
+	  console.info(`[INFO] ${message}`, data);
+	}
+  }
+  warn(message: string, data?: any) {
+	if (this.shouldLog('warn')) {
+	  console.warn(`[WARN] ${message}`, data);
+	}
+  }
+  error(message: string, data?: any) {
+	if (this.shouldLog('error')) {
+	  console.error(`[ERROR] ${message}`, data);
+	}
+  }
+  private shouldLog(level: string): boolean {
+	const levels = ['debug', 'info', 'warn', 'error'];
+	return levels.indexOf(level) >= levels.indexOf(this.logLevel);
+  }
+}
+export const logger = new Logger();
+```
 
 ### 3.1.15 Security
+Location: src/[security](/src/security/)/
+#### `src/security/authManager.ts` ([authManager.ts](/src/security/authManager.ts))
 
-#### src/security/authManager.ts
+``` ts
+import { useAuth0 } from '@auth0/auth0-react';
 
-	import { useAuth0 } from '@auth0/auth0-react';
-
-	export const useAuthManager = () => {
-	  const { user, getAccessTokenSilently } = useAuth0();
-
-	  const getSecureToken = async (): Promise<string> => {
-		try {
-		  return await getAccessTokenSilently();
-		} catch (error) {
-		  throw new Error('Failed to get secure token');
-		}
-	  };
-
-	  const hasRequiredRole = (requiredRole: string): boolean => {
-		const roles = user?.['https://20mincoach.com/roles'] || [];
-		return roles.includes(requiredRole);
-	  };
-
-	  const encryptSensitiveData = (data: string): string => {
-		// Simple base64 encoding - in production use proper encryption
-		return btoa(unescape(encodeURIComponent(data)));
-	  };
-
-	  const decryptSensitiveData = (encryptedData: string): string => {
-		try {
-		  return decodeURIComponent(escape(atob(encryptedData)));
-		} catch {
-		  throw new Error('Failed to decrypt data');
-		}
-	  };
-
-	  return {
-		getSecureToken,
-		hasRequiredRole,
-		encryptSensitiveData,
-		decryptSensitiveData
-	  };
-};
-
+export const useAuthManager = () => {
+  const { user, getAccessTokenSilently } = useAuth0();
+  const getSecureToken = async (): Promise<string> => {
+	try {
+	  return await getAccessTokenSilently();
+	} catch (error) {
+	  throw new Error('Failed to get secure token');
+	}
+  };
+  const hasRequiredRole = (requiredRole: string): boolean => {
+	const roles = user?.['https://20mincoach.com/roles'] || [];
+	return roles.includes(requiredRole);
+  };
+  const encryptSensitiveData = (data: string): string => {
+	// Simple base64 encoding - in production use proper encryption
+	return btoa(unescape(encodeURIComponent(data)));
+  };
+  const decryptSensitiveData = (encryptedData: string): string => {
+	try {
+	  return decodeURIComponent(escape(atob(encryptedData)));
+	} catch {
+	  throw new Error('Failed to decrypt data');
+	}
+  };
+  return {
+	getSecureToken,
+	hasRequiredRole,
+	encryptSensitiveData,
+	decryptSensitiveData
+  };
+  ```
 
 ### 3.1.16 Linter Configuration
 
-#### ESLint config: .eslintrc.cjs
+#### ESLint config: [eslint.config.js](/src/eslint.config.js)
 
-	module.exports = {
-	  extends: [
-		'@tanstack/eslint-config-react',
-		'@tanstack/eslint-config-query'
-	  ],
-	  rules: {
-		'react-hooks/exhaustive-deps': 'error',
-		'@typescript-eslint/no-unused-vars': 'error',
-		'prefer-const': 'error',
-		'no-console': ['warn', { allow: ['warn', 'error'] }],
-		'react/prop-types': 'off' // We use TypeScript
-	  },
-	  ignorePatterns: ['dist/', 'node_modules/']
-	};
-
+``` js
+module.exports = {
+  extends: [
+	'@tanstack/eslint-config-react',
+	'@tanstack/eslint-config-query'
+  ],
+  rules: {
+	'react-hooks/exhaustive-deps': 'error',
+	'@typescript-eslint/no-unused-vars': 'error',
+	'prefer-const': 'error',
+	'no-console': ['warn', { allow: ['warn', 'error'] }],
+	'react/prop-types': 'off' // We use TypeScript
+  },
+  ignorePatterns: ['dist/', 'node_modules/']
+};
+```
 #### Prettier config: .prettierrc
 
-	{
-	  "semi": true,
-	  "singleQuote": true,
-	  "tabWidth": 2,
-	  "trailingComma": "es5",
-	  "printWidth": 100,
-	  "bracketSpacing": true
-	}
-
+``` json
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "printWidth": 100,
+  "bracketSpacing": true
+}
+```
 ### 3.1.17 Build and Deployment Pipelining
 
-#### Vite config: vite.config.ts
+#### Vite config: [vite.config.ts](./src/vite.config.ts)
 
-	import { defineConfig } from 'vite';
-	import react from '@vitejs/plugin-react';
-	
-	export default defineConfig({
-	  plugins: [react()],
-	  build: {
-	    outDir: 'dist',
-	    sourcemap: true,
-	    rollupOptions: {
-	      output: {
-	        manualChunks: {
-	          vendor: ['react', 'react-dom'],
-	          auth: ['@auth0/auth0-react'],
-	          utils: ['axios', 'zustand']
-	        }
-	      }
-	    }
-	  },
-	  server: {
-	    port: 3000,
-	    open: true
-	  }
-	});
+``` ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          auth: ['@auth0/auth0-react'],
+          utils: ['axios', 'zustand']
+        }
+      }
+    }
+  },
+  server: {
+    port: 3000,
+    open: true
+  }
+});
+```
 
 #### Enviroment files:
 
 .env.development:
+``` ts
+VITE_API_URL=http://localhost:3001
+VITE_AUTH0_DOMAIN=dev-dwut2n5nvuu4bl0n.us.auth0.com
+VITE_AUTH0_CLIENT_ID=h5wipav5LmusIRE1kBUFUu4VNxbHTlD7
+```
 
-	VITE_API_URL=http://localhost:3001
-	VITE_AUTH0_DOMAIN=dev-dwut2n5nvuu4bl0n.us.auth0.com
-	VITE_AUTH0_CLIENT_ID=h5wipav5LmusIRE1kBUFUu4VNxbHTlD7
-	
 .env.production:
-
-	VITE_API_URL=https://api.20mincoach.com
-	VITE_AUTH0_DOMAIN=prod-dwut2n5nvuu4bl0n.us.auth0.com
-	VITE_AUTH0_CLIENT_ID=prod-client-id-here
-
+``` ts
+VITE_API_URL=https://api.20mincoach.com
+VITE_AUTH0_DOMAIN=prod-dwut2n5nvuu4bl0n.us.auth0.com
+VITE_AUTH0_CLIENT_ID=prod-client-id-here
+```
 ---
 ## 3.2 Practical Layer Separation - Developer Guidelines
 
@@ -1761,7 +1705,7 @@ src/:
    -  services/  -> only API calls & data transformation
    - hooks/      -> only state management & business logic
    - components/ -> only UI rendering & user interactions
-   - types/      -> only type definitions
+   - models/      -> only models definitions
    - utils/      -> only pure helper functions
    - stores/     -> only global client state
 
@@ -1814,52 +1758,55 @@ src/:
 
 - Example: Adding Coach Rating
 
-#### 1.Types: src/types/rating.ts
-
-	export interface Rating {
-	  score: number;
-	  comment: string;
-	  userId: string;
-	  coachId: string;
-	}
+#### 1.Model: src/models/rating.ts
+``` ts
+export interface Rating {
+  score: number;
+  comment: string;
+  userId: string;
+  coachId: string;
+}
+```
 
 #### 2. Service Method: src/services/ratingService.ts
 
-
-	export class RatingService {
-	  async submitRating(rating: Rating): Promise<void> {
-	    return apiClient.post('/ratings', rating); 
-	  }
-	}
+``` ts
+export class RatingService {
+  async submitRating(rating: Rating): Promise<void> {
+    return apiClient.post('/ratings', rating); 
+  }
+}
+```
 
 #### 3. Business Logic Hook: src/hooks/useRating.ts
 
-
-	export const useRating = () => {
-	  const submitRating = useMutation({
-	    mutationFn: (rating: Rating) => ratingService.submitRating(rating)
-	  });
-	  return { submitRating }; 
-	}
+``` ts
+export const useRating = () => {
+	const submitRating = useMutation({
+	mutationFn: (rating: Rating) => ratingService.submitRating(rating)
+	});
+	return { submitRating }; 
+}
+```
 
 #### 4.Build UI Component: src/components/RatingForm.tsx
-
-	const RatingForm = ({ coachId }) => {
-	  const { submitRating } = useRating();
-	  const [score, setScore] = useState(0);
-	  
-	  const handleSubmit = () => {
-	    submitRating({ score, comment: '', coachId, userId: '123' });
-	  };
-	  
-	  return (
-	    <div>
-	      <StarRating value={score} onChange={setScore} />
-	      <button onClick={handleSubmit}>Submit Rating</button>
-	    </div>
-	  );
-	}
-
+``` tsx
+const RatingForm = ({ coachId }) => {
+	const { submitRating } = useRating();
+	const [score, setScore] = useState(0);
+	
+	const handleSubmit = () => {
+	submitRating({ score, comment: '', coachId, userId: '123' });
+	};
+	
+	return (
+	<div>
+		<StarRating value={score} onChange={setScore} />
+		<button onClick={handleSubmit}>Submit Rating</button>
+	</div>
+	);
+}
+```
 ### 3.2.3 Error Handling Pattern
 
  Not to do:
@@ -1911,7 +1858,7 @@ src/:
 
 - Proper layer communication (Components → Hooks → Services)
 
-- Type definitions separated in /types folder
+- Type definitions separated in /models folder
 
 - Pure functions in /utils without side effects
 
@@ -1931,29 +1878,22 @@ src/:
 
 ---
 
-# 4 Visual Components Strategy
+# 4 Visual Components Strategy (Atomic Design)
 
 
 ## 4.1 Component Organization Strategy 
 
-For the core strategy, combine:
+The architecture is based on Atomic Design principles:
 
- - Atomic Design (tecnical consistency)
+- **Atoms:** Basic UI elements (e.g., buttons, inputs, labels, icons)
 
- - Domain-Driven Design (business alignment)
+- **Molecules:** Simple combinations of atoms that form functional components (e.g., input with label and icon)
 
-Strategic Decisions:
+- **Organisms:** Complex UI sections composed of molecules and/or atoms (e.g., a card with header, content, and action buttons)
 
- - Component Architecture
+- **Templates:** Page-level structures defining layout and placement of organisms
 
- - Foundation Layer: Primitive UI components  - buttons, inputs, labels
-
- - Layout Layer: Structural components that arrange content - headers, grids
-
- - Domain Layer: Heart of the architecture, business components that combine primitives with business logic
-
- - Page Layer: Top-level components representing full screens
-
+- **Pages:** Full screens that represent the final user interface
 ## 4.1.1 Technology-Driven Organization
 
 - React + TypeScript: All will be function components with interfaces using strict TypeScript
@@ -1964,63 +1904,65 @@ Strategic Decisions:
 
 ## 4.1.2 Separation of Concerns
 
-- Presentational Components: Only handle appearance (in ui/ folder)
+- **Atoms:** Purely visual, smallest building blocks
 
-- Container Components: That handle business logic and data (in domain/ folder)
+- **Molecules:** Combine atoms, handle small interactions
 
-- Layout Components: Structural components (in layout/ folder)
+- **Organisms:** Combine molecules and atoms, may handle minor logic
 
+- **Templates:** Arrange organisms in a layout
+
+- **Pages:** Complete screens using templates
 ## 4.1.3 Scalability Approach
 
-- Shared code architecture: Components organized in a way that could be extracted to a separate package
+- Shared architecture: Components structured for reuse across multiple screens
 
-- Progressive: Start simple, add complexity only when needed
+- Progressive complexity: Start simple, increase complexity as needed
 
 - Documentation: Each component folder must include usage examples
 
 ## 4.1.4 Organizational Principles:
 
-- Single Responsibility: Each component should do one thing well
+- Single Responsibility: Each component performs one task
 
 - Composition over Inheritance: Build complex components by combining simple ones
 
 - Prop-Based Customization: Configure components through props, not CSS overrides
 
 
-## 4.1.4 Folder Structure Strategy:
+## 4.1.5 Folder Structure Strategy:
 
+``` bash
+src/components/
+		atoms/       # Smallest, reusable UI elements
+		molecules/   # Combinations of atoms
+		organisms/   # Complex components combining molecules and atoms
+		templates/   # Page-level layout structures
+	pages/       # Full pages representing screens
 
-	src/components/
-		 ui/           # Presentational components
-		 layout/       # Layout  components
-		 domain/       # Container components
-		 pages/        # Page-level compositions
+```
 
-- This high-level strategy ensures that our component architecture is:
-
-- Scalable, maintainable and consistent.
 
    
 ## 4.2 Reusable Component Structure
 
-Visual component files must be placed following the next hierarchy:
-src/presentation_layer/page/template/organism/molecule
+Components are stored according to hierarchy:
 
-For any component used by two components of higher hierarchy, it must be inside a package as <higher_hierarchy>/<next_hierarchy>/.../<component_hierarchy>. For example, if two templates of the same page were to use the same molecule on their organisms, that molecule file would be stored on <page_name>/molecules/organisms/.
+- #### src/components/[atoms](./src/components/atoms/)/
+- #### src/components/[molecules](./src/components/molecules/)/
+- #### src/components/[organisms](./src/components/organisms/)/
+- #### src/components/[templates](./src/components/templates/)/
+- #### src/[pages](./src/pages/)/
+
+Shared components used by multiple higher-level components should live in the lowest common folder in the hierarchy.
 
 ## 4.3 Component Development Workflow
 
 
 ### 4.3.1 Planning & Analysis
-#### 4.3.1.1 Determine Component Type
+#### 4.3.1.1 Determine Component Level
 
-Decide the component type: Is this basic UI , a layout, or  business?
-
-Choose the correct folder: 
-
-	ui/     ->  reusable basics 
-	domain/ ->  business logic
-	layout/ ->  structure
+Atom, Molecule, Organism, Template, Page
 
 #### 4.3.1.2 Define the purpose for the component
 
@@ -2034,14 +1976,12 @@ Choose the correct folder:
 
 - Look in the component library to see if something similar already exists
 
-- If there is something similar, note what needs to be customized
+- Reuse existing atoms/molecules whenever possible
 
 ### 4.3.2 Implementation
-#### 4.3.2.1 Create Folder Structure
+#### 4.3.2.1 Create Folder & Files
 
-- Create a new folder with the component name
-
-- Create these files inside: the main component, test,export, and documentation.
+Main component, test file, export file, and documentation
 
 #### 4.3.2.2 Define Component Interface
 
@@ -2077,15 +2017,15 @@ Configure the export file for other components to use it
 - Pending for team review revision
 
 ### 4.3.4 Special Cases
- #### 4.3.4.1 For Business Logic Components:
+ #### 4.3.4.1 For Business Logic in Components:
 
-- Create a separate hook to handle data and logic
+- Minimal logic in organisms, separate hooks/services for data handling
 
 - Keep the display component clean and focused on UI
 
 #### 4.3.4.2 For Complex Components:
 
-- Break into smaller sub-components
+- Break into sub-components (atoms → molecules → organisms)
 
 - Each sub-component follows the same workflow
 
